@@ -1,0 +1,40 @@
+{
+  "name": "@bowerbird-poc/shopify-theme",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n build,hmr -c blue,green \"vite build --watch\" \"vite dev\"",
+    "build": "vite build",
+    "theme:dev": "shopify theme dev --path=theme",
+    "theme:push": "shopify theme push --path=theme",
+    "theme:pull": "shopify theme pull --path=theme",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@bowerbird-poc/shared": "workspace:*",
+    "@bowerbird-poc/ui": "workspace:*",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@bowerbird-poc/eslint-config": "workspace:*",
+    "@bowerbird-poc/stylelint-config": "workspace:*",
+    "@bowerbird-poc/typescript-config": "workspace:*",
+    "@shopify/cli": "^3.0.0",
+    "@shopify/theme": "^3.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.17.0",
+    "stylelint": "^16.0.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
+}

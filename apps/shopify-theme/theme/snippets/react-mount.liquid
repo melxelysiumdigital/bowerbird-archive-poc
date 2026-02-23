@@ -1,0 +1,16 @@
+{%- comment -%}
+  Generic mount point for React components.
+  Usage:
+    {% render 'react-mount', component: 'ComponentName', props: props_json %}
+    {% render 'react-mount', component: 'ComponentName', props_script_id: '#props-id' %}
+{%- endcomment -%}
+
+<div
+  data-react-component="{{ component }}"
+  {%- if props %}
+    data-react-props="{{ props | escape }}"
+  {%- endif -%}
+  {%- if props_script_id %}
+    data-react-props-from="{{ props_script_id }}"
+  {%- endif -%}
+></div>

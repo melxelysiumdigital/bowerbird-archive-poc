@@ -1,0 +1,85 @@
+<section id="react-hero-{{ section.id }}" class="shopify-section">
+  <script id="react-hero-props-{{ section.id }}" type="application/json">
+    {
+      "heading": {{ section.settings.heading | json }},
+      "subheading": {{ section.settings.subheading | json }},
+      {%- if section.settings.image -%}
+        "imageUrl": {{ section.settings.image | image_url: width: 1920 | json }},
+      {%- endif -%}
+      "ctaText": {{ section.settings.cta_text | json }},
+      "ctaUrl": {{ section.settings.cta_url | json }},
+      "overlayOpacity": {{ section.settings.overlay_opacity | json }},
+      "textAlignment": {{ section.settings.text_alignment | json }}
+    }
+  </script>
+
+  {%- assign hero_props_id = '#react-hero-props-' | append: section.id -%}
+  {% render 'react-mount',
+    component: 'HeroBanner',
+    props_script_id: hero_props_id
+  %}
+</section>
+
+{% schema %}
+{
+  "name": "React Hero Banner",
+  "tag": "div",
+  "class": "react-hero-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to Our Store"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our curated collection"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "React Hero Banner"
+    }
+  ]
+}
+{% endschema %}

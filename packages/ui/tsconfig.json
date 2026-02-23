@@ -1,0 +1,11 @@
+{
+  "extends": "@bowerbird-poc/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "paths": {
+      "@bowerbird-poc/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}

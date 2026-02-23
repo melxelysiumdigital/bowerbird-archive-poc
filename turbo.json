@@ -1,0 +1,41 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "SHOPIFY_API_KEY",
+    "SHOPIFY_API_SECRET",
+    "SHOPIFY_SCOPES",
+    "SHOPIFY_HOST_NAME"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "theme/assets/*.bundle.js", "theme/assets/*.min.css"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "persistent": true,
+      "cache": false
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"]
+    },
+    "lint:styles": {},
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "storybook": {
+      "persistent": true,
+      "cache": false
+    },
+    "build-storybook": {
+      "dependsOn": ["^build"],
+      "outputs": ["storybook-static/**"]
+    }
+  }
+}

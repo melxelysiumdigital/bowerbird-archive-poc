@@ -1,0 +1,13 @@
+{%- comment -%}
+  Dual-mode asset loader for Vite.
+  In dev mode (settings.vite_dev_mode): loads from Vite HMR server on localhost:5173
+  In production: loads bundled JS and CSS from theme assets
+{%- endcomment -%}
+
+{%- if settings.vite_dev_mode -%}
+  <script type="module" src="http://localhost:5173/@vite/client"></script>
+  <script type="module" src="http://localhost:5173/src/entries/react.tsx"></script>
+{%- else -%}
+  {{ 'react.min.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'react.bundle.js' | asset_url }}" defer></script>
+{%- endif -%}

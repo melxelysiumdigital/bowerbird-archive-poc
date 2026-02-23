@@ -1,0 +1,101 @@
+name: Build and Deploy Theme
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - production
+          - custom
+      custom_branch:
+        description: 'Custom branch name (only used when environment is "custom")'
+        required: false
+        type: string
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Determine deploy branch
+        id: branch
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ inputs.environment }}" in
+              production)
+                echo "target=deploy/prod" >> $GITHUB_OUTPUT
+                ;;
+              custom)
+                if [ -z "${{ inputs.custom_branch }}" ]; then
+                  echo "Error: custom_branch is required when environment is 'custom'"
+                  exit 1
+                fi
+                echo "target=${{ inputs.custom_branch }}" >> $GITHUB_OUTPUT
+                ;;
+              *)
+                echo "target=deploy/test" >> $GITHUB_OUTPUT
+                ;;
+            esac
+          else
+            echo "target=deploy/test" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          DEPLOY_BRANCH="${{ steps.branch.outputs.target }}"
+
+          # Create a temp directory for deploy with only the theme files
+          mkdir -p /tmp/deploy
+
+          # Copy the built theme directory
+          rsync -av \
+            --exclude-from='apps/shopify-theme/.shopifyignore' \
+            apps/shopify-theme/theme/ /tmp/deploy/
+
+          # Switch to deploy branch (create if doesn't exist)
+          git fetch origin $DEPLOY_BRANCH || true
+          if git show-ref --verify --quiet refs/remotes/origin/$DEPLOY_BRANCH; then
+            git checkout --force $DEPLOY_BRANCH
+          else
+            git checkout --orphan $DEPLOY_BRANCH
+            git rm -rf . || true
+          fi
+
+          # Clean and copy new files
+          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
+          cp -r /tmp/deploy/. .
+
+          # Commit and push
+          git add -A
+          git commit -m "Deploy from ${{ github.sha }}" || echo "No changes to commit"
+          git push origin $DEPLOY_BRANCH

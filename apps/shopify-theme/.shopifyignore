@@ -1,0 +1,26 @@
+# Build tooling
+node_modules/
+src/
+package.json
+pnpm-lock.yaml
+vite.config.ts
+tsconfig.json
+tsconfig.*.json
+
+# Linting/formatting
+eslint.config.*
+.prettierrc
+.prettierignore
+stylelint.config.*
+
+# Environment
+.env
+.env.*
+
+# IDE/Editor
+.vscode/
+
+# Docs
+README.md
+CLAUDE.md
+AGENTS.md

@@ -1,0 +1,27 @@
+{
+  "name": "@bowerbird-poc/monorepo",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=25"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@bowerbird-poc/web",
+    "dev:shopify-app": "turbo run dev --filter=@bowerbird-poc/shopify-app",
+    "dev:shopify-theme": "turbo run dev --filter=@bowerbird-poc/shopify-theme",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "lint:styles": "turbo run lint:styles",
+    "type-check": "turbo run check-types",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "storybook": "turbo run storybook --filter=@bowerbird-poc/ui",
+    "clean": "turbo run clean && rm -rf node_modules .turbo"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3"
+  }
+}
