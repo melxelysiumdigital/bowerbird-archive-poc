@@ -1,6 +1,27 @@
 extends: :theme_app_extension
 
-# offset: continue is valid Liquid pagination syntax (false positive)
-UndefinedObject:
-  ignore:
-    - sections/main-product.liquid
+# Accessibility (WCAG 2.2 AA)
+ImgLazyLoading:
+  enabled: true
+  severity: error
+RequiredLayoutThemeObject:
+  enabled: true
+DeprecatedTags:
+  enabled: true
+  severity: error
+
+# Performance
+AssetSizeCSS:
+  enabled: true
+  threshold_in_bytes: 100000
+AssetSizeJavaScript:
+  enabled: true
+  threshold_in_bytes: 200000
+
+# Best practices
+MissingTemplate:
+  enabled: true
+  severity: error
+TranslationKeyExists:
+  enabled: true
+  severity: warning
