@@ -5,13 +5,6 @@ if (!customElements.get('donation-widget')) {
       constructor() {
         super();
 
-        this.variantMap = {
-          10: this.dataset.variant10,
-          50: this.dataset.variant50,
-          100: this.dataset.variant100,
-          custom: this.dataset.variantCustom,
-        };
-
         this.amountButtons = this.querySelectorAll('.donation-widget__amount-btn');
         this.customInputWrapper = this.querySelector('.donation-widget__custom-input');
         this.customInput = this.querySelector('.donation-widget__input');
@@ -21,7 +14,8 @@ if (!customElements.get('donation-widget')) {
         this.errorEl = this.querySelector('.donation-widget__error');
 
         this.selectedAmount = null;
-        this.selectedVariantKey = null;
+        this.selectedVariantId = null;
+        this.isCustom = false;
 
         this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
 
@@ -39,16 +33,15 @@ if (!customElements.get('donation-widget')) {
 
       onAmountClick(event) {
         const btn = event.currentTarget;
-        const variantKey = btn.dataset.variantKey;
         const amount = btn.dataset.amount;
 
-        // Toggle selection
         this.amountButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
         btn.setAttribute('aria-pressed', 'true');
 
-        this.selectedVariantKey = variantKey;
+        this.selectedVariantId = btn.dataset.variantId;
+        this.isCustom = amount === 'custom';
 
-        if (amount === 'custom') {
+        if (this.isCustom) {
           this.customInputWrapper.hidden = false;
           this.customInput.focus();
           this.selectedAmount = this.customInput.value ? parseFloat(this.customInput.value) : null;
@@ -68,7 +61,7 @@ if (!customElements.get('donation-widget')) {
       }
 
       updateSubmitState() {
-        const enabled = this.selectedVariantKey && this.selectedAmount && this.selectedAmount >= 1;
+        const enabled = this.selectedVariantId && this.selectedAmount && this.selectedAmount >= 1;
         this.submitButton.disabled = !enabled;
       }
 
@@ -79,20 +72,12 @@ if (!customElements.get('donation-widget')) {
         this.hideError();
         this.setLoading(true);
 
-        const variantId = this.variantMap[this.selectedVariantKey];
-        if (!variantId) {
-          this.showError('Variant not configured. Please check theme settings.');
-          this.setLoading(false);
-          return;
-        }
-
-        const isCustom = this.selectedVariantKey === 'custom';
         const body = {
-          id: parseInt(variantId, 10),
+          id: parseInt(this.selectedVariantId, 10),
           quantity: 1,
         };
 
-        if (isCustom) {
+        if (this.isCustom) {
           body.properties = {
             _donation_amount: String(this.selectedAmount),
             'Donation Amount': '$' + this.selectedAmount,
