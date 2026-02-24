@@ -12,6 +12,7 @@
     "check-types": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:theme": "shopify theme check --path=theme",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {

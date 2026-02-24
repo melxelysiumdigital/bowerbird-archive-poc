@@ -1,2 +1,0 @@
-root: theme/
-extends: :theme_app_extension

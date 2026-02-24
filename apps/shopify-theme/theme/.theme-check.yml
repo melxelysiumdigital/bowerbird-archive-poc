@@ -1,0 +1,6 @@
+extends: :theme_app_extension
+
+# offset: continue is valid Liquid pagination syntax (false positive)
+UndefinedObject:
+  ignore:
+    - sections/main-product.liquid

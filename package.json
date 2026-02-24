@@ -13,6 +13,7 @@
     "dev:shopify-theme": "turbo run dev --filter=@bowerbird-poc/shopify-theme",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
+    "lint:theme": "turbo run lint:theme",
     "lint:styles": "turbo run lint:styles",
     "type-check": "turbo run check-types",
     "format": "prettier --write .",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "turbo": "^2.3.3"
   }
 }

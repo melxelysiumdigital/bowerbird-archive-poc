@@ -50,7 +50,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             case "${{ inputs.environment }}" in
               production)
-                echo "target=deploy/prod" >> $GITHUB_OUTPUT
+                echo "target=deploy/shopify-prod" >> $GITHUB_OUTPUT
                 ;;
               custom)
                 if [ -z "${{ inputs.custom_branch }}" ]; then
@@ -60,11 +60,11 @@ jobs:
                 echo "target=${{ inputs.custom_branch }}" >> $GITHUB_OUTPUT
                 ;;
               *)
-                echo "target=deploy/test" >> $GITHUB_OUTPUT
+                echo "target=deploy/shopify-test" >> $GITHUB_OUTPUT
                 ;;
             esac
           else
-            echo "target=deploy/test" >> $GITHUB_OUTPUT
+            echo "target=deploy/shopify-test" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy to branch

@@ -8,9 +8,9 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, 'theme/assets'),
     emptyOutDir: false,
-    watch: {
-      exclude: resolve(__dirname, 'theme/assets/**'),
-    },
+    watch: process.argv.includes('--watch')
+      ? { exclude: resolve(__dirname, 'theme/assets/**') }
+      : null,
     rollupOptions: {
       input: {
         theme: resolve(__dirname, 'src/entries/theme.ts'),

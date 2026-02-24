@@ -1,15 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": [
-    "SHOPIFY_API_KEY",
-    "SHOPIFY_API_SECRET",
-    "SHOPIFY_SCOPES",
-    "SHOPIFY_HOST_NAME"
-  ],
+  "globalEnv": ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SHOPIFY_SCOPES", "SHOPIFY_HOST_NAME"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "theme/assets/*.bundle.js", "theme/assets/*.min.css"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "theme/assets/*.bundle.js",
+        "theme/assets/*.min.css"
+      ]
     },
     "dev": {
       "dependsOn": ["^build"],
@@ -22,6 +23,7 @@
     "lint:fix": {
       "dependsOn": ["^build"]
     },
+    "lint:theme": {},
     "lint:styles": {},
     "check-types": {
       "dependsOn": ["^check-types"]

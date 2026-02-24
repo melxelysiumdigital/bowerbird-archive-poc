@@ -37,6 +37,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Theme check
+        run: pnpm lint:theme
+
       - name: Format check
         run: pnpm format:check
 

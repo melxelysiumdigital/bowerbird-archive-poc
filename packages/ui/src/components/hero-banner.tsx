@@ -42,15 +42,8 @@ export function HeroBanner({
     >
       {imageUrl && (
         <>
-          <img
-            src={imageUrl}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div
-            className="absolute inset-0 bg-black"
-            style={{ opacity: overlayOpacity / 100 }}
-          />
+          <img src={imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-black" style={{ opacity: overlayOpacity / 100 }} />
         </>
       )}
 
@@ -62,13 +55,9 @@ export function HeroBanner({
         )}
       >
         {heading && (
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-            {heading}
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">{heading}</h1>
         )}
-        {subheading && (
-          <p className="text-lg md:text-xl opacity-90 mb-12">{subheading}</p>
-        )}
+        {subheading && <p className="mb-12 text-lg opacity-90 md:text-xl">{subheading}</p>}
         {ctaText && ctaUrl && (
           <div className="mt-2">
             <Button

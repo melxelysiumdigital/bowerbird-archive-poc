@@ -2,7 +2,7 @@ import { createElement, type ComponentType } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ComponentRegistry = Record<string, ComponentType<any>>;
+export type ComponentRegistry = Record<string, ComponentType<any>>;
 
 const roots = new WeakMap<Element, Root>();
 

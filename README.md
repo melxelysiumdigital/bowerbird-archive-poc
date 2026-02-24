@@ -15,16 +15,16 @@ pnpm install
 
 ## Workspaces
 
-| Workspace | Path | Description |
-|---|---|---|
-| `@bowerbird-poc/web` | `apps/web` | Next.js website (port 3000) |
-| `@bowerbird-poc/shopify-app` | `apps/shopify-app` | Shopify embedded app (port 3001) |
-| `@bowerbird-poc/shopify-theme` | `apps/shopify-theme` | Shopify theme with Vite build pipeline |
-| `@bowerbird-poc/ui` | `packages/ui` | Shared shadcn/ui component library |
-| `@bowerbird-poc/shared` | `packages/shared` | Shared types, constants, and utilities |
-| `@bowerbird-poc/eslint-config` | `packages/eslint-config` | Shared ESLint flat config |
-| `@bowerbird-poc/stylelint-config` | `packages/stylelint-config` | Shared Stylelint config |
-| `@bowerbird-poc/typescript-config` | `packages/typescript-config` | Shared TypeScript configs |
+| Workspace                          | Path                         | Description                            |
+| ---------------------------------- | ---------------------------- | -------------------------------------- |
+| `@bowerbird-poc/web`               | `apps/web`                   | Next.js website (port 3000)            |
+| `@bowerbird-poc/shopify-app`       | `apps/shopify-app`           | Shopify embedded app (port 3001)       |
+| `@bowerbird-poc/shopify-theme`     | `apps/shopify-theme`         | Shopify theme with Vite build pipeline |
+| `@bowerbird-poc/ui`                | `packages/ui`                | Shared shadcn/ui component library     |
+| `@bowerbird-poc/shared`            | `packages/shared`            | Shared types, constants, and utilities |
+| `@bowerbird-poc/eslint-config`     | `packages/eslint-config`     | Shared ESLint flat config              |
+| `@bowerbird-poc/stylelint-config`  | `packages/stylelint-config`  | Shared Stylelint config                |
+| `@bowerbird-poc/typescript-config` | `packages/typescript-config` | Shared TypeScript configs              |
 
 ## Scripts
 
@@ -93,7 +93,7 @@ Tailwind v4 is configured with a single source of truth at `packages/ui/src/styl
 Each app's CSS simply imports the shared styles:
 
 ```css
-@import "@bowerbird-poc/ui/globals.css";
+@import '@bowerbird-poc/ui/globals.css';
 ```
 
 ## Shopify Theme

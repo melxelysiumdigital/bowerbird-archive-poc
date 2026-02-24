@@ -52,13 +52,13 @@ pnpm build
 
 Outputs to `theme/assets/`:
 
-| File | Description |
-|------|-------------|
+| File              | Description                                   |
+| ----------------- | --------------------------------------------- |
 | `react.bundle.js` | React entry point (components + mount system) |
-| `react.min.css` | Tailwind CSS utilities for React components |
-| `theme.bundle.js` | Theme-specific JS entry |
-| `theme.min.css` | Theme-specific CSS |
-| `chunk-*.js` | Code-split chunks (if any) |
+| `react.min.css`   | Tailwind CSS utilities for React components   |
+| `theme.bundle.js` | Theme-specific JS entry                       |
+| `theme.min.css`   | Theme-specific CSS                            |
+| `chunk-*.js`      | Code-split chunks (if any)                    |
 
 ### Build assets are gitignored
 
@@ -87,6 +87,7 @@ pnpm theme:push
 
 1. Create the component in `packages/ui/src/components/my-component.tsx` with a named export
 2. Register it in `src/react/registry.ts` with an eager import:
+
    ```ts
    import { MyComponent } from '@bowerbird-poc/ui/components/my-component';
 
@@ -95,7 +96,9 @@ pnpm theme:push
      MyComponent,
    };
    ```
+
 3. Create a Liquid section in `theme/sections/` that uses the `react-mount` snippet:
+
    ```liquid
    <script id="my-props-{{ section.id }}" type="application/json">
      { "title": {{ section.settings.title | json }} }
@@ -125,6 +128,7 @@ pnpm theme:push
 ### Editor support
 
 Listens for Shopify theme editor events:
+
 - `shopify:section:load/unload` — mount/unmount components when sections are added/removed
 - `shopify:block:select/deselect` — mount/unmount components when blocks are selected
 
@@ -135,8 +139,8 @@ Dawn's `base.css` is wrapped in `@layer base { ... }` so that Tailwind v4 utilit
 The Tailwind CSS entry point (`src/entries/react.css`) imports the shared design tokens from `@bowerbird-poc/ui/globals.css` and uses a `@source` directive to scan the UI package's components for class usage:
 
 ```css
-@import "@bowerbird-poc/ui/globals.css";
-@source "../../node_modules/@bowerbird-poc/ui/src";
+@import '@bowerbird-poc/ui/globals.css';
+@source '../../node_modules/@bowerbird-poc/ui/src';
 ```
 
 ## File Structure

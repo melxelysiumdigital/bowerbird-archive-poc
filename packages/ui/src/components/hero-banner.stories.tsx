@@ -75,7 +75,7 @@ export const LeftAligned: Story = {
 export const RightAligned: Story = {
   args: {
     heading: 'Limited Edition',
-    subheading: 'Exclusive drops you won\'t find anywhere else',
+    subheading: "Exclusive drops you won't find anywhere else",
     imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80',
     ctaText: 'Shop Exclusives',
     ctaUrl: '/collections/limited',
@@ -85,7 +85,7 @@ export const RightAligned: Story = {
 
 export const SkeletonLoading: Story = {
   render: () => (
-    <section className="relative flex min-h-[400px] w-full items-center justify-center overflow-hidden bg-muted">
+    <section className="bg-muted relative flex min-h-[400px] w-full items-center justify-center overflow-hidden">
       <Skeleton className="absolute inset-0" />
       <div className="relative z-10 flex max-w-3xl flex-col items-center gap-4 px-6 py-16">
         <Skeleton className="h-12 w-96 rounded-md" />

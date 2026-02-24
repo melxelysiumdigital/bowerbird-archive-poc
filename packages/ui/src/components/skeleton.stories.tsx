@@ -28,7 +28,7 @@ export const Circle: Story = {
 
 export const Card: Story = {
   render: () => (
-    <div className="flex flex-col gap-3 w-64">
+    <div className="flex w-64 flex-col gap-3">
       <Skeleton className="h-32 w-full rounded-xl" />
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-4 w-1/2" />
@@ -38,7 +38,7 @@ export const Card: Story = {
 
 export const TextBlock: Story = {
   render: () => (
-    <div className="flex flex-col gap-2 w-72">
+    <div className="flex w-72 flex-col gap-2">
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-full" />
       <Skeleton className="h-4 w-4/5" />
