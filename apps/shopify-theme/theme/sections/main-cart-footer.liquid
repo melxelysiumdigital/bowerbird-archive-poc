@@ -42,6 +42,10 @@
           {%- case block.type -%}
             {%- when '@app' -%}
               {% render block %}
+            {%- when 'donation' -%}
+              <div {{ block.shopify_attributes }}>
+                {% render 'donation-widget' %}
+              </div>
             {%- when 'subtotal' -%}
               <div class="js-contents" {{ block.shopify_attributes }}>
                 <div>
@@ -170,6 +174,11 @@
     }
   ],
   "blocks": [
+    {
+      "type": "donation",
+      "name": "Donation",
+      "limit": 1
+    },
     {
       "type": "subtotal",
       "name": "t:sections.main-cart-footer.blocks.subtotal.name",

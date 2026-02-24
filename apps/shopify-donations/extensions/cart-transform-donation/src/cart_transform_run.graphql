@@ -1,0 +1,11 @@
+query CartTransformRunInput {
+  cart {
+    lines {
+      id
+      quantity
+      donationAmount: attribute(key: "_donation_amount") {
+        value
+      }
+    }
+  }
+}

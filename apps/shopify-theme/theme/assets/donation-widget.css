@@ -1,0 +1,144 @@
+.donation-widget {
+  display: block;
+  padding: 1.5rem 0;
+  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+}
+
+.donation-widget__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.donation-widget__heading {
+  margin: 0;
+}
+
+.donation-widget__description {
+  margin: 0;
+  opacity: 0.7;
+  font-size: 1.3rem;
+}
+
+.donation-widget__amounts {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+
+.donation-widget__amount-btn {
+  padding: 0.8rem 0.4rem;
+  min-height: auto;
+  font-size: 1.3rem;
+}
+
+.donation-widget__amount-btn[aria-pressed='true'] {
+  background: rgba(var(--color-button), 1);
+  color: rgba(var(--color-button-text), 1);
+}
+
+.donation-widget__custom-input {
+  position: relative;
+}
+
+.donation-widget__custom-input .field {
+  position: relative;
+}
+
+.donation-widget__currency-symbol {
+  position: absolute;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.donation-widget__input {
+  padding-left: 2.4rem;
+}
+
+/* Remove spinner arrows from number input */
+.donation-widget__input::-webkit-outer-spin-button,
+.donation-widget__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.donation-widget__input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.donation-widget__submit {
+  width: 100%;
+  position: relative;
+}
+
+.donation-widget__submit[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.donation-widget__submit.loading .donation-widget__submit-text {
+  visibility: hidden;
+}
+
+.donation-widget__submit.loading .donation-widget__spinner {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.donation-widget__spinner .spinner {
+  width: 2rem;
+  height: 2rem;
+  animation: spinner 0.6s linear infinite;
+}
+
+.donation-widget__spinner .path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: spinner-dash 1.5s ease-in-out infinite;
+}
+
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+
+.donation-widget__error {
+  color: rgb(var(--color-error, 214, 57, 57));
+  font-size: 1.2rem;
+}
+
+/* Section context — product page */
+.donation-addon-section .donation-widget {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Responsive: stack on very small screens */
+@media screen and (max-width: 400px) {
+  .donation-widget__amounts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

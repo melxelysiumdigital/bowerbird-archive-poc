@@ -64,6 +64,12 @@ importers:
         specifier: ^5.7.0
         version: 5.9.3
 
+  apps/shopify-donations:
+    devDependencies:
+      '@shopify/cli':
+        specifier: ^3.90.0
+        version: 3.90.1
+
   apps/shopify-theme:
     dependencies:
       '@bowerbird-poc/shared':
@@ -7254,7 +7260,7 @@ snapshots:
 
   '@shopify/theme-check-docs-updater@2.2.2':
     dependencies:
-      '@shopify/theme-check-common': 2.2.2
+      '@shopify/theme-check-common': 2.9.2
       ajv: 8.18.0
       env-paths: 2.2.1
       node-fetch: 2.7.0
@@ -8266,7 +8272,7 @@ snapshots:
       dot-prop: 7.2.0
       env-paths: 3.0.0
       json-schema-typed: 8.0.2
-      semver: 7.5.4
+      semver: 7.7.4
 
   config-chain@1.1.13:
     dependencies:
@@ -9906,7 +9912,7 @@ snapshots:
       got: 12.6.1
       registry-auth-token: 5.1.1
       registry-url: 6.0.1
-      semver: 7.5.4
+      semver: 7.7.4
 
   param-case@3.0.4:
     dependencies:

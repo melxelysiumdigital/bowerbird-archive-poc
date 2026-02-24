@@ -1,0 +1,79 @@
+{% comment %}
+  Renders donation widget with preset amount buttons and custom amount input.
+
+  Usage:
+    {% render 'donation-widget' %}
+{% endcomment %}
+
+{%- if settings.donation_enabled and settings.donation_product_handle != blank -%}
+  {%- assign donation_in_cart = false -%}
+  {%- for item in cart.items -%}
+    {%- if item.product.handle == settings.donation_product_handle -%}
+      {%- assign donation_in_cart = true -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- unless donation_in_cart -%}
+    {{ 'donation-widget.css' | asset_url | stylesheet_tag }}
+
+    <donation-widget
+      class="donation-widget"
+      data-variant10="{{ settings.donation_variant_10 }}"
+      data-variant50="{{ settings.donation_variant_50 }}"
+      data-variant100="{{ settings.donation_variant_100 }}"
+      data-variant-custom="{{ settings.donation_variant_custom }}"
+    >
+      <div class="donation-widget__inner">
+        {%- if settings.donation_heading != blank -%}
+          <h3 class="donation-widget__heading h4">{{ settings.donation_heading }}</h3>
+        {%- endif -%}
+        {%- if settings.donation_description != blank -%}
+          <p class="donation-widget__description">{{ settings.donation_description }}</p>
+        {%- endif -%}
+
+        <div class="donation-widget__amounts">
+          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="10" data-variant-key="10" aria-pressed="false">
+            $10
+          </button>
+          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="50" data-variant-key="50" aria-pressed="false">
+            $50
+          </button>
+          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="100" data-variant-key="100" aria-pressed="false">
+            $100
+          </button>
+          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="custom" data-variant-key="custom" aria-pressed="false">
+            Custom
+          </button>
+        </div>
+
+        <div class="donation-widget__custom-input" hidden>
+          <div class="field">
+            <span class="donation-widget__currency-symbol">$</span>
+            <input
+              type="number"
+              class="field__input donation-widget__input"
+              min="1"
+              step="1"
+              placeholder="Enter amount"
+              aria-label="Custom donation amount"
+            >
+          </div>
+        </div>
+
+        <button type="button" class="donation-widget__submit button" disabled>
+          <span class="donation-widget__submit-text">Add donation</span>
+          <span class="donation-widget__spinner loading__spinner hidden">
+            <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+              <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
+            </svg>
+          </span>
+        </button>
+
+        <div class="donation-widget__error" hidden role="alert"></div>
+      </div>
+    </donation-widget>
+
+    <script src="{{ 'donation-widget.js' | asset_url }}" defer="defer"></script>
+  {%- endunless -%}
+{%- endif -%}

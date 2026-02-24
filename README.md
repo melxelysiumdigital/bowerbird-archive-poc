@@ -116,12 +116,24 @@ The theme uses `@bowerbird-poc/ui` React components (HeroBanner, ProductCard) mo
 A GitHub Actions workflow (`.github/workflows/deploy.yml`) handles theme deployment:
 
 1. Builds the full monorepo (`pnpm build`) — generates Vite assets
-2. Copies only the `theme/` directory (respecting `.shopifyignore`) to a deployment branch
-3. Pushes to `deploy/test` (on merge to main) or `deploy/prod` (manual dispatch)
+2. Syncs only the `theme/` directory (respecting `.shopifyignore`) to a deployment branch
+3. Pushes to `deploy/shopify-test` (on merge to main) or `deploy/shopify-prod` (manual dispatch)
 
-Deployment branches contain only Shopify-ready theme files — no source code, node_modules, or build tooling. Use `shopify theme push` from a deployment branch, or connect it to Shopify's GitHub integration.
+Deployment branches contain only Shopify-ready theme files — no source code, node_modules, or build tooling. Connect the deploy branch to Shopify's GitHub integration for automatic theme updates.
 
 Manual deployment via workflow dispatch supports `test`, `production`, and `custom` branch targets.
+
+### Non-destructive sync
+
+Deploys preserve changes made through the Shopify admin (template customizations, theme settings). The workflow uses a two-pass rsync instead of a full branch replacement:
+
+| Category | Behavior | Examples |
+| --- | --- | --- |
+| **Fully synced** (old files cleaned up) | Overwritten every deploy | `assets/`, `sections/`, `snippets/`, `layout/`, `locales/`, `config/settings_schema.json` |
+| **New only** (never overwritten) | Repo templates are copied on first deploy; Shopify admin edits are preserved on subsequent deploys | `templates/**` |
+| **Excluded entirely** | Never touched by deploys; managed only via Shopify admin | `config/settings_data.json` |
+
+This means you can safely customize templates and theme settings in the Shopify admin without losing them on the next deploy.
 
 ## Project Structure
 

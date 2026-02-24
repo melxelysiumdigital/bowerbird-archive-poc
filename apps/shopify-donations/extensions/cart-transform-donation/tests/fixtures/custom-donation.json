@@ -1,0 +1,40 @@
+{
+  "payload": {
+    "export": "cart-transform-run",
+    "target": "cart.transform.run",
+    "input": {
+      "cart": {
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/1",
+            "quantity": 1,
+            "donationAmount": null
+          },
+          {
+            "id": "gid://shopify/CartLine/2",
+            "quantity": 1,
+            "donationAmount": {
+              "value": "25"
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "lineUpdate": {
+            "cartLineId": "gid://shopify/CartLine/2",
+            "price": {
+              "adjustment": {
+                "fixedPricePerUnit": {
+                  "amount": "25.00"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

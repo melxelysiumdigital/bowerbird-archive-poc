@@ -11,6 +11,7 @@
     "dev:web": "turbo run dev --filter=@bowerbird-poc/web",
     "dev:shopify-app": "turbo run dev --filter=@bowerbird-poc/shopify-app",
     "dev:shopify-theme": "turbo run dev --filter=@bowerbird-poc/shopify-theme",
+    "dev:shopify-donations": "turbo run dev --filter=@bowerbird-poc/shopify-donations",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "lint:theme": "turbo run lint:theme",

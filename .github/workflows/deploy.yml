@@ -91,14 +91,26 @@ jobs:
             git rm -rf . || true
           fi
 
-          # Sync non-template files (with cleanup of removed files)
+          # Deploy uses two-pass rsync to avoid destroying Shopify admin changes.
+          # The Shopify GitHub integration commits admin edits (template customizations,
+          # theme settings) back to the deploy branch. A naive full-replace would wipe
+          # those commits on every deploy.
+          #
+          # What gets fully synced (old files cleaned up):
+          #   assets/, sections/, snippets/, layout/, locales/, config/settings_schema.json
+          #
+          # What gets preserved:
+          #   templates/**  — never overwritten, only new templates added from repo
+          #   config/settings_data.json — excluded entirely, managed by Shopify admin
+
+          # Pass 1: sync non-template files (with cleanup of removed files)
           rsync -av --delete \
             --exclude='.git' \
             --exclude='templates/' \
             --exclude='config/settings_data.json' \
             /tmp/deploy/ ./
 
-          # Sync templates: add new ones from repo, never overwrite existing
+          # Pass 2: add new templates from repo, never overwrite existing ones
           rsync -av --ignore-existing \
             /tmp/deploy/templates/ ./templates/
 
