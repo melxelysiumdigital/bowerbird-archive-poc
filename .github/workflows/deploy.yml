@@ -91,15 +91,16 @@ jobs:
             git rm -rf . || true
           fi
 
-          # Sync deploy files, preserving Shopify-managed content
-          # - --delete removes files no longer in the repo
-          # - protect templates/** prevents deletion of admin-created templates
-          # - exclude settings_data.json preserves theme customizer settings
+          # Sync non-template files (with cleanup of removed files)
           rsync -av --delete \
             --exclude='.git' \
-            --filter='protect templates/**' \
+            --exclude='templates/' \
             --exclude='config/settings_data.json' \
             /tmp/deploy/ ./
+
+          # Sync templates: add new ones from repo, never overwrite existing
+          rsync -av --ignore-existing \
+            /tmp/deploy/templates/ ./templates/
 
           # Commit and push
           git add -A
