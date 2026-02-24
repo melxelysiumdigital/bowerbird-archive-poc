@@ -17,10 +17,19 @@ export function cartTransformRun(input) {
   const operations = [];
 
   for (const line of input.cart.lines) {
-    const donationAttr = line.donationAmount;
-    if (!donationAttr?.value) continue;
+    // Try hidden _donation_amount first, fall back to visible "Donation Amount"
+    let rawAmount = line.donationAmount?.value;
 
-    const amount = parseFloat(donationAttr.value);
+    if (!rawAmount && line.donationDisplay?.value) {
+      // Parse "$33" or "$12.50" format from the display property
+      rawAmount = line.donationDisplay.value.replace(/[^0-9.]/g, "");
+    }
+
+    console.error(`Line ${line.id}: _donation_amount=${line.donationAmount?.value}, Donation Amount=${line.donationDisplay?.value}, parsed=${rawAmount}`);
+
+    if (!rawAmount) continue;
+
+    const amount = parseFloat(rawAmount);
     if (isNaN(amount) || amount <= 0) continue;
 
     operations.push({
@@ -36,6 +45,8 @@ export function cartTransformRun(input) {
       },
     });
   }
+
+  console.error("Cart Transform operations:", JSON.stringify(operations));
 
   return { operations };
 }

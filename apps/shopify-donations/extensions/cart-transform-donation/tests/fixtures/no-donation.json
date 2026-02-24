@@ -10,6 +10,12 @@
             "quantity": 1,
             "donationAmount": null,
             "donationDisplay": null
+          },
+          {
+            "id": "gid://shopify/CartLine/2",
+            "quantity": 2,
+            "donationAmount": null,
+            "donationDisplay": null
           }
         ]
       }

@@ -8,14 +8,8 @@
           {
             "id": "gid://shopify/CartLine/1",
             "quantity": 1,
-            "donationAmount": null,
-            "donationDisplay": null
-          },
-          {
-            "id": "gid://shopify/CartLine/2",
-            "quantity": 1,
             "donationAmount": {
-              "value": "25"
+              "value": "12.50"
             },
             "donationDisplay": null
           }
@@ -26,11 +20,11 @@
       "operations": [
         {
           "lineUpdate": {
-            "cartLineId": "gid://shopify/CartLine/2",
+            "cartLineId": "gid://shopify/CartLine/1",
             "price": {
               "adjustment": {
                 "fixedPricePerUnit": {
-                  "amount": "25.00"
+                  "amount": "12.50"
                 }
               }
             }

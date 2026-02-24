@@ -6,6 +6,9 @@ query CartTransformRunInput {
       donationAmount: attribute(key: "_donation_amount") {
         value
       }
+      donationDisplay: attribute(key: "Donation Amount") {
+        value
+      }
     }
   }
 }

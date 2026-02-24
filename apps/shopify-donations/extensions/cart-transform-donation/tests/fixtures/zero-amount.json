@@ -8,7 +8,9 @@
           {
             "id": "gid://shopify/CartLine/1",
             "quantity": 1,
-            "donationAmount": null,
+            "donationAmount": {
+              "value": "0"
+            },
             "donationDisplay": null
           }
         ]
