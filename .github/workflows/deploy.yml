@@ -104,14 +104,15 @@ jobs:
           #   config/settings_data.json — excluded entirely, managed by Shopify admin
 
           # Pass 1: sync non-template files (with cleanup of removed files)
+          # TODO: Restore settings_data.json exclusion after first Horizon deploy
           rsync -av --delete \
             --exclude='.git' \
             --exclude='templates/' \
-            --exclude='config/settings_data.json' \
             /tmp/deploy/ ./
 
-          # Pass 2: add new templates from repo, never overwrite existing ones
-          rsync -av --ignore-existing \
+          # Pass 2: sync templates (overwriting to replace Dawn→Horizon)
+          # TODO: Restore --ignore-existing after first Horizon deploy
+          rsync -av --delete \
             /tmp/deploy/templates/ ./templates/
 
           # Commit and push
