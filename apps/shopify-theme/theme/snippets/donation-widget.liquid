@@ -1,10 +1,10 @@
-{% comment %}
+{%- comment -%}
   Renders donation widget with preset amount buttons and custom amount input.
-  Variants are read dynamically from the selected donation product.
+  Works with both Horizon cart drawer and cart page.
 
   Usage:
     {% render 'donation-widget' %}
-{% endcomment %}
+{%- endcomment -%}
 
 {%- assign donation_product = settings.donation_product -%}
 {%- if settings.donation_enabled and donation_product != blank -%}
@@ -22,7 +22,7 @@
     <donation-widget class="donation-widget">
       <div class="donation-widget__inner">
         {%- if settings.donation_heading != blank -%}
-          <h3 class="donation-widget__heading h4">{{ settings.donation_heading }}</h3>
+          <h3 class="donation-widget__heading">{{ settings.donation_heading }}</h3>
         {%- endif -%}
         {%- if settings.donation_description != blank -%}
           <p class="donation-widget__description">{{ settings.donation_description }}</p>
@@ -33,9 +33,9 @@
             {%- if variant.price == 0 -%}
               <button
                 type="button"
-                class="donation-widget__amount-btn button button--secondary"
-                data-variant-id="{{ variant.id }}"
+                class="donation-widget__amount-btn button--secondary"
                 data-amount="custom"
+                data-variant-id="{{ variant.id }}"
                 aria-pressed="false"
               >
                 Custom
@@ -43,23 +43,23 @@
             {%- else -%}
               <button
                 type="button"
-                class="donation-widget__amount-btn button button--secondary"
+                class="donation-widget__amount-btn button--secondary"
+                data-amount="{{ variant.price | money_without_trailing_zeros | remove: '$' }}"
                 data-variant-id="{{ variant.id }}"
-                data-amount="{{ variant.price | money_without_currency | strip }}"
                 aria-pressed="false"
               >
-                {{ variant.price | money }}
+                {{ variant.price | money_without_trailing_zeros }}
               </button>
             {%- endif -%}
           {%- endfor -%}
         </div>
 
         <div class="donation-widget__custom-input" hidden>
-          <div class="field">
+          <div class="donation-widget__field">
             <span class="donation-widget__currency-symbol">{{ cart.currency.symbol }}</span>
             <input
               type="number"
-              class="field__input donation-widget__input"
+              class="donation-widget__input"
               min="1"
               step="1"
               placeholder="Enter amount"
@@ -70,7 +70,7 @@
 
         <button type="button" class="donation-widget__submit button" disabled>
           <span class="donation-widget__submit-text">Add donation</span>
-          <span class="donation-widget__spinner loading__spinner hidden">
+          <span class="donation-widget__spinner" hidden>
             <svg aria-hidden="true" focusable="false" class="spinner" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
               <circle class="path" fill="none" stroke-width="6" cx="33" cy="33" r="30"></circle>
             </svg>
@@ -81,6 +81,6 @@
       </div>
     </donation-widget>
 
-    <script src="{{ 'donation-widget.js' | asset_url }}" defer="defer"></script>
+    <script src="{{ 'donation-widget.js' | asset_url }}" type="module"></script>
   {%- endunless -%}
 {%- endif -%}

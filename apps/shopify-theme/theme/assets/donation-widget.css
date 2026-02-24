@@ -1,65 +1,79 @@
 .donation-widget {
   display: block;
-  padding: 1.5rem 0;
-  border-top: 0.1rem solid rgba(var(--color-foreground), 0.08);
+  padding: var(--padding-xl) 0;
+  border-top: 1px solid var(--color-border);
 }
 
 .donation-widget__inner {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--gap-md);
 }
 
 .donation-widget__heading {
   margin: 0;
+  font-size: var(--font-size--md);
+  font-weight: var(--font-weight-bold);
 }
 
 .donation-widget__description {
   margin: 0;
   opacity: 0.7;
-  font-size: 1.3rem;
+  font-size: var(--font-size--sm);
 }
 
 .donation-widget__amounts {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: var(--gap-sm);
 }
 
 .donation-widget__amount-btn {
-  padding: 0.8rem 0.4rem;
-  min-height: auto;
-  font-size: 1.3rem;
+  padding: var(--padding-sm) var(--padding-xs);
+  font-size: var(--font-size--sm);
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: var(--style-border-radius-inputs);
+  background: transparent;
+  color: var(--color-foreground);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.donation-widget__amount-btn:hover {
+  background: rgb(var(--color-foreground-rgb) / 0.05);
 }
 
 .donation-widget__amount-btn[aria-pressed='true'] {
-  background: rgba(var(--color-button), 1);
-  color: rgba(var(--color-button-text), 1);
+  background: var(--color-foreground);
+  color: var(--color-background);
+  border-color: var(--color-foreground);
 }
 
-.donation-widget__custom-input {
+.donation-widget__field {
   position: relative;
-}
-
-.donation-widget__custom-input .field {
-  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .donation-widget__currency-symbol {
   position: absolute;
-  left: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.4rem;
-  z-index: 1;
+  left: var(--padding-md);
+  font-size: var(--font-size--sm);
   opacity: 0.7;
+  pointer-events: none;
 }
 
 .donation-widget__input {
-  padding-left: 2.4rem;
+  width: 100%;
+  padding: var(--padding-sm) var(--padding-md);
+  padding-left: calc(var(--padding-md) + 1.2em);
+  font-size: var(--font-size--sm);
+  border: var(--style-border-width-inputs) solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  background: var(--color-input-background);
+  color: var(--color-input-text);
 }
 
-/* Remove spinner arrows from number input */
 .donation-widget__input::-webkit-outer-spin-button,
 .donation-widget__input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -80,10 +94,6 @@
   cursor: not-allowed;
 }
 
-.donation-widget__submit.loading .donation-widget__submit-text {
-  visibility: hidden;
-}
-
 .donation-widget__submit.loading .donation-widget__spinner {
   display: flex;
   position: absolute;
@@ -93,24 +103,24 @@
 }
 
 .donation-widget__spinner .spinner {
-  width: 2rem;
-  height: 2rem;
-  animation: spinner 0.6s linear infinite;
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: donation-spinner 0.6s linear infinite;
 }
 
 .donation-widget__spinner .path {
   stroke: currentColor;
   stroke-linecap: round;
-  animation: spinner-dash 1.5s ease-in-out infinite;
+  animation: donation-spinner-dash 1.5s ease-in-out infinite;
 }
 
-@keyframes spinner {
+@keyframes donation-spinner {
   100% {
     transform: rotate(360deg);
   }
 }
 
-@keyframes spinner-dash {
+@keyframes donation-spinner-dash {
   0% {
     stroke-dasharray: 1, 150;
     stroke-dashoffset: 0;
@@ -126,37 +136,8 @@
 }
 
 .donation-widget__error {
-  color: rgb(var(--color-error, 214, 57, 57));
-  font-size: 1.2rem;
-}
-
-/* Product page donation amount block */
-.donation-amount-block .field {
-  position: relative;
-}
-
-.donation-amount-block .field__currency {
-  position: absolute;
-  left: 1.2rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.4rem;
-  z-index: 1;
-  opacity: 0.7;
-}
-
-.donation-amount-block .field__input {
-  padding-left: 2.4rem;
-}
-
-.donation-amount-block .field__input::-webkit-outer-spin-button,
-.donation-amount-block .field__input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.donation-amount-block .field__input[type='number'] {
-  -moz-appearance: textfield;
+  color: var(--color-error, #d63939);
+  font-size: var(--font-size--2xs);
 }
 
 /* Section context — product page */
@@ -165,9 +146,44 @@
   padding-top: 0;
 }
 
-/* Responsive: stack on very small screens */
-@media screen and (max-width: 400px) {
-  .donation-widget__amounts {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Donation amount block on product page */
+.donation-amount-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.donation-amount-block .donation-amount__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.donation-amount-block .donation-amount__currency {
+  position: absolute;
+  left: var(--padding-md);
+  font-size: var(--font-size--sm);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.donation-amount-block .donation-amount__input {
+  width: 100%;
+  padding: var(--padding-sm) var(--padding-md);
+  padding-left: calc(var(--padding-md) + 1.2em);
+  font-size: var(--font-size--sm);
+  border: var(--style-border-width-inputs) solid var(--color-input-border);
+  border-radius: var(--style-border-radius-inputs);
+  background: var(--color-input-background);
+  color: var(--color-input-text);
+}
+
+.donation-amount-block .donation-amount__input::-webkit-outer-spin-button,
+.donation-amount-block .donation-amount__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.donation-amount-block .donation-amount__input[type='number'] {
+  -moz-appearance: textfield;
 }
