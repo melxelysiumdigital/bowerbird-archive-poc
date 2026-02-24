@@ -17,8 +17,6 @@ if (!customElements.get('donation-widget')) {
         this.selectedVariantId = null;
         this.isCustom = false;
 
-        this.cart = document.querySelector('cart-notification') || document.querySelector('cart-drawer');
-
         this.bindEvents();
       }
 
@@ -27,7 +25,9 @@ if (!customElements.get('donation-widget')) {
           btn.addEventListener('click', this.onAmountClick.bind(this));
         });
 
-        this.customInput.addEventListener('input', this.onCustomInput.bind(this));
+        if (this.customInput) {
+          this.customInput.addEventListener('input', this.onCustomInput.bind(this));
+        }
         this.submitButton.addEventListener('click', this.onSubmit.bind(this));
       }
 
@@ -65,7 +65,7 @@ if (!customElements.get('donation-widget')) {
         this.submitButton.disabled = !enabled;
       }
 
-      onSubmit() {
+      async onSubmit() {
         if (this.submitButton.disabled) return;
         if (this.submitButton.getAttribute('aria-disabled') === 'true') return;
 
@@ -73,59 +73,55 @@ if (!customElements.get('donation-widget')) {
         this.setLoading(true);
 
         const body = {
-          id: parseInt(this.selectedVariantId, 10),
-          quantity: 1,
+          items: [
+            {
+              id: parseInt(this.selectedVariantId, 10),
+              quantity: 1,
+            },
+          ],
         };
 
         if (this.isCustom) {
-          body.properties = {
+          body.items[0].properties = {
             _donation_amount: String(this.selectedAmount),
             'Donation Amount': '$' + this.selectedAmount,
           };
         }
 
-        const config = fetchConfig('javascript');
-        config.headers['X-Requested-With'] = 'XMLHttpRequest';
-        config.headers['Content-Type'] = 'application/json';
-
-        if (this.cart) {
-          const sections = this.cart.getSectionsToRender().map((s) => s.id);
-          body.sections = sections;
-          body.sections_url = window.location.pathname;
-        }
-
-        config.body = JSON.stringify({ items: [body] });
-
-        fetch(window.routes.cart_add_url, config)
-          .then((response) => response.json())
-          .then((response) => {
-            if (response.status) {
-              this.showError(response.description || response.message || 'Could not add donation.');
-              return;
-            }
-
-            publish(PUB_SUB_EVENTS.cartUpdate, {
-              source: 'donation-widget',
-              cartData: response,
-            });
-
-            if (this.cart) {
-              this.cart.renderContents(response);
-            }
-          })
-          .catch((e) => {
-            console.error(e);
-            this.showError('Something went wrong. Please try again.');
-          })
-          .finally(() => {
-            this.setLoading(false);
+        try {
+          const response = await fetch(Theme.routes.cart_add_url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(body),
           });
+
+          const data = await response.json();
+
+          if (data.status) {
+            this.showError(data.description || data.message || 'Could not add donation.');
+            return;
+          }
+
+          // Refresh the page to update cart state (works in both cart page and drawer contexts)
+          window.location.reload();
+        } catch (e) {
+          console.error(e);
+          this.showError('Something went wrong. Please try again.');
+        } finally {
+          this.setLoading(false);
+        }
       }
 
       setLoading(loading) {
         this.submitButton.classList.toggle('loading', loading);
-        this.submitButton.setAttribute('aria-disabled', loading);
-        this.spinner.classList.toggle('hidden', !loading);
+        this.submitButton.setAttribute('aria-disabled', String(loading));
+        this.spinner.hidden = !loading;
+        if (loading) this.submitText.style.visibility = 'hidden';
+        else this.submitText.style.visibility = '';
       }
 
       showError(message) {
@@ -137,6 +133,6 @@ if (!customElements.get('donation-widget')) {
         this.errorEl.textContent = '';
         this.errorEl.hidden = true;
       }
-    }
+    },
   );
 }

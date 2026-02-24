@@ -1,0 +1,175 @@
+{%- comment -%}
+  Donation amount input block for product pages.
+  Shows a number input when the $0 "Custom Amount" variant is selected.
+  Submits _donation_amount and visible "Donation Amount" line item properties.
+{%- endcomment -%}
+
+{%- liquid
+  assign product_form_id = 'BuyButtons-ProductForm-section.id' | replace: 'section.id', section.id
+  assign element_id = 'DonationAmount-' | append: section.id
+-%}
+
+{{ 'donation-widget.css' | asset_url | stylesheet_tag }}
+
+<div
+  class="donation-amount-block spacing-style"
+  id="{{ element_id }}"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+  hidden
+>
+  <p class="__heading">
+    {{ block.settings.label | default: 'Donation amount' }}
+  </p>
+
+  <div class="donation-amount__field">
+    <span class="donation-amount__currency">{{ cart.currency.symbol }}</span>
+    <input
+      type="number"
+      class="field__input donation-amount__input"
+      name="properties[_donation_amount]"
+      min="1"
+      step="1"
+      placeholder="Enter amount"
+      aria-label="Custom donation amount"
+      form="{{ product_form_id }}"
+      disabled
+    >
+    <input
+      type="hidden"
+      name="properties[Donation Amount]"
+      form="{{ product_form_id }}"
+      disabled
+    >
+  </div>
+</div>
+
+<script type="module">
+  (function() {
+    const wrapper = document.getElementById('{{ element_id }}');
+    if (!wrapper) return;
+
+    const amountInput = wrapper.querySelector('input[type="number"]');
+    const displayInput = wrapper.querySelector('input[type="hidden"]');
+
+    // Find the variant ID input in the product form
+    const section = wrapper.closest('.shopify-section') || wrapper.closest('[data-section-id]');
+    if (!section) return;
+
+    // Horizon stores current variant ID in a hidden input or uses variant-picker component
+    function getVariantInput() {
+      return section.querySelector('input[name="id"]') || section.querySelector('select[name="id"]');
+    }
+
+    // Zero-price variant IDs for this product
+    const zeroVariantIds = [
+      {%- for variant in product.variants -%}
+        {%- if variant.price == 0 -%}
+          '{{ variant.id }}',
+        {%- endif -%}
+      {%- endfor -%}
+    ];
+
+    function update() {
+      const variantInput = getVariantInput();
+      if (!variantInput) return;
+
+      const currentId = String(variantInput.value);
+      const isCustom = zeroVariantIds.includes(currentId);
+
+      wrapper.hidden = !isCustom;
+      amountInput.disabled = !isCustom;
+      displayInput.disabled = !isCustom;
+
+      if (!isCustom) {
+        amountInput.value = '';
+        displayInput.value = '';
+      }
+    }
+
+    amountInput.addEventListener('input', function() {
+      displayInput.value = amountInput.value ? '{{ cart.currency.symbol }}' + amountInput.value : '';
+    });
+
+    // Listen for variant changes - Horizon dispatches 'variant:change' events
+    document.addEventListener('variant:change', update);
+
+    // Also observe the variant input for value changes
+    const variantInput = getVariantInput();
+    if (variantInput) {
+      new MutationObserver(update).observe(variantInput, {
+        attributes: true,
+        attributeFilter: ['value'],
+      });
+      // Also listen for change events
+      variantInput.addEventListener('change', update);
+    }
+
+    update();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Donation amount",
+  "tag": "donation-amount-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Donation amount"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Donation amount",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
