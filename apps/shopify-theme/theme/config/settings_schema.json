@@ -1464,14 +1464,8 @@
       {
         "type": "product",
         "id": "donation_product",
-        "label": "Donation product"
-      },
-      {
-        "type": "text",
-        "id": "donation_custom_variant_title",
-        "label": "Custom amount variant title",
-        "default": "Custom Amount",
-        "info": "The variant with this title shows a free-form amount input. All other variants render as preset amount buttons."
+        "label": "Donation product",
+        "info": "Variants with a price show as preset amount buttons. A $0 variant becomes the custom amount input."
       },
       {
         "type": "text",

@@ -17,7 +17,6 @@
   {%- endfor -%}
 
   {%- unless donation_in_cart -%}
-    {%- assign custom_title = settings.donation_custom_variant_title | default: 'Custom Amount' -%}
     {{ 'donation-widget.css' | asset_url | stylesheet_tag }}
 
     <donation-widget class="donation-widget">
@@ -31,7 +30,7 @@
 
         <div class="donation-widget__amounts">
           {%- for variant in donation_product.variants -%}
-            {%- if variant.title == custom_title -%}
+            {%- if variant.price == 0 -%}
               <button
                 type="button"
                 class="donation-widget__amount-btn button button--secondary"
