@@ -9,6 +9,6 @@
   <script type="module" src="http://localhost:5173/src/entries/react.tsx"></script>
 {%- else -%}
   {{ 'react.min.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'vendor.chunk.js' | asset_url }}" defer></script>
-  <script src="{{ 'react.bundle.js' | asset_url }}" defer></script>
+  <link rel="modulepreload" href="{{ 'vendor.chunk.js' | asset_url }}">
+  <script type="module" src="{{ 'react.bundle.js' | asset_url }}"></script>
 {%- endif -%}
