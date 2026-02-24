@@ -5,8 +5,6 @@
  * @typedef {import("../generated/api").CartTransformRunResult} CartTransformRunResult
  */
 
-const NO_CHANGES = { operations: [] };
-
 /**
  * Overrides the price of cart lines that have a `_donation_amount` attribute.
  * This allows customers to specify a custom donation amount, which gets applied
