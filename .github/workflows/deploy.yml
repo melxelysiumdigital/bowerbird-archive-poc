@@ -91,9 +91,14 @@ jobs:
             git rm -rf . || true
           fi
 
-          # Clean and copy new files
-          find . -maxdepth 1 ! -name '.git' ! -name '.' -exec rm -rf {} +
-          cp -r /tmp/deploy/. .
+          # Sync deploy files, preserving Shopify-managed content
+          # - --delete removes files no longer in the repo
+          # - protect templates/** prevents deletion of admin-created templates
+          # - exclude settings_data.json preserves theme customizer settings
+          rsync -av --delete \
+            --filter='protect templates/**' \
+            --exclude='config/settings_data.json' \
+            /tmp/deploy/ ./
 
           # Commit and push
           git add -A
