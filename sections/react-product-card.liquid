@@ -1,0 +1,130 @@
+<section id="react-products-{{ section.id }}" class="shopify-section">
+  <div class="mx-auto max-w-7xl px-4 py-12">
+    {%- if section.settings.title != blank -%}
+      <h2 class="mb-8 text-2xl font-bold">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    <div class="grid gap-6 grid-cols-2 md:grid-cols-{{ section.settings.columns }}">
+      {%- for block in section.blocks -%}
+        {%- assign product = block.settings.product -%}
+        {%- if product != blank -%}
+          <div {{ block.shopify_attributes }}>
+            {% render 'react-mount',
+              component: 'ProductCard',
+              props: product | json
+            %}
+          </div>
+        {%- else -%}
+          <div {{ block.shopify_attributes }}>
+            <script id="product-card-props-{{ block.id }}" type="application/json">
+              {
+                "title": {{ block.settings.product_title | default: "Sample Product" | json }},
+                "price": {{ block.settings.product_price | default: "$29.99" | json }},
+                "compareAtPrice": {{ block.settings.compare_at_price | json }},
+                "vendor": {{ block.settings.vendor | json }},
+                "imageUrl": {% if block.settings.image %}{{ block.settings.image | image_url: width: 600 | json }}{% else %}null{% endif %},
+                "url": {{ block.settings.product_url | default: "#" | json }},
+                "badge": {{ block.settings.badge | json }},
+                "available": {{ block.settings.available | default: true | json }}
+              }
+            </script>
+            {%- assign card_props_id = '#product-card-props-' | append: block.id -%}
+            {% render 'react-mount',
+              component: 'ProductCard',
+              props_script_id: card_props_id
+            %}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "React Product Cards",
+  "tag": "div",
+  "class": "react-product-cards-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "text",
+          "id": "product_title",
+          "label": "Product Title",
+          "default": "Sample Product"
+        },
+        {
+          "type": "text",
+          "id": "product_price",
+          "label": "Price",
+          "default": "$29.99"
+        },
+        {
+          "type": "text",
+          "id": "compare_at_price",
+          "label": "Compare at Price"
+        },
+        {
+          "type": "text",
+          "id": "vendor",
+          "label": "Vendor"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Product Image"
+        },
+        {
+          "type": "url",
+          "id": "product_url",
+          "label": "Product URL"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge Text"
+        },
+        {
+          "type": "checkbox",
+          "id": "available",
+          "label": "Available",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "React Product Cards",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}

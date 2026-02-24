@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "react-hero": {
+      "type": "react-hero",
+      "settings": {}
+    }
+  },
+  "order": ["react-hero"]
+}
