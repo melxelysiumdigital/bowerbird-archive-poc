@@ -106,7 +106,7 @@
         "image_width": "full",
         "image_ratio": "adapt",
         "button_label": "Button label",
-        "button_link": "",
+        "button_link": "shopify://products/donation",
         "columns_desktop": 3,
         "column_alignment": "left",
         "background_style": "primary",
