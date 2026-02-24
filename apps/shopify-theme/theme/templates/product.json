@@ -29,6 +29,9 @@
             "picker_type": "button"
           }
         },
+        "donation_amount": {
+          "type": "donation_amount"
+        },
         "quantity_selector": {
           "type": "quantity_selector"
         },
@@ -91,6 +94,7 @@
         "caption",
         "price",
         "variant_picker",
+        "donation_amount",
         "quantity_selector",
         "buy_buttons",
         "description",

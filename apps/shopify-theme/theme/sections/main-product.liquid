@@ -39,6 +39,7 @@
     }
   {%- endstyle -%}
 
+  {{ 'donation-widget.css' | asset_url | stylesheet_tag }}
   <script src="{{ 'product-info.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
   {%- if product.quantity_price_breaks_configured? -%}
@@ -477,6 +478,75 @@
 
               {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
+              {%- when 'donation_amount' -%}
+                <div
+                  class="donation-amount-block product-form__input"
+                  id="DonationAmount-{{ section.id }}"
+                  {{ block.shopify_attributes }}
+                  hidden
+                >
+                  <label class="form__label" for="DonationAmountInput-{{ section.id }}">
+                    {{ block.settings.label | default: 'Donation amount' }}
+                  </label>
+                  <div class="field">
+                    <span class="field__currency">{{ cart.currency.symbol }}</span>
+                    <input
+                      type="number"
+                      id="DonationAmountInput-{{ section.id }}"
+                      class="field__input"
+                      name="properties[_donation_amount]"
+                      min="1"
+                      step="1"
+                      placeholder="Enter amount"
+                      aria-label="Custom donation amount"
+                      disabled
+                    >
+                    <input type="hidden" name="properties[Donation Amount]" disabled>
+                  </div>
+                </div>
+                <script>
+                  (function() {
+                    const sectionId = '{{ section.id }}';
+                    const wrapper = document.getElementById('DonationAmount-' + sectionId);
+                    const amountInput = wrapper.querySelector('input[type="number"]');
+                    const displayInput = wrapper.querySelector('input[type="hidden"]');
+                    const productInfo = wrapper.closest('product-info');
+
+                    function update() {
+                      const variantId = productInfo?.querySelector('[name="id"]')?.value;
+                      if (!variantId) return;
+
+                      {%- for variant in product.variants -%}
+                        {%- if variant.price == 0 -%}
+                          if (String(variantId) === '{{ variant.id }}') {
+                            wrapper.hidden = false;
+                            amountInput.disabled = false;
+                            displayInput.disabled = false;
+                            return;
+                          }
+                        {%- endif -%}
+                      {%- endfor -%}
+
+                      wrapper.hidden = true;
+                      amountInput.disabled = true;
+                      displayInput.disabled = true;
+                      amountInput.value = '';
+                    }
+
+                    amountInput.addEventListener('input', function() {
+                      displayInput.value = amountInput.value ? '$' + amountInput.value : '';
+                    });
+
+                    document.addEventListener('variant:change', update);
+                    if (productInfo) {
+                      new MutationObserver(update).observe(
+                        productInfo.querySelector('[name="id"]'),
+                        { attributes: true, attributeFilter: ['value'] }
+                      );
+                    }
+                    update();
+                  })();
+                </script>
               {%- when 'buy_buttons' -%}
                 {%- render 'buy-buttons',
                   block: block,
@@ -935,6 +1005,19 @@
           "id": "share_label",
           "label": "t:sections.main-product.blocks.share.settings.text.label",
           "default": "t:sections.main-product.blocks.share.settings.text.default"
+        }
+      ]
+    },
+    {
+      "type": "donation_amount",
+      "name": "Donation amount",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Donation amount"
         }
       ]
     },
