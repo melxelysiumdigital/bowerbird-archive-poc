@@ -1,29 +1,26 @@
 {% comment %}
   Renders donation widget with preset amount buttons and custom amount input.
+  Variants are read dynamically from the selected donation product.
 
   Usage:
     {% render 'donation-widget' %}
 {% endcomment %}
 
-{%- if settings.donation_enabled and settings.donation_product_handle != blank -%}
+{%- assign donation_product = settings.donation_product -%}
+{%- if settings.donation_enabled and donation_product != blank -%}
   {%- assign donation_in_cart = false -%}
   {%- for item in cart.items -%}
-    {%- if item.product.handle == settings.donation_product_handle -%}
+    {%- if item.product.id == donation_product.id -%}
       {%- assign donation_in_cart = true -%}
       {%- break -%}
     {%- endif -%}
   {%- endfor -%}
 
   {%- unless donation_in_cart -%}
+    {%- assign custom_title = settings.donation_custom_variant_title | default: 'Custom Amount' -%}
     {{ 'donation-widget.css' | asset_url | stylesheet_tag }}
 
-    <donation-widget
-      class="donation-widget"
-      data-variant10="{{ settings.donation_variant_10 }}"
-      data-variant50="{{ settings.donation_variant_50 }}"
-      data-variant100="{{ settings.donation_variant_100 }}"
-      data-variant-custom="{{ settings.donation_variant_custom }}"
-    >
+    <donation-widget class="donation-widget">
       <div class="donation-widget__inner">
         {%- if settings.donation_heading != blank -%}
           <h3 class="donation-widget__heading h4">{{ settings.donation_heading }}</h3>
@@ -33,23 +30,34 @@
         {%- endif -%}
 
         <div class="donation-widget__amounts">
-          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="10" data-variant-key="10" aria-pressed="false">
-            $10
-          </button>
-          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="50" data-variant-key="50" aria-pressed="false">
-            $50
-          </button>
-          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="100" data-variant-key="100" aria-pressed="false">
-            $100
-          </button>
-          <button type="button" class="donation-widget__amount-btn button button--secondary" data-amount="custom" data-variant-key="custom" aria-pressed="false">
-            Custom
-          </button>
+          {%- for variant in donation_product.variants -%}
+            {%- if variant.title == custom_title -%}
+              <button
+                type="button"
+                class="donation-widget__amount-btn button button--secondary"
+                data-variant-id="{{ variant.id }}"
+                data-amount="custom"
+                aria-pressed="false"
+              >
+                Custom
+              </button>
+            {%- else -%}
+              <button
+                type="button"
+                class="donation-widget__amount-btn button button--secondary"
+                data-variant-id="{{ variant.id }}"
+                data-amount="{{ variant.price | money_without_currency | strip }}"
+                aria-pressed="false"
+              >
+                {{ variant.price | money }}
+              </button>
+            {%- endif -%}
+          {%- endfor -%}
         </div>
 
         <div class="donation-widget__custom-input" hidden>
           <div class="field">
-            <span class="donation-widget__currency-symbol">$</span>
+            <span class="donation-widget__currency-symbol">{{ cart.currency.symbol }}</span>
             <input
               type="number"
               class="field__input donation-widget__input"

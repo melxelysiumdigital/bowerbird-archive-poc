@@ -1462,31 +1462,16 @@
         "default": false
       },
       {
-        "type": "text",
-        "id": "donation_product_handle",
-        "label": "Donation product handle",
-        "info": "The handle of the donation product (e.g. 'donation')"
+        "type": "product",
+        "id": "donation_product",
+        "label": "Donation product"
       },
       {
         "type": "text",
-        "id": "donation_variant_10",
-        "label": "$10 variant ID"
-      },
-      {
-        "type": "text",
-        "id": "donation_variant_50",
-        "label": "$50 variant ID"
-      },
-      {
-        "type": "text",
-        "id": "donation_variant_100",
-        "label": "$100 variant ID"
-      },
-      {
-        "type": "text",
-        "id": "donation_variant_custom",
-        "label": "Custom amount variant ID",
-        "info": "Variant with placeholder price — Cart Transform overrides the price at checkout"
+        "id": "donation_custom_variant_title",
+        "label": "Custom amount variant title",
+        "default": "Custom Amount",
+        "info": "The variant with this title shows a free-form amount input. All other variants render as preset amount buttons."
       },
       {
         "type": "text",
