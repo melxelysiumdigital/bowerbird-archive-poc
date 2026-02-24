@@ -122,18 +122,11 @@ importers:
   extensions/checkout-donation-upsell:
     dependencies:
       '@shopify/ui-extensions':
-        specifier: ^2025.7.3
-        version: 2025.7.3
-      '@shopify/ui-extensions-react':
-        specifier: ^2025.7.3
-        version: 2025.7.3(@shopify/ui-extensions@2025.7.3)(react@18.3.1)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-    devDependencies:
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
+        specifier: ^2026.1.1
+        version: 2026.1.1(preact@10.28.4)
+      preact:
+        specifier: ^10.25.4
+        version: 10.28.4
 
 packages:
 
@@ -1027,27 +1020,6 @@ packages:
   '@remix-run/node-fetch-server@0.13.0':
     resolution: {integrity: sha512-1EsNo0ZpgXu/90AWoRZf/oE3RVTUS80tiTUpt+hv5pjtAkw7icN4WskDwz/KdAw5ARbJLMhZBrO1NqThmy/McA==}
 
-  '@remote-ui/async-subscription@2.1.18':
-    resolution: {integrity: sha512-O+76qOiTGN6iJZBFncELNIBnhCbHAIYrsrG0n3SjmwXE9Gy6nl4xZoa5FqIcw5VPz7EAdwKBkFsRE5uyQB7FOw==}
-
-  '@remote-ui/core@2.2.7':
-    resolution: {integrity: sha512-9eiTKy2eNKcT76xS0Dpz06ae2oClGAUUjx+HTDsz6fh7n/SS8Avid5N7GOaRiny/6T/cMJxaCeycMQJsEviGjA==}
-
-  '@remote-ui/react@5.0.8':
-    resolution: {integrity: sha512-GUwqP0b4m2TQ8THbsjhBvvYXZfvyWbP6HlYtzKw7izW9C49DWrixLuSz41kB4Ae7MI1OUfKy3xHtwXeLWa+nuA==}
-    peerDependencies:
-      react: '>=17.0.0 <19.0.0'
-      react-reconciler: '>=0.26.0 <0.30.0'
-    peerDependenciesMeta:
-      react-reconciler:
-        optional: true
-
-  '@remote-ui/rpc@1.4.7':
-    resolution: {integrity: sha512-ORiaKsbVBSEi3Z4YWOj5Ucrp70NrkNktI1hdqqfBW7Z3o0YoxTX9MIqtLmsc6721IbjmExvLrLip5I5Y7uAbng==}
-
-  '@remote-ui/types@1.1.3':
-    resolution: {integrity: sha512-P1kN1F3p0oMgnLN8Of1Ie9am3sLvJ7nhqHH1pvzkrxqjVwhhyPVZNcwOHyUNZPKp62izhDavdrcnqrdXzVJqGA==}
-
   '@repeaterjs/repeater@3.0.6':
     resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
 
@@ -1241,14 +1213,16 @@ packages:
   '@shopify/storefront-api-client@1.0.9':
     resolution: {integrity: sha512-vgc0ZczMvrbsQQFYcIIONnIiqiafpcMyq5osI8X6PB65DhnmCQEp3kSlXKOjBPzyAWYvp28nLHS0+r4xsp4yQA==}
 
-  '@shopify/ui-extensions-react@2025.7.3':
-    resolution: {integrity: sha512-XNi91jm5oMhJG4ktoUeIQyvajDMse+MkOwc6x39NHDrjDbOEEoqBKqY+AB7ef+T9I0FDw9vkN9PdzDnXQJqEow==}
+  '@shopify/ui-extensions@2026.1.1':
+    resolution: {integrity: sha512-QjyU/PsbmEM0f/UmPA0MVwPjMy4tZxecBtoh7YqZk0D3RrAK9fw5FTn+yDVw6YOIcH97/Wk5zJCUuXVCJ85C1A==}
     peerDependencies:
-      '@shopify/ui-extensions': 2025.7.3
-      react: '>=18.0.0'
-
-  '@shopify/ui-extensions@2025.7.3':
-    resolution: {integrity: sha512-XqTEzLnU0YOD7s9vd2EEBdXuqxL6H2VMBkwXuHNHdohwMtN/50S5/OsKRrEsE97D3/+/TcEEhQywocA8z4IvSw==}
+      '@preact/signals': '*'
+      preact: '*'
+    peerDependenciesMeta:
+      '@preact/signals':
+        optional: true
+      preact:
+        optional: true
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -1258,6 +1232,9 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       graphql: ^16.0.0
+
+  '@ts-morph/common@0.26.1':
+    resolution: {integrity: sha512-Sn28TGl/4cFpcM+jwsH1wLncYq3FtN/BIpem+HOygfBWPT5pAeS5dB4VFVzV8FbnOKHpDLZmvAl4AjPEev5idA==}
 
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
@@ -1293,11 +1270,6 @@ packages:
     resolution: {integrity: sha512-MEe3UeoENYVFXzoXEWsvcpg6ZvlrFNlOQ7EOsvhI3CfAXwzPfO8Qwuxd40nepsYKqyyVQnTdEfv68q91yLcKrQ==}
     peerDependencies:
       '@types/react': ^18.0.0
-
-  '@types/react-reconciler@0.28.9':
-    resolution: {integrity: sha512-HHM3nxyUZ3zAylX8ZEyrDNd2XZOnQ0D5XfunJF5FLQnZbHHYq4UWvW1QfelQNXv1ICNkwYhfxjwfnqivYB6bFg==}
-    peerDependencies:
-      '@types/react': '*'
 
   '@types/react@18.3.28':
     resolution: {integrity: sha512-z9VXpC7MWrhfWipitjNdgCauoMLRdIILQsAEV+ZesIzBq/oUlxk0m3ApZuMFCXdnS4U7KrI+l3WRUEGQ8K1QKw==}
@@ -1789,6 +1761,9 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+
+  code-block-writer@13.0.3:
+    resolution: {integrity: sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==}
 
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
@@ -3088,6 +3063,9 @@ packages:
   pascal-case@3.1.2:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
 
+  path-browserify@1.0.1:
+    resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
+
   path-case@3.0.4:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
 
@@ -3155,6 +3133,9 @@ packages:
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
+
+  preact@10.28.4:
+    resolution: {integrity: sha512-uKFfOHWuSNpRFVTnljsCluEFq57OKT+0QdOiQo8XWnQ/pSvg7OpX5eNOejELXJMWy+BwM2nobz0FkvzmnpCNsQ==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -3596,6 +3577,9 @@ packages:
 
   ts-log@2.2.7:
     resolution: {integrity: sha512-320x5Ggei84AxzlXp91QkIGSw5wgaLT6GeAH0KsqDmRZdVWW2OiSeVvElVoatk3f7nicwXlElXsoFkARiGE2yg==}
+
+  ts-morph@25.0.1:
+    resolution: {integrity: sha512-QJEiTdnz1YjrB3JFhd626gX4rKHDLSjSVMvGGG4v7ONc3RBwa0Eei98G9AT9uNFDMtV54JyuXsFeC+OH0n6bXQ==}
 
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
@@ -5110,28 +5094,6 @@ snapshots:
 
   '@remix-run/node-fetch-server@0.13.0': {}
 
-  '@remote-ui/async-subscription@2.1.18':
-    dependencies:
-      '@remote-ui/rpc': 1.4.7
-
-  '@remote-ui/core@2.2.7':
-    dependencies:
-      '@remote-ui/rpc': 1.4.7
-      '@remote-ui/types': 1.1.3
-
-  '@remote-ui/react@5.0.8(react@18.3.1)':
-    dependencies:
-      '@remote-ui/async-subscription': 2.1.18
-      '@remote-ui/core': 2.2.7
-      '@remote-ui/rpc': 1.4.7
-      '@types/react': 18.3.28
-      '@types/react-reconciler': 0.28.9(@types/react@18.3.28)
-      react: 18.3.1
-
-  '@remote-ui/rpc@1.4.7': {}
-
-  '@remote-ui/types@1.1.3': {}
-
   '@repeaterjs/repeater@3.0.6': {}
 
   '@rollup/rollup-android-arm-eabi@4.59.0':
@@ -5326,20 +5288,11 @@ snapshots:
     dependencies:
       '@shopify/graphql-client': 1.4.1
 
-  '@shopify/ui-extensions-react@2025.7.3(@shopify/ui-extensions@2025.7.3)(react@18.3.1)':
+  '@shopify/ui-extensions@2026.1.1(preact@10.28.4)':
     dependencies:
-      '@remote-ui/async-subscription': 2.1.18
-      '@remote-ui/react': 5.0.8(react@18.3.1)
-      '@shopify/ui-extensions': 2025.7.3
-      '@types/react': 18.3.28
-      react: 18.3.1
-    transitivePeerDependencies:
-      - react-reconciler
-
-  '@shopify/ui-extensions@2025.7.3':
-    dependencies:
-      '@remote-ui/async-subscription': 2.1.18
-      '@remote-ui/core': 2.2.7
+      ts-morph: 25.0.1
+    optionalDependencies:
+      preact: 10.28.4
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -5352,6 +5305,12 @@ snapshots:
       lodash.sortby: 4.7.0
     transitivePeerDependencies:
       - supports-color
+
+  '@ts-morph/common@0.26.1':
+    dependencies:
+      fast-glob: 3.3.3
+      minimatch: 9.0.6
+      path-browserify: 1.0.1
 
   '@tybys/wasm-util@0.10.1':
     dependencies:
@@ -5385,10 +5344,6 @@ snapshots:
   '@types/prop-types@15.7.15': {}
 
   '@types/react-dom@18.3.7(@types/react@18.3.28)':
-    dependencies:
-      '@types/react': 18.3.28
-
-  '@types/react-reconciler@0.28.9(@types/react@18.3.28)':
     dependencies:
       '@types/react': 18.3.28
 
@@ -5957,6 +5912,8 @@ snapshots:
       wrap-ansi: 7.0.0
 
   clone@1.0.4: {}
+
+  code-block-writer@13.0.3: {}
 
   color-convert@2.0.1:
     dependencies:
@@ -7478,6 +7435,8 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.8.1
 
+  path-browserify@1.0.1: {}
+
   path-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
@@ -7528,6 +7487,8 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  preact@10.28.4: {}
 
   prelude-ls@1.2.1: {}
 
@@ -8041,6 +8002,11 @@ snapshots:
       typescript: 5.9.3
 
   ts-log@2.2.7: {}
+
+  ts-morph@25.0.1:
+    dependencies:
+      '@ts-morph/common': 0.26.1
+      code-block-writer: 13.0.3
 
   tsconfck@3.1.6(typescript@5.9.3):
     optionalDependencies:

@@ -1,29 +1,18 @@
-import { useState, useEffect } from "react";
+import "@shopify/ui-extensions/preact";
+import { render } from "preact";
+import { useState, useEffect } from "preact/hooks";
 import {
-  reactExtension,
   useCartLines,
   useApplyCartLinesChange,
-  useApi,
-  useSettings,
-  BlockStack,
-  InlineLayout,
-  Button,
-  TextField,
-  Text,
-  Heading,
-  Banner,
-} from "@shopify/ui-extensions-react/checkout";
+} from "@shopify/ui-extensions/preact";
 
-export default reactExtension(
-  "purchase.checkout.block.render",
-  () => <DonationUpsell />,
-);
+export default function extension() {
+  render(<DonationUpsell />, document.body);
+}
 
 function DonationUpsell() {
-  const settings = useSettings();
   const cartLines = useCartLines();
   const applyCartLinesChange = useApplyCartLinesChange();
-  const { query } = useApi();
 
   const [variants, setVariants] = useState([]);
   const [selectedVariantId, setSelectedVariantId] = useState(null);
@@ -33,30 +22,32 @@ function DonationUpsell() {
   const [added, setAdded] = useState(false);
   const [error, setError] = useState("");
 
-  const productHandle = settings.product_handle;
-  const heading = settings.heading || "Add a donation";
+  const productHandle = shopify.settings.value.product_handle;
+  const heading = shopify.settings.value.heading || "Add a donation";
   const description =
-    settings.description || "Support our mission with a one-time donation.";
+    shopify.settings.value.description ||
+    "Support our mission with a one-time donation.";
 
   // Fetch donation product variants via Storefront API
   useEffect(() => {
     if (!productHandle) return;
 
-    query(
-      `query DonationProduct($handle: String!) {
-        product(handle: $handle) {
-          id
-          variants(first: 20) {
-            nodes {
-              id
-              title
-              price { amount currencyCode }
+    shopify
+      .query(
+        `query DonationProduct($handle: String!) {
+          product(handle: $handle) {
+            id
+            variants(first: 20) {
+              nodes {
+                id
+                title
+                price { amount currencyCode }
+              }
             }
           }
-        }
-      }`,
-      { variables: { handle: productHandle } },
-    )
+        }`,
+        { variables: { handle: productHandle } },
+      )
       .then(({ data, errors }) => {
         if (errors?.length) {
           setError("Could not load donation options.");
@@ -124,30 +115,24 @@ function DonationUpsell() {
   if (variants.length === 0 && !error) return null;
 
   if (added || donationInCart) {
-    return <Banner status="success">Thank you for adding a donation!</Banner>;
+    return <s-banner status="success">Thank you for adding a donation!</s-banner>;
   }
 
   const canAdd = isCustom ? parseFloat(customAmount) >= 1 : !!selectedVariantId;
 
   return (
-    <BlockStack spacing="base">
-      <Heading level={3}>{heading}</Heading>
-      <Text>{description}</Text>
+    <s-stack direction="block" gap="base">
+      <s-heading level={3}>{heading}</s-heading>
+      <s-text>{description}</s-text>
 
-      {error && <Banner status="critical">{error}</Banner>}
+      {error && <s-banner status="critical">{error}</s-banner>}
 
-      <InlineLayout
-        columns={[
-          ...presetVariants.map(() => "fill"),
-          ...(zeroVariant ? ["fill"] : []),
-        ]}
-        spacing="base"
-      >
+      <s-stack direction="inline" gap="base">
         {presetVariants.map((variant) => (
-          <Button
+          <s-button
             key={variant.id}
             kind={selectedVariantId === variant.id ? "primary" : "secondary"}
-            onPress={() => {
+            onClick={() => {
               setSelectedVariantId(variant.id);
               setIsCustom(false);
               setCustomAmount("");
@@ -155,39 +140,39 @@ function DonationUpsell() {
             }}
           >
             ${parseFloat(variant.price.amount).toFixed(0)}
-          </Button>
+          </s-button>
         ))}
         {zeroVariant && (
-          <Button
+          <s-button
             kind={isCustom ? "primary" : "secondary"}
-            onPress={() => {
+            onClick={() => {
               setIsCustom(true);
               setSelectedVariantId(null);
               setError("");
             }}
           >
             Custom
-          </Button>
+          </s-button>
         )}
-      </InlineLayout>
+      </s-stack>
 
       {isCustom && (
-        <TextField
+        <s-text-field
           type="number"
           label="Custom amount"
           value={customAmount}
-          onChange={setCustomAmount}
+          onInput={(e) => setCustomAmount(e.target.value)}
         />
       )}
 
-      <Button
+      <s-button
         kind="primary"
-        onPress={handleAddDonation}
-        loading={loading}
-        disabled={!canAdd}
+        onClick={handleAddDonation}
+        loading={loading || undefined}
+        disabled={!canAdd || undefined}
       >
         Add donation
-      </Button>
-    </BlockStack>
+      </s-button>
+    </s-stack>
   );
 }
