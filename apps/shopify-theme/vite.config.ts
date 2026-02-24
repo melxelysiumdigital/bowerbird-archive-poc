@@ -18,8 +18,13 @@ export default defineConfig({
       },
       output: {
         entryFileNames: '[name].bundle.js',
-        chunkFileNames: 'chunk-[name]-[hash].js',
+        chunkFileNames: '[name].chunk.js',
         assetFileNames: '[name].min[extname]',
+        manualChunks(id) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor';
+          }
+        },
       },
     },
   },
