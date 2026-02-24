@@ -96,6 +96,7 @@ jobs:
           # - protect templates/** prevents deletion of admin-created templates
           # - exclude settings_data.json preserves theme customizer settings
           rsync -av --delete \
+            --exclude='.git' \
             --filter='protect templates/**' \
             --exclude='config/settings_data.json' \
             /tmp/deploy/ ./
