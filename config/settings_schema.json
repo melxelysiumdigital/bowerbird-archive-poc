@@ -1453,6 +1453,56 @@
     ]
   },
   {
+    "name": "Donation",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "donation_enabled",
+        "label": "Enable donation add-on",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "donation_product_handle",
+        "label": "Donation product handle",
+        "info": "The handle of the donation product (e.g. 'donation')"
+      },
+      {
+        "type": "text",
+        "id": "donation_variant_10",
+        "label": "$10 variant ID"
+      },
+      {
+        "type": "text",
+        "id": "donation_variant_50",
+        "label": "$50 variant ID"
+      },
+      {
+        "type": "text",
+        "id": "donation_variant_100",
+        "label": "$100 variant ID"
+      },
+      {
+        "type": "text",
+        "id": "donation_variant_custom",
+        "label": "Custom amount variant ID",
+        "info": "Variant with placeholder price — Cart Transform overrides the price at checkout"
+      },
+      {
+        "type": "text",
+        "id": "donation_heading",
+        "label": "Heading",
+        "default": "Add a donation"
+      },
+      {
+        "type": "text",
+        "id": "donation_description",
+        "label": "Description",
+        "default": "Support our mission with a one-time donation."
+      }
+    ]
+  },
+  {
     "name": "Developer",
     "settings": [
       {

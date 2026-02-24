@@ -475,6 +475,7 @@
         </form>
       </cart-drawer-items>
       <div class="drawer__footer">
+        {% render 'donation-widget' %}
         {%- if settings.show_cart_note -%}
           <details id="Details-CartDrawer">
             <summary>

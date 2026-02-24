@@ -1,0 +1,20 @@
+{%- if settings.donation_enabled -%}
+  <div class="donation-addon-section page-width section-{{ section.id }}-padding">
+    {% render 'donation-widget' %}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Donation add-on",
+  "class": "donation-addon-section",
+  "limit": 1,
+  "settings": [],
+  "templates": ["product"],
+  "presets": [
+    {
+      "name": "Donation add-on"
+    }
+  ]
+}
+{% endschema %}
