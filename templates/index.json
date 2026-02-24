@@ -14,8 +14,9 @@
       "settings": {
         "heading": "Welcome to Our Store",
         "subheading": "Discover our curated collection",
+        "image": "shopify://shop_images/dusty-archives.png",
         "cta_text": "Shop Now",
-        "cta_url": "",
+        "cta_url": "shopify://products/letters-from-the-front",
         "overlay_opacity": 40,
         "text_alignment": "center"
       }
