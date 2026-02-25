@@ -2314,24 +2314,6 @@
     ]
   },
   {
-    "name": "Headless Storefront",
-    "settings": [
-      {
-        "type": "checkbox",
-        "id": "enable_headless_redirect",
-        "label": "Enable headless redirect",
-        "default": true,
-        "info": "Redirects customers back to the headless storefront after checkout. Only affects customers who arrived from the headless app."
-      },
-      {
-        "type": "textarea",
-        "id": "custom_redirects",
-        "label": "Custom path redirects",
-        "info": "One per line, format: /shopify-path > /headless-path. Example: /collections > /shop"
-      }
-    ]
-  },
-  {
     "name": "Developer",
     "settings": [
       {
