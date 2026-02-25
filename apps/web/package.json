@@ -13,8 +13,10 @@
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.2.0",
     "@bowerbird-poc/shared": "workspace:*",
     "@bowerbird-poc/ui": "workspace:*",
+    "@shopify/hydrogen-react": "^2025.1.0",
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

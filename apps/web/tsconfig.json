@@ -2,7 +2,7 @@
   "extends": "@bowerbird-poc/typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./*"],
       "@bowerbird-poc/ui/*": ["../../packages/ui/src/*"]
     },
     "incremental": true

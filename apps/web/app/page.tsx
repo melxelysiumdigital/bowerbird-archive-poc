@@ -1,12 +1,22 @@
-import { APP_NAME } from '@bowerbird-poc/shared';
-import { Button } from '@bowerbird-poc/ui/components/button';
+'use client';
 
-export default function Home() {
+import { CategoryGrid } from '@/components/home/category-grid';
+import { FeaturedSection } from '@/components/home/featured-section';
+import { HeroSection } from '@/components/home/hero-section';
+import { NewsletterSection } from '@/components/home/newsletter-section';
+import { PhilosophySection } from '@/components/home/philosophy-section';
+import { useAzureSearch } from '@/hooks/use-azure-search';
+
+export default function HomePage() {
+  const { items, isLoading } = useAzureSearch();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-24">
-      <h1 className="text-4xl font-bold">{APP_NAME}</h1>
-      <p className="text-muted-foreground">Welcome to the Bowerbird Archive POC</p>
-      <Button>Get Started</Button>
-    </main>
+    <>
+      <HeroSection />
+      <PhilosophySection />
+      <FeaturedSection items={items} isLoading={isLoading} />
+      <CategoryGrid />
+      <NewsletterSection />
+    </>
   );
 }
