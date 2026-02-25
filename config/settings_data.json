@@ -79,6 +79,16 @@
     "donation_enabled": true,
     "donation_product": "donation",
     "content_for_index": [],
+    "blocks": {
+      "13578273684786698590": {
+        "type": "shopify://apps/bowerbird-archive-thank-you/blocks/redirect/019c92b9-08cc-7bfc-ad47-62118e040ca0",
+        "disabled": false,
+        "settings": {
+          "enable_redirect": true,
+          "custom_redirects": ""
+        }
+      }
+    },
     "color_schemes": {
       "scheme-1": {
         "settings": {
