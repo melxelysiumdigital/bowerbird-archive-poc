@@ -43,7 +43,6 @@
       Only redirects visitors who came from the headless app (detected via cookie).
       Shopify store visitors stay on Shopify - both storefronts work independently.
     {%- endcomment -%}
-    {%- if settings.enable_headless_redirect -%}
       <script>
         (function() {
           if (window.Shopify && window.Shopify.designMode) return;
@@ -123,7 +122,6 @@
           window.location.replace(url.toString());
         })();
       </script>
-    {%- endif -%}
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
