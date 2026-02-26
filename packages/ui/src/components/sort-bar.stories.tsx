@@ -1,6 +1,7 @@
 import type { SortOption } from '@bowerbird-poc/shared/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
+import { userEvent, within } from 'storybook/test';
 
 import { SortBar } from './sort-bar';
 
@@ -23,6 +24,13 @@ function SortBarWithState() {
 
 export const Default: Story = {
   render: () => <SortBarWithState />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('combobox');
+    await userEvent.click(trigger);
+    const option = await within(document.body).findByRole('option', { name: /Title A–Z/i });
+    await userEvent.click(option);
+  },
 };
 
 export const Loading: Story = {

@@ -25,6 +25,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     placeholder: 'Enter text...',
+    'aria-label': 'Text input',
   },
 };
 
@@ -32,6 +33,7 @@ export const Email: Story = {
   args: {
     type: 'email',
     placeholder: 'Email address',
+    'aria-label': 'Email address',
   },
 };
 
@@ -39,18 +41,21 @@ export const Password: Story = {
   args: {
     type: 'password',
     placeholder: 'Password',
+    'aria-label': 'Password',
   },
 };
 
 export const File: Story = {
   args: {
     type: 'file',
+    'aria-label': 'File upload',
   },
 };
 
 export const Disabled: Story = {
   args: {
     placeholder: 'Disabled',
+    'aria-label': 'Disabled input',
     disabled: true,
   },
 };

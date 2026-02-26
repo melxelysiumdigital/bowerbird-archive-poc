@@ -68,3 +68,16 @@ export const AllFeatures: Story = {
     currencyCode: 'AUD',
   },
 };
+
+export const InvalidPrice: Story = {
+  args: {
+    price: 'Free',
+  },
+};
+
+export const StringCompareAt: Story = {
+  args: {
+    price: 19.99,
+    compareAtPrice: 'N/A',
+  },
+};

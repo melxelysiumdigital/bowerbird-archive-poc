@@ -1,0 +1,31 @@
+{%- comment -%} Conditional messages based on products purchased {%- endcomment -%}
+{%- comment -%}
+  USAGE: Copy the relevant sections into Settings → Notifications → Order confirmation.
+  Adjust product handles to match your store (e.g. 'membership', 'donate').
+  Note: final_line_price is in cents in email Liquid, hence divided_by: 100.0.
+{%- endcomment -%}
+
+{%- assign has_membership = false -%}
+{%- assign has_donation = false -%}
+{%- assign donation_total = 0 -%}
+
+{%- for line in line_items -%}
+  {%- if line.product.handle == 'membership' -%}
+    {%- assign has_membership = true -%}
+  {%- endif -%}
+  {%- if line.product.handle == 'donate' -%}
+    {%- assign has_donation = true -%}
+    {%- assign line_total = line.final_line_price | divided_by: 100.0 -%}
+    {%- assign donation_total = donation_total | plus: line_total -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if has_membership -%}
+<p><strong>Your membership card will arrive in the mail within 2-3 weeks.</strong></p>
+{%- endif -%}
+
+{%- if has_donation and donation_total >= 100 -%}
+<p><strong>Thank you for your generous donation! You'll receive a complimentary membership.</strong></p>
+{%- elsif has_donation -%}
+<p><strong>Thank you for your donation!</strong></p>
+{%- endif -%}

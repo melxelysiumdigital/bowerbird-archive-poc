@@ -17,6 +17,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    'aria-label': 'Accept terms',
+  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const checkbox = canvas.getByRole('checkbox');
@@ -33,12 +36,14 @@ export const Default: Story = {
 
 export const Checked: Story = {
   args: {
+    'aria-label': 'Accept terms',
     defaultChecked: true,
   },
 };
 
 export const Disabled: Story = {
   args: {
+    'aria-label': 'Accept terms',
     disabled: true,
   },
 };

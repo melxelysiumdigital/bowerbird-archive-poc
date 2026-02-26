@@ -1,0 +1,25 @@
+{
+  "extension": {
+    "name": "Thank You Messages"
+  },
+  "settings": {
+    "product_handle": {
+      "label": "Product handle"
+    },
+    "min_amount": {
+      "label": "Minimum amount"
+    },
+    "message": {
+      "label": "Message"
+    },
+    "banner_title": {
+      "label": "Banner title"
+    },
+    "banner_status": {
+      "label": "Banner style"
+    },
+    "show_debug": {
+      "label": "Show debug info"
+    }
+  }
+}

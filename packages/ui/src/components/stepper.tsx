@@ -42,7 +42,7 @@ function StepperDot({
             isCurrent &&
               'border-primary/20 bg-primary shadow-primary/30 -mt-2 size-10 border-4 text-white shadow-lg',
             isCompleted && 'bg-primary size-6 text-white',
-            isPending && 'size-6 bg-gray-200 text-gray-400',
+            isPending && 'size-6 bg-gray-200 text-gray-500',
           )}
         >
           {isCompleted && <Check className="size-3" />}
@@ -52,7 +52,7 @@ function StepperDot({
           className={cn(
             'text-center text-[11px] font-bold',
             isCurrent && 'text-primary',
-            isPending && 'text-gray-400',
+            isPending && 'text-gray-500',
           )}
         >
           {label}

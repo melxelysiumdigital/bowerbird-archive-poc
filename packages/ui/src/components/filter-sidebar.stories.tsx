@@ -2,6 +2,7 @@ import { EMPTY_FILTERS } from '@bowerbird-poc/shared/constants';
 import type { SearchFilters } from '@bowerbird-poc/shared/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
+import { userEvent, within } from 'storybook/test';
 
 import { FilterSidebar } from './filter-sidebar';
 
@@ -88,6 +89,17 @@ function FilterSidebarWithState() {
 
 export const Default: Story = {
   render: () => <FilterSidebarWithState />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // Toggle on then off to cover both branches
+    await userEvent.click(canvas.getByLabelText('Document'));
+    await userEvent.click(canvas.getByLabelText('Document'));
+    await userEvent.click(canvas.getByLabelText('Military Records'));
+    await userEvent.click(canvas.getByLabelText('Military Records'));
+    await userEvent.click(canvas.getByLabelText('WWI'));
+    await userEvent.click(canvas.getByLabelText('WWI'));
+    await userEvent.click(canvas.getByLabelText('Available for purchase'));
+  },
 };
 
 export const WithPreselected: Story = {

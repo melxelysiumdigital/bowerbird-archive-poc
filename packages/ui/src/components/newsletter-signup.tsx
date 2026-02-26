@@ -49,6 +49,7 @@ export function NewsletterSignup({
               name="email"
               className="ring-border focus:ring-accent-gold flex-1 rounded-xl border-none px-6 py-4 ring-1"
               placeholder={placeholder}
+              aria-label={placeholder}
               type="email"
               required
             />

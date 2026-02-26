@@ -77,7 +77,12 @@ export function DiscountPopup({
             <code className="text-primary text-2xl font-extrabold tracking-widest">
               {discountCode}
             </code>
-            <Button variant="ghost" size="icon-sm" onClick={handleCopy}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleCopy}
+              aria-label="Copy discount code"
+            >
               {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             </Button>
           </div>

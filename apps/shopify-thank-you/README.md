@@ -43,6 +43,8 @@ pnpm dev
 After deploying, enable the **Headless Redirect** app embed in the Shopify admin:
 Online Store > Themes > Customize > App embeds
 
+**Warning: `pnpm deploy` can reset/disable app embeds in the theme.** After every deploy, verify the Headless Redirect embed is still toggled on in the theme customizer and save. Symptom: checkout redirect stops working — user lands on the Shopify homepage with `headless_origin` and `checkout_url` params but isn't redirected.
+
 ### Important: Development vs Main theme
 
 App embeds must be enabled **per theme**. If you're testing with a development theme, enable the embed on that specific theme. The preview bar at the bottom of the store page shows which theme you're viewing.

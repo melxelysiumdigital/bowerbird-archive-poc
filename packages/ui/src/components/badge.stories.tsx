@@ -60,3 +60,11 @@ export const Link: Story = {
     variant: 'link',
   },
 };
+
+export const AsChild: Story = {
+  render: () => (
+    <Badge asChild>
+      <a href="#">Link Badge</a>
+    </Badge>
+  ),
+};

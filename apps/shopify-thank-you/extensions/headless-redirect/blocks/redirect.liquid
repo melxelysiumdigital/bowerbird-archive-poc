@@ -19,7 +19,7 @@
     var urlParams = new URLSearchParams(window.location.search);
 
     // Skip theme preview URLs (admin preview, bypass tokens)
-    if (urlParams.has('preview_theme_id') || urlParams.has('_bt') || urlParams.has('key')) return;
+    if (urlParams.has('preview_theme_id') || urlParams.has('_bt')) return;
 
     function getCookie(name) {
       var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));

@@ -6,6 +6,7 @@ import { Label } from '../label';
 
 import {
   Popover,
+  PopoverAnchor,
   PopoverContent,
   PopoverDescription,
   PopoverHeader,
@@ -27,11 +28,11 @@ type Story = StoryObj;
 
 export const Default: Story = {
   render: () => (
-    <Popover>
+    <Popover defaultOpen>
       <PopoverTrigger asChild>
         <Button>Open Popover</Button>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent aria-label="Popover Title">
         <PopoverHeader>
           <PopoverTitle>Popover Title</PopoverTitle>
           <PopoverDescription>This is a popover description.</PopoverDescription>
@@ -43,11 +44,15 @@ export const Default: Story = {
 
 export const WithForm: Story = {
   render: () => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button>Open Popover</Button>
-      </PopoverTrigger>
-      <PopoverContent>
+    <Popover defaultOpen>
+      <PopoverAnchor asChild>
+        <div className="mx-auto w-fit">
+          <PopoverTrigger asChild>
+            <Button>Open Popover</Button>
+          </PopoverTrigger>
+        </div>
+      </PopoverAnchor>
+      <PopoverContent aria-label="Name form">
         <div className="grid gap-2">
           <Label htmlFor="name">Name</Label>
           <Input id="name" placeholder="Enter your name" />

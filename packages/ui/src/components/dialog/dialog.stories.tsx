@@ -5,6 +5,7 @@ import { Button } from '../button';
 
 import {
   Dialog,
+  DialogClose,
   DialogTrigger,
   DialogContent,
   DialogHeader,
@@ -52,7 +53,7 @@ export const Default: Story = {
 
 export const NoCloseButton: Story = {
   render: () => (
-    <Dialog>
+    <Dialog defaultOpen>
       <DialogTrigger asChild>
         <Button>Open Dialog</Button>
       </DialogTrigger>
@@ -61,7 +62,10 @@ export const NoCloseButton: Story = {
           <DialogTitle>Dialog Title</DialogTitle>
           <DialogDescription>Dialog description text.</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter showCloseButton>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
           <Button>Save</Button>
         </DialogFooter>
       </DialogContent>

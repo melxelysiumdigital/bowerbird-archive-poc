@@ -19,7 +19,7 @@ interface FilterSidebarProps {
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-3 text-xs font-black tracking-[0.15em] text-gray-400 uppercase">{title}</h3>
+      <h3 className="mb-3 text-xs font-black tracking-[0.15em] text-gray-500 uppercase">{title}</h3>
       <div className="space-y-2">{children}</div>
     </div>
   );

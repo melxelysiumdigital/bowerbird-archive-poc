@@ -5,7 +5,12 @@
     "target": "ES2020",
     "checkJs": true,
     "allowJs": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true
-  }
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "noEmit": true,
+    "outDir": "dist",
+    "skipLibCheck": true
+  },
+  "include": ["src", "shopify.d.ts"],
+  "exclude": ["dist", "node_modules"]
 }

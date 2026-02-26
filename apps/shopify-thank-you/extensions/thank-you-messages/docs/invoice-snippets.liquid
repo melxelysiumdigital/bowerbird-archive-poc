@@ -1,0 +1,33 @@
+{%- comment -%} Conditional messages for PDF invoice {%- endcomment -%}
+{%- comment -%}
+  USAGE: Copy into Apps → Order Printer → Manage templates.
+  Adjust product handles to match your store (e.g. 'membership', 'donate').
+  Note: Order Printer uses line_item (not line) and line_item.price is already in dollars.
+{%- endcomment -%}
+
+{%- assign has_membership = false -%}
+{%- assign has_donation = false -%}
+{%- assign donation_total = 0 -%}
+
+{%- for line_item in line_items -%}
+  {%- if line_item.product.handle == 'membership' -%}
+    {%- assign has_membership = true -%}
+  {%- endif -%}
+  {%- if line_item.product.handle == 'donate' -%}
+    {%- assign has_donation = true -%}
+    {%- assign donation_total = donation_total | plus: line_item.price -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if has_membership or has_donation -%}
+<div style="border:1px solid #ddd; padding:12px; margin:16px 0;">
+  {%- if has_membership -%}
+  <p><strong>Your membership card will arrive in the mail within 2-3 weeks.</strong></p>
+  {%- endif -%}
+  {%- if has_donation and donation_total >= 100.0 -%}
+  <p><strong>Thank you! You'll receive a complimentary membership.</strong></p>
+  {%- elsif has_donation -%}
+  <p><strong>Thank you for your donation!</strong></p>
+  {%- endif -%}
+</div>
+{%- endif -%}

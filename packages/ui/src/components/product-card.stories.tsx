@@ -76,6 +76,14 @@ export const SoldOut: Story = {
   },
 };
 
+export const NoLink: Story = {
+  args: {
+    title: 'No Link Card',
+    price: '$19.99',
+    vendor: 'Bowerbird',
+  },
+};
+
 export const SkeletonLoading: Story = {
   render: () => (
     <Card className="pt-0">

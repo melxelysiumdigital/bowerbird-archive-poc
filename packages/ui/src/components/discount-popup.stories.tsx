@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { DiscountPopup } from './discount-popup';
 
@@ -17,6 +18,17 @@ export const Default: Story = {
     delay: 0,
     storageKey: 'storybook_discount_demo',
   },
+  play: async () => {
+    const body = within(document.body);
+    const dialog = await body.findByRole('dialog');
+    await expect(within(dialog).getByText('BOWERBIRD5')).toBeVisible();
+
+    const copyButton = within(dialog).getByRole('button', { name: /Copy discount code/i });
+    await userEvent.click(copyButton);
+
+    const continueButton = within(dialog).getByRole('button', { name: /Continue shopping/i });
+    await userEvent.click(continueButton);
+  },
 };
 
 export const CustomCode: Story = {
@@ -26,5 +38,10 @@ export const CustomCode: Story = {
     heading: 'Wait! Special offer',
     body: 'Take 10% off your first order with this exclusive code.',
     storageKey: 'storybook_discount_custom',
+  },
+  play: async () => {
+    const body = within(document.body);
+    await body.findByRole('dialog');
+    await userEvent.keyboard('{Escape}');
   },
 };

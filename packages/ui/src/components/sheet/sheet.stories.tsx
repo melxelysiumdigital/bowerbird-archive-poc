@@ -4,6 +4,7 @@ import { Button } from '../button';
 
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -26,7 +27,7 @@ type Story = StoryObj;
 
 export const Right: Story = {
   render: () => (
-    <Sheet>
+    <Sheet defaultOpen>
       <SheetTrigger asChild>
         <Button>Open Sheet</Button>
       </SheetTrigger>
@@ -36,6 +37,9 @@ export const Right: Story = {
           <SheetDescription>Sheet description text.</SheetDescription>
         </SheetHeader>
         <SheetFooter>
+          <SheetClose asChild>
+            <Button variant="outline">Close</Button>
+          </SheetClose>
           <Button>Save</Button>
         </SheetFooter>
       </SheetContent>

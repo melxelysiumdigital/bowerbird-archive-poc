@@ -1,4 +1,3 @@
-import '@shopify/ui-extensions/preact';
 import { render } from 'preact';
 
 /**
@@ -45,9 +44,9 @@ export default function main() {
 
   const buttonText = settings.button_text || 'Continue to Your Order';
 
-  // Only show if customer came from headless storefront
-  if (!headlessOrigin) {
-    console.log('[TY-REDIRECT] No headless_origin, skipping block render');
+  // Only show if customer came from headless storefront or return_url is configured
+  if (!headlessOrigin && !settings.return_url) {
+    console.log('[TY-REDIRECT] No headless_origin or return_url, skipping block render');
     return;
   }
 
@@ -57,7 +56,7 @@ export default function main() {
         <s-heading>Thank you for your order!</s-heading>
         <s-text>We've received your order and will begin processing it shortly.</s-text>
 
-        {orderNumber && <s-text emphasis="bold">Order #{orderNumber}</s-text>}
+        {orderNumber && <s-text type="strong">Order #{orderNumber}</s-text>}
 
         <s-text>Click below to return to the collection and view your order details.</s-text>
         <s-button variant="primary" href={redirectUrl}>
@@ -76,9 +75,9 @@ export function thankYouFooter() {
 
   console.log('[TY-REDIRECT] Footer render | origin:', headlessOrigin);
 
-  // Only override if customer came from headless storefront
-  if (!headlessOrigin) {
-    console.log('[TY-REDIRECT] No headless_origin, skipping footer render');
+  // Only override if customer came from headless storefront or return_url is configured
+  if (!headlessOrigin && !settings.return_url) {
+    console.log('[TY-REDIRECT] No headless_origin or return_url, skipping footer render');
     return;
   }
 
@@ -86,7 +85,7 @@ export function thankYouFooter() {
   const buttonText = settings.button_text || 'Continue Shopping';
 
   render(
-    <s-stack direction="inline" blockAlignment="center" inlineAlignment="center" padding="base">
+    <s-stack direction="inline" alignItems="center" justifyContent="center" padding="base">
       <s-link href={redirectUrl}>{buttonText}</s-link>
     </s-stack>,
     document.body,

@@ -37,7 +37,9 @@ export const Default: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.hover(canvas.getByRole('button', { name: /Hover me/i }));
-    await expect(await within(document.body).findByRole('tooltip')).toBeVisible();
+    const tooltip = await within(document.body).findByRole('tooltip');
+    // Wait for Radix tooltip animation to complete
+    await expect(tooltip).toHaveTextContent('Tooltip content');
   },
 };
 

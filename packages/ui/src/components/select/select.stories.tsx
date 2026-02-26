@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { userEvent, within } from 'storybook/test';
 
 import {
   Select,
@@ -26,7 +27,7 @@ type Story = StoryObj;
 export const Default: Story = {
   render: () => (
     <Select>
-      <SelectTrigger>
+      <SelectTrigger aria-label="Select a fruit">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
@@ -44,7 +45,7 @@ export const Default: Story = {
 export const WithGroups: Story = {
   render: () => (
     <Select>
-      <SelectTrigger>
+      <SelectTrigger aria-label="Select an item">
         <SelectValue placeholder="Select an item" />
       </SelectTrigger>
       <SelectContent>
@@ -67,7 +68,7 @@ export const WithGroups: Story = {
 export const Small: Story = {
   render: () => (
     <Select>
-      <SelectTrigger size="sm">
+      <SelectTrigger size="sm" aria-label="Select a fruit">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
@@ -80,4 +81,28 @@ export const Small: Story = {
       </SelectContent>
     </Select>
   ),
+};
+
+export const Popper: Story = {
+  render: () => (
+    <Select>
+      <SelectTrigger aria-label="Select a fruit">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent position="popper">
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="banana">Banana</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('combobox');
+    await userEvent.click(trigger);
+    const option = await within(document.body).findByRole('option', { name: 'Apple' });
+    await userEvent.click(option);
+  },
 };

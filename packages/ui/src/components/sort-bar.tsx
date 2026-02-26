@@ -28,7 +28,7 @@ export function SortBar({ sort, onSortChange, resultCount, isLoading, className 
         )}
       </p>
       <Select value={sort} onValueChange={(v) => onSortChange(v as SortOption)}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px]" aria-label="Sort by">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

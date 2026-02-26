@@ -18,9 +18,11 @@ export function PolaroidCard({ item, onClick, className }: PolaroidCardProps) {
   const style = ITEM_TYPE_STYLE[item.itemType];
 
   return (
-    <div
+    <button
+      type="button"
+      aria-label={item.title}
       className={cn(
-        'group cursor-pointer rounded-xl border-[12px] border-white bg-white shadow-md transition-all hover:-translate-y-1 hover:shadow-lg',
+        'group cursor-pointer rounded-xl border-[12px] border-white bg-white text-left shadow-md transition-all hover:-translate-y-1 hover:shadow-lg',
         className,
       )}
       onClick={onClick}
@@ -52,10 +54,10 @@ export function PolaroidCard({ item, onClick, className }: PolaroidCardProps) {
           <p className="text-primary mt-2 text-sm font-bold">{item.price}</p>
         )}
         {!item.forSale && (
-          <p className="mt-2 text-xs font-medium text-amber-600">Digitisation on request</p>
+          <p className="mt-2 text-xs font-medium text-amber-800">Digitisation on request</p>
         )}
       </div>
-    </div>
+    </button>
   );
 }
 

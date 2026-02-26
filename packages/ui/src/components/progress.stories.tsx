@@ -29,23 +29,27 @@ type Story = StoryObj<typeof meta>;
 export const Empty: Story = {
   args: {
     value: 0,
+    'aria-label': 'Progress',
   },
 };
 
 export const Half: Story = {
   args: {
     value: 50,
+    'aria-label': 'Progress',
   },
 };
 
 export const Full: Story = {
   args: {
     value: 100,
+    'aria-label': 'Progress',
   },
 };
 
 export const Default: Story = {
   args: {
     value: 33,
+    'aria-label': 'Progress',
   },
 };

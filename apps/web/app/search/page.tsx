@@ -18,7 +18,10 @@ import { SortBar } from '@bowerbird-poc/ui/components/sort-bar';
 import { SlidersHorizontal, SearchX } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState, useEffect, useCallback } from 'react';
+import { Suspense as ReactSuspense, useState, useEffect, useCallback } from 'react';
+
+// Workaround for React types version conflict in monorepo
+const Suspense = ReactSuspense as unknown as React.FC<{ fallback?: React.ReactNode; children: React.ReactNode }>;
 
 import { useAzureSearch } from '@/hooks/use-azure-search';
 
@@ -124,7 +127,7 @@ function SearchResults() {
 
 export default function SearchResultsPage() {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <SearchResults />
     </Suspense>
   );

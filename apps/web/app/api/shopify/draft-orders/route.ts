@@ -284,12 +284,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     // Delete the draft order
-    const storeDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || '';
-    const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN || '';
-    await fetch(`https://${storeDomain}/admin/api/2025-01/draft_orders/${id}.json`, {
-      method: 'DELETE',
-      headers: { 'X-Shopify-Access-Token': adminToken },
-    });
+    await shopifyAdminFetch(`/draft_orders/${id}.json`, { method: 'DELETE' });
 
     return NextResponse.json({
       originalName: draft.name,
