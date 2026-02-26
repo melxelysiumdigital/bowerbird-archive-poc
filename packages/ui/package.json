@@ -28,7 +28,8 @@
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf dist .turbo",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test-storybook": "storybook test"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@bowerbird-poc/eslint-config": "workspace:*",
     "@bowerbird-poc/typescript-config": "workspace:*",
+    "@storybook/addon-a11y": "^10.2.12",
     "@storybook/addon-docs": "^10.2.12",
     "@storybook/react-vite": "^10.2.12",
     "@tailwindcss/postcss": "^4.0.0",

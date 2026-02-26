@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, within } from 'storybook/test';
 
 import {
   Accordion,
@@ -40,6 +41,17 @@ export const Default: Story = {
       </AccordionItem>
     </Accordion>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = canvas.getByRole('button', { name: /Is it accessible\?/i });
+
+    await userEvent.click(trigger);
+    await expect(
+      canvas.getByText('Yes. It adheres to the WAI-ARIA design pattern.'),
+    ).toBeVisible();
+
+    await userEvent.click(trigger);
+  },
 };
 
 export const Multiple: Story = {

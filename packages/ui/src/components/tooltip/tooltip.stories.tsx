@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { expect, userEvent, within } from 'storybook/test';
 
 import { Button } from '../button';
 
@@ -32,6 +33,14 @@ export const Default: Story = {
       <TooltipContent>Tooltip content</TooltipContent>
     </Tooltip>
   ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    await userEvent.hover(canvas.getByRole('button', { name: /Hover me/i }));
+    await expect(
+      await within(document.body).findByRole('tooltip'),
+    ).toBeVisible();
+  },
 };
 
 export const CustomContent: Story = {

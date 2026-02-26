@@ -49,19 +49,19 @@ export function ArchiveHero({
         className,
       )}
     >
-      <div className="flex flex-1 flex-col justify-center space-y-8 px-6 py-16 lg:px-24">
+      <div className="flex flex-1 flex-col justify-center space-y-6 px-5 py-10 sm:space-y-8 sm:px-6 sm:py-16 lg:px-24">
         <div className="space-y-4">
           {tagline && (
             <span className="text-xs font-bold uppercase tracking-[0.3em] text-accent-gold">
               {tagline}
             </span>
           )}
-          <h1 className="text-5xl font-black leading-[1.1] tracking-tight lg:text-7xl">
+          <h1 className="text-3xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-7xl">
             {headingLine1} <br />
             <span className="font-serif italic text-primary">{headingLine2}</span>
           </h1>
           {description && (
-            <p className="max-w-md text-lg font-light leading-relaxed text-muted-foreground">
+            <p className="max-w-md text-base font-light leading-relaxed text-muted-foreground sm:text-lg">
               {description}
             </p>
           )}
@@ -91,7 +91,7 @@ export function ArchiveHero({
         )}
       </div>
       {imageUrl && (
-        <div className="relative min-h-[500px] flex-1 lg:min-h-full">
+        <div className="relative min-h-[280px] flex-1 sm:min-h-[400px] lg:min-h-full">
           <div
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url("${imageUrl}")` }}
