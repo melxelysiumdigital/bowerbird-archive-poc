@@ -9,8 +9,6 @@
  */
 {
   "current": {
-    "logo_height": 36,
-    "logo_height_mobile": 28,
     "type_body_font": "inter_n4",
     "type_subheading_font": "inter_n5",
     "type_heading_font": "inter_n7",
@@ -76,19 +74,6 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
-    "donation_enabled": true,
-    "donation_product": "donation",
-    "content_for_index": [],
-    "blocks": {
-      "13578273684786698590": {
-        "type": "shopify://apps/bowerbird-archive-thank-you/blocks/redirect/019c92b9-08cc-7bfc-ad47-62118e040ca0",
-        "disabled": false,
-        "settings": {
-          "enable_redirect": true,
-          "custom_redirects": ""
-        }
-      }
-    },
     "color_schemes": {
       "scheme-1": {
         "settings": {
@@ -136,7 +121,7 @@
           "foreground": "#000000cf",
           "primary": "#000000cf",
           "primary_hover": "#ffffff",
-          "border": "#dfdfdf",
+          "border": "#DFDFDF",
           "shadow": "#000000",
           "primary_button_background": "#000000",
           "primary_button_text": "#ffffff",
@@ -363,7 +348,9 @@
           "selected_variant_hover_border_color": "#1a1a1a"
         }
       }
-    }
+    },
+    "logo_height": 36,
+    "logo_height_mobile": 28
   },
   "presets": {
     "Horizon": {

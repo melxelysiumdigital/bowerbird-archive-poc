@@ -1,0 +1,671 @@
+/* Animation declarations - to be kept at the bottom of the file for ease of find */
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes move-and-fade {
+  from {
+    transform: translate(var(--start-x, 0), var(--start-y, 0));
+    opacity: var(--start-opacity, 0);
+  }
+
+  to {
+    transform: translate(var(--end-x, 0), var(--end-y, 0));
+    opacity: var(--end-opacity, 1);
+  }
+}
+
+@keyframes slideInTopViewTransition {
+  from {
+    transform: translateY(100px);
+  }
+}
+
+@keyframes elementSlideInTop {
+  from {
+    margin-top: var(--padding-sm);
+    opacity: 0;
+  }
+
+  to {
+    margin-top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes elementSlideOutTop {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(var(--padding-sm));
+    opacity: 0;
+  }
+}
+
+@keyframes elementSlideInBottom {
+  from {
+    transform: translateY(calc(-1 * var(--padding-sm)));
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes elementSlideOutBottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(calc(-1 * var(--padding-sm)));
+    opacity: 0;
+  }
+}
+
+@keyframes thumbnailsSlideInTop {
+  from {
+    transform: translateY(calc(-50% + var(--margin-lg)));
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(-50%);
+    opacity: 1;
+  }
+}
+
+@keyframes thumbnailsSlideOutTop {
+  from {
+    transform: translateY(-50%);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(calc(-50% + var(--margin-lg)));
+    opacity: 0;
+  }
+}
+
+@keyframes thumbnailsSlideInBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes thumbnailsSlideOutBottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes search-element-slide-in-bottom {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes search-element-slide-out-bottom {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+@keyframes dialogZoom {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(1em);
+  }
+}
+
+@keyframes thumbnail-selected {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px transparent;
+    scale: 0.9;
+  }
+
+  50% {
+    box-shadow: 0 0 0 2px #000;
+    scale: 1;
+  }
+}
+
+@keyframes backdropFilter {
+  from {
+    backdrop-filter: brightness(1);
+  }
+
+  to {
+    backdrop-filter: brightness(0.75);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideInTop {
+  from {
+    transform: translateY(var(--padding-sm));
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideOutTop {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(var(--padding-sm));
+    opacity: 0;
+  }
+}
+
+.bubble {
+  display: inline-flex;
+  height: calc(var(--variant-picker-swatch-height) / 1.5);
+  font-size: var(--font-size--xs);
+  border-radius: 20px;
+  min-width: 20px;
+  padding: 0 6px;
+  background-color: rgb(var(--color-foreground-rgb) / var(--opacity-10-25));
+  color: var(--color-foreground);
+  align-items: center;
+  justify-content: center;
+}
+
+.bubble svg {
+  width: 12px;
+  height: 12px;
+}
+
+.top-shadow::before {
+  content: '';
+  box-shadow: 0 0 10px var(--color-shadow);
+  position: absolute;
+  z-index: var(--layer-lowest);
+  inset: 0;
+  clip-path: inset(-50px 0 0 0); /* stylelint-disable-line */
+}
+
+@media screen and (min-width: 750px) {
+  .top-shadow--mobile::before {
+    display: none;
+  }
+}
+
+.bottom-shadow::before {
+  content: '';
+  box-shadow: 0 0 10px var(--color-shadow);
+  position: absolute;
+  z-index: var(--layer-lowest);
+  inset: 0;
+  clip-path: inset(0 0 -50px 0); /* stylelint-disable-line */
+}
+
+@media screen and (min-width: 750px) {
+  .bottom-shadow--mobile::before {
+    display: none;
+  }
+}
+
+.video-placeholder-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: var(--size-style-aspect-ratio, auto);
+}
+
+:not(deferred-media) > .video-placeholder-wrapper {
+  width: var(--video-placeholder-width);
+}
+
+.video-placeholder-wrapper > * {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/*
+ * Slideshow Component
+ */
+slideshow-component {
+  --cursor: grab;
+  --slide-offset: 6px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  timeline-scope: var(--slideshow-timeline);
+}
+
+slideshow-component.slideshow--content-below-media slideshow-slide {
+  display: grid;
+}
+
+.slideshow--content-below-media slideshow-slide :is(.slide__image-container, .slide__content) {
+  position: static;
+}
+
+.slideshow--content-below-media slideshow-slide {
+  grid-template-rows: var(--grid-template-rows);
+
+  @media screen and (min-width: 750px) {
+    grid-template-rows: var(--grid-template-rows-desktop);
+  }
+}
+
+.slide__content {
+  @supports (animation-timeline: auto) {
+    opacity: 0;
+    animation: slide-reveal both linear;
+    animation-timeline: var(--slideshow-timeline);
+  }
+
+  @media (prefers-reduced-motion) {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/*
+ * Force Safari to recalculate the timeline state on timeline refresh (after loop)
+*/
+slideshow-component[refreshing-timeline] .slide__content {
+  animation: none;
+}
+
+.slideshow--single-media {
+  --cursor: default;
+}
+
+a slideshow-component {
+  --cursor: pointer;
+}
+
+/*
+ * Slideshow Slides
+ */
+slideshow-slides {
+  width: 100%;
+  position: relative;
+  display: flex;
+  overflow-x: scroll;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+  gap: var(--slideshow-gap, 0);
+  cursor: var(--cursor);
+  min-height: var(--slide-min-height);
+
+  @media (prefers-reduced-motion) {
+    scroll-behavior: auto;
+  }
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    min-height: var(--slide-min-height-desktop);
+  }
+}
+
+slideshow-component[disabled='true'] slideshow-slides {
+  overflow: hidden;
+}
+
+/**
+ * By default, slideshows have overflow: hidden (no compositor layer).
+ * When the slideshow enters the viewport, JavaScript adds [in-viewport] which enables scrolling.
+ */
+slideshow-component:not([in-viewport]) slideshow-slides {
+  overflow: hidden;
+}
+
+slideshow-component[mobile-disabled] slideshow-slides {
+  @media screen and (max-width: 749px) {
+    overflow: hidden;
+  }
+}
+
+slideshow-slide {
+  position: relative;
+  scroll-snap-align: center;
+  width: var(--slide-width, 100%);
+  max-height: 100%;
+  flex-shrink: 0;
+  view-timeline-name: var(--slideshow-timeline);
+  view-timeline-axis: inline;
+  content-visibility: auto;
+  contain-intrinsic-size: auto none;
+  border-radius: var(--corner-radius, 0);
+  overflow: hidden;
+
+  slideshow-component[actioned] &,
+  &[aria-hidden='false'] {
+    content-visibility: visible;
+  }
+
+  slideshow-component slideshow-slide:not([aria-hidden='false']) {
+    content-visibility: hidden;
+  }
+
+  &[hidden]:not([reveal]) {
+    display: none;
+  }
+
+  /* Make inactive slides appear clickable */
+  &[aria-hidden='true'] {
+    cursor: pointer;
+  }
+}
+
+slideshow-slide .slide__image-container--rounded {
+  border-radius: var(--corner-radius, 0);
+}
+
+slideshow-slide.product-media-container--tallest {
+  content-visibility: visible;
+}
+
+@media screen and (max-width: 749px) {
+  /* Media gallery has a peeking slide on the right side always, and on the left side when the current slide is the last one */
+  .media-gallery--hint
+    :is(
+      slideshow-slide:has(+ slideshow-slide[aria-hidden='false']:last-of-type),
+      slideshow-slide[aria-hidden='false'] + slideshow-slide
+    ) {
+    content-visibility: auto;
+
+    slideshow-component[actioned] & {
+      content-visibility: visible;
+    }
+  }
+}
+
+/*
+ * Collection and Resource list carousels have peeking slides on both sides.
+ * Card galleries preview the next or previous images on 'pointerenter', so we
+ * try to kick load them beforehand (they are lazy loaded otherwise).
+ */
+:is(.resource-list__carousel, .card-gallery)
+  :is(
+    slideshow-slide:has(+ slideshow-slide[aria-hidden='false']),
+    slideshow-slide[aria-hidden='false'] + slideshow-slide
+  ) {
+  content-visibility: auto;
+
+  slideshow-component[actioned] & {
+    content-visibility: visible;
+  }
+}
+
+/*
+ * Be specific about HTML children structure to avoid targeting nested slideshows.
+ * Ensure that the content is 'visible' while scrolling instead of 'auto' to avoid issues in Safari.
+ */
+slideshow-component:is([dragging], [transitioning], :hover) > slideshow-container > slideshow-slides > slideshow-slide {
+  content-visibility: visible;
+}
+
+slideshow-slides[gutters*='start'] {
+  padding-inline-start: var(--gutter-slide-width, 0);
+  scroll-padding-inline-start: var(--gutter-slide-width, 0);
+}
+
+slideshow-slides[gutters*='end'] {
+  padding-inline-end: var(--gutter-slide-width, 0);
+}
+
+slideshow-component[dragging] {
+  --cursor: grabbing;
+
+  * {
+    pointer-events: none;
+  }
+}
+
+slideshow-component[dragging] slideshow-arrows {
+  display: none;
+}
+
+slideshow-container {
+  width: 100%;
+  display: block;
+  position: relative;
+  grid-area: container;
+  container-type: inline-size;
+  background-color: var(--color-background);
+}
+
+@media screen and (min-width: 750px) {
+  .media-gallery--carousel slideshow-component:has(slideshow-controls[thumbnails]) {
+    &:has(slideshow-controls[pagination-position='right']) {
+      display: grid;
+      grid-template:
+        'container controls' auto
+        'arrows controls' min-content
+        / 1fr auto;
+    }
+
+    &:has(slideshow-controls[pagination-position='left']) {
+      display: grid;
+      grid-template:
+        'controls container' auto
+        'controls arrows' min-content
+        / auto 1fr;
+    }
+
+    slideshow-controls[pagination-position='left'] {
+      order: -1;
+    }
+  }
+}
+
+/* Slideshow Play/Pause */
+.slideshow-control:is(.icon-pause, .icon-play) {
+  color: var(--color-active);
+
+  &:hover {
+    color: var(--color-hover);
+  }
+
+  svg {
+    display: none;
+  }
+}
+
+slideshow-component:is([autoplay]) {
+  &:is([paused]) {
+    .icon-play > svg {
+      display: block;
+    }
+  }
+
+  &:not([paused]) {
+    .icon-pause > svg {
+      display: block;
+    }
+  }
+}
+
+/* Slideshow Arrows */
+slideshow-arrows {
+  --cursor-previous: w-resize;
+  --cursor-next: e-resize;
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: var(--layer-heightened);
+  pointer-events: none;
+  mix-blend-mode: difference;
+  align-items: flex-end;
+
+  &[position='left'] {
+    justify-content: flex-start;
+    padding-inline: var(--padding-xs);
+  }
+
+  &[position='right'] {
+    justify-content: flex-end;
+    padding-inline: var(--padding-xs);
+  }
+
+  &[position='center'] {
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+slideshow-arrows:has(.slideshow-control--shape-square),
+slideshow-arrows:has(.slideshow-control--shape-circle) {
+  mix-blend-mode: normal;
+}
+
+slideshow-component[disabled='true'] slideshow-arrows {
+  display: none;
+}
+
+slideshow-arrows .slideshow-control {
+  pointer-events: auto;
+  opacity: 0;
+  min-height: var(--minimum-touch-target);
+  min-width: var(--minimum-touch-target);
+  padding: 0 var(--padding-xs);
+  color: var(--color-white);
+}
+
+slideshow-arrows .slideshow-control.slideshow-control--style-none {
+  display: none;
+}
+
+.media-gallery--carousel slideshow-arrows .slideshow-control {
+  padding-inline: 0 var(--padding-md);
+  opacity: 1;
+}
+
+.card-gallery slideshow-arrows .slideshow-control {
+  /* Align icons with quick-add button */
+  padding-inline: var(--padding-xl);
+
+  @container (max-width: 249px) {
+    padding-inline: 0 var(--padding-sm);
+  }
+}
+
+:not(.media-gallery--carousel)
+  > :is(slideshow-component:hover, slideshow-component:focus-within):not(:has(slideshow-controls:hover))
+  > slideshow-container
+  > slideshow-arrows
+  .slideshow-control {
+  animation: arrowsSlideIn var(--animation-speed) var(--animation-easing) forwards;
+}
+
+@keyframes arrowsSlideIn {
+  from {
+    transform: translate(var(--padding-sm), 0);
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-reveal {
+  0% {
+    translate: calc(var(--slideshow-slide-offset, 6) * 1rem) 0;
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    translate: calc(var(--slideshow-slide-offset, 6) * -1rem) 0;
+    opacity: 0;
+  }
+}

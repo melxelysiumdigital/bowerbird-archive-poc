@@ -70,11 +70,16 @@
       {%- endfor -%}
     ];
 
-    function update() {
-      const variantInput = getVariantInput();
-      if (!variantInput) return;
-
-      const currentId = String(variantInput.value);
+    function update(event) {
+      // Read variant ID from Horizon event detail or from the hidden input
+      let currentId;
+      if (event?.detail?.resource?.id) {
+        currentId = String(event.detail.resource.id);
+      } else {
+        const variantInput = getVariantInput();
+        if (!variantInput) return;
+        currentId = String(variantInput.value);
+      }
       const isCustom = zeroVariantIds.includes(currentId);
 
       wrapper.hidden = !isCustom;
@@ -91,8 +96,9 @@
       displayInput.value = amountInput.value ? '{{ cart.currency.symbol }}' + amountInput.value : '';
     });
 
-    // Listen for variant changes - Horizon dispatches 'variant:change' events
-    document.addEventListener('variant:change', update);
+    // Listen for Horizon's variant events
+    document.addEventListener('variant:update', update);
+    document.addEventListener('variant:selected', update);
 
     // Also observe the variant input for value changes
     const variantInput = getVariantInput();
@@ -101,10 +107,10 @@
         attributes: true,
         attributeFilter: ['value'],
       });
-      // Also listen for change events
       variantInput.addEventListener('change', update);
     }
 
+    // Run on load — if $0 variant is already selected, show immediately
     update();
   })();
 </script>

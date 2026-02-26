@@ -4,49 +4,56 @@ if (!customElements.get('donation-widget')) {
     class DonationWidget extends HTMLElement {
       constructor() {
         super();
-
-        this.amountButtons = this.querySelectorAll('.donation-widget__amount-btn');
-        this.customInputWrapper = this.querySelector('.donation-widget__custom-input');
-        this.customInput = this.querySelector('.donation-widget__input');
-        this.submitButton = this.querySelector('.donation-widget__submit');
-        this.submitText = this.querySelector('.donation-widget__submit-text');
-        this.spinner = this.querySelector('.donation-widget__spinner');
-        this.errorEl = this.querySelector('.donation-widget__error');
-
         this.selectedAmount = null;
         this.selectedVariantId = null;
         this.isCustom = false;
-
-        this.bindEvents();
       }
 
-      bindEvents() {
-        this.amountButtons.forEach((btn) => {
-          btn.addEventListener('click', this.onAmountClick.bind(this));
-        });
+      connectedCallback() {
+        this.addEventListener('click', this.onClick.bind(this));
+        this.addEventListener('input', this.onInput.bind(this));
+      }
 
-        if (this.customInput) {
-          this.customInput.addEventListener('input', this.onCustomInput.bind(this));
+      // Use event delegation so it works after AJAX cart updates
+      onClick(event) {
+        const amountBtn = event.target.closest('.donation-widget__amount-btn');
+        if (amountBtn) {
+          this.onAmountClick(amountBtn);
+          return;
         }
-        this.submitButton.addEventListener('click', this.onSubmit.bind(this));
+
+        const submitBtn = event.target.closest('.donation-widget__submit');
+        if (submitBtn) {
+          this.onSubmit();
+        }
       }
 
-      onAmountClick(event) {
-        const btn = event.currentTarget;
+      onInput(event) {
+        if (event.target.closest('.donation-widget__input')) {
+          this.onCustomInput();
+        }
+      }
+
+      onAmountClick(btn) {
         const amount = btn.dataset.amount;
 
-        this.amountButtons.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+        this.querySelectorAll('.donation-widget__amount-btn').forEach((b) =>
+          b.setAttribute('aria-pressed', 'false'),
+        );
         btn.setAttribute('aria-pressed', 'true');
 
         this.selectedVariantId = btn.dataset.variantId;
         this.isCustom = amount === 'custom';
 
+        const customInputWrapper = this.querySelector('.donation-widget__custom-input');
+        const customInput = this.querySelector('.donation-widget__input');
+
         if (this.isCustom) {
-          this.customInputWrapper.hidden = false;
-          this.customInput.focus();
-          this.selectedAmount = this.customInput.value ? parseFloat(this.customInput.value) : null;
+          customInputWrapper.hidden = false;
+          customInput.focus();
+          this.selectedAmount = customInput.value ? parseFloat(customInput.value) : null;
         } else {
-          this.customInputWrapper.hidden = true;
+          customInputWrapper.hidden = true;
           this.selectedAmount = parseFloat(amount);
         }
 
@@ -55,19 +62,22 @@ if (!customElements.get('donation-widget')) {
       }
 
       onCustomInput() {
-        const val = parseFloat(this.customInput.value);
+        const customInput = this.querySelector('.donation-widget__input');
+        const val = parseFloat(customInput.value);
         this.selectedAmount = isNaN(val) || val < 1 ? null : val;
         this.updateSubmitState();
       }
 
       updateSubmitState() {
+        const submitButton = this.querySelector('.donation-widget__submit');
         const enabled = this.selectedVariantId && this.selectedAmount && this.selectedAmount >= 1;
-        this.submitButton.disabled = !enabled;
+        submitButton.disabled = !enabled;
       }
 
       async onSubmit() {
-        if (this.submitButton.disabled) return;
-        if (this.submitButton.getAttribute('aria-disabled') === 'true') return;
+        const submitButton = this.querySelector('.donation-widget__submit');
+        if (!submitButton || submitButton.disabled) return;
+        if (submitButton.getAttribute('aria-disabled') === 'true') return;
 
         this.hideError();
         this.setLoading(true);
@@ -99,39 +109,57 @@ if (!customElements.get('donation-widget')) {
             body: JSON.stringify(body),
           });
 
-          const data = await response.json();
-
-          if (data.status) {
-            this.showError(data.description || data.message || 'Could not add donation.');
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            this.showError(err.description || err.message || 'Could not add donation.');
+            this.setLoading(false);
             return;
           }
 
-          // Refresh the page to update cart state (works in both cart page and drawer contexts)
-          window.location.reload();
+          const data = await response.json();
+
+          // Dispatch cart:update event so Horizon refreshes the cart drawer/page inline
+          // After this, the widget may be removed from the DOM (donation now in cart)
+          const event = new Event('cart:update', { bubbles: true });
+          event.detail = {
+            resource: data,
+            sourceId: 'donation-widget',
+            data: { source: 'donation-widget', itemCount: 1 },
+          };
+          document.dispatchEvent(event);
         } catch (e) {
-          console.error(e);
-          this.showError('Something went wrong. Please try again.');
-        } finally {
-          this.setLoading(false);
+          console.error('Donation widget error:', e);
+          // Widget may have been removed from DOM by cart re-render — that's fine
+          if (this.isConnected) {
+            this.showError('Something went wrong. Please try again.');
+            this.setLoading(false);
+          }
         }
       }
 
       setLoading(loading) {
-        this.submitButton.classList.toggle('loading', loading);
-        this.submitButton.setAttribute('aria-disabled', String(loading));
-        this.spinner.hidden = !loading;
-        if (loading) this.submitText.style.visibility = 'hidden';
-        else this.submitText.style.visibility = '';
+        const submitButton = this.querySelector('.donation-widget__submit');
+        const submitText = this.querySelector('.donation-widget__submit-text');
+        const spinner = this.querySelector('.donation-widget__spinner');
+        if (!submitButton) return;
+        submitButton.classList.toggle('loading', loading);
+        submitButton.setAttribute('aria-disabled', String(loading));
+        if (spinner) spinner.hidden = !loading;
+        if (submitText) submitText.style.visibility = loading ? 'hidden' : '';
       }
 
       showError(message) {
-        this.errorEl.textContent = message;
-        this.errorEl.hidden = false;
+        const errorEl = this.querySelector('.donation-widget__error');
+        if (!errorEl) return;
+        errorEl.textContent = message;
+        errorEl.hidden = false;
       }
 
       hideError() {
-        this.errorEl.textContent = '';
-        this.errorEl.hidden = true;
+        const errorEl = this.querySelector('.donation-widget__error');
+        if (!errorEl) return;
+        errorEl.textContent = '';
+        errorEl.hidden = true;
       }
     },
   );
