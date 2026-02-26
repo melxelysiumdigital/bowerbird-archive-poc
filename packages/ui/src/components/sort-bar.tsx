@@ -5,13 +5,7 @@ import type { SortOption } from '@bowerbird-poc/shared/types';
 
 import { cn } from '@bowerbird-poc/ui/lib/utils';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
 
 interface SortBarProps {
   sort: SortOption;
@@ -24,12 +18,12 @@ interface SortBarProps {
 export function SortBar({ sort, onSortChange, resultCount, isLoading, className }: SortBarProps) {
   return (
     <div className={cn('mb-6 flex items-center justify-between', className)}>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-sm">
         {isLoading ? (
-          <span className="inline-block h-4 w-24 animate-pulse rounded bg-muted" />
+          <span className="bg-muted inline-block h-4 w-24 animate-pulse rounded" />
         ) : (
           <>
-            <span className="font-bold text-foreground">{resultCount}</span> results
+            <span className="text-foreground font-bold">{resultCount}</span> results
           </>
         )}
       </p>

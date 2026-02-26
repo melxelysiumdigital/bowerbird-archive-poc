@@ -1,9 +1,17 @@
-import path from "path";
-import fs from "fs";
-import { describe, beforeAll, test, expect } from "vitest";
-import { buildFunction, getFunctionInfo, loadSchema, loadInputQuery, loadFixture, validateTestAssets, runFunction } from "@shopify/shopify-function-test-helpers";
+import path from 'path';
+import fs from 'fs';
+import { describe, beforeAll, test, expect } from 'vitest';
+import {
+  buildFunction,
+  getFunctionInfo,
+  loadSchema,
+  loadInputQuery,
+  loadFixture,
+  validateTestAssets,
+  runFunction,
+} from '@shopify/shopify-function-test-helpers';
 
-describe("Default Integration Test", () => {
+describe('Default Integration Test', () => {
   let schema;
   let functionDir;
   let functionInfo;
@@ -20,10 +28,10 @@ describe("Default Integration Test", () => {
     schema = await loadSchema(schemaPath);
   }, 45000);
 
-  const fixturesDir = path.join(__dirname, "fixtures");
+  const fixturesDir = path.join(__dirname, 'fixtures');
   const fixtureFiles = fs
     .readdirSync(fixturesDir)
-    .filter((file) => file.endsWith(".json"))
+    .filter((file) => file.endsWith('.json'))
     .map((file) => path.join(fixturesDir, file));
 
   fixtureFiles.forEach((fixtureFile) => {
@@ -37,7 +45,13 @@ describe("Default Integration Test", () => {
       expect(validationResult.inputFixture.errors).toEqual([]);
       expect(validationResult.outputFixture.errors).toEqual([]);
 
-      const runResult = await runFunction(fixture, functionRunnerPath, wasmPath, targetInputQueryPath, schemaPath);
+      const runResult = await runFunction(
+        fixture,
+        functionRunnerPath,
+        wasmPath,
+        targetInputQueryPath,
+        schemaPath,
+      );
       expect(runResult.error).toBeNull();
       expect(runResult.result.output).toEqual(fixture.expectedOutput);
     }, 10000);

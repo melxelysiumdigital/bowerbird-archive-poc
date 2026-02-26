@@ -9,7 +9,6 @@ import type {
 } from '@bowerbird-poc/shared/types';
 import { useCallback } from 'react';
 
-
 interface CreateRequestParams {
   email: string;
   firstName: string;

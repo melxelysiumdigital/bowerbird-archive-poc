@@ -54,11 +54,7 @@ export const AllComplete: Story = {
 
 export const ThreeSteps: Story = {
   args: {
-    steps: [
-      { label: 'Start' },
-      { label: 'Process' },
-      { label: 'Done' },
-    ],
+    steps: [{ label: 'Start' }, { label: 'Process' }, { label: 'Done' }],
     currentStep: 2,
   },
 };

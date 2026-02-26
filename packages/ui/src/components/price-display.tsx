@@ -36,7 +36,7 @@ export function PriceDisplay({
         {typeof total === 'number' ? formatPrice(total, currencyCode) : total}
       </span>
       {hasCompare && (
-        <span className="ml-2 text-sm text-muted-foreground line-through">
+        <span className="text-muted-foreground ml-2 text-sm line-through">
           {formatPrice(compareAtPrice, currencyCode)}
         </span>
       )}

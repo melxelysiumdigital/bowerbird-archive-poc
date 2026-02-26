@@ -17,7 +17,13 @@ const meta: Meta = {
   component: Card,
   parameters: { layout: 'centered' },
   tags: ['autodocs'],
-  decorators: [(Story) => <div className="w-[350px]"><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div className="w-[350px]">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;

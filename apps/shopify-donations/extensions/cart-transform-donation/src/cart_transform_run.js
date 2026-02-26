@@ -22,10 +22,12 @@ export function cartTransformRun(input) {
 
     if (!rawAmount && line.donationDisplay?.value) {
       // Parse "$33" or "$12.50" format from the display property
-      rawAmount = line.donationDisplay.value.replace(/[^0-9.]/g, "");
+      rawAmount = line.donationDisplay.value.replace(/[^0-9.]/g, '');
     }
 
-    console.error(`Line ${line.id}: _donation_amount=${line.donationAmount?.value}, Donation Amount=${line.donationDisplay?.value}, parsed=${rawAmount}`);
+    console.error(
+      `Line ${line.id}: _donation_amount=${line.donationAmount?.value}, Donation Amount=${line.donationDisplay?.value}, parsed=${rawAmount}`,
+    );
 
     if (!rawAmount) continue;
 
@@ -46,7 +48,7 @@ export function cartTransformRun(input) {
     });
   }
 
-  console.error("Cart Transform operations:", JSON.stringify(operations));
+  console.error('Cart Transform operations:', JSON.stringify(operations));
 
   return { operations };
 }

@@ -4,7 +4,6 @@ import type { ItemProperties } from '@bowerbird-poc/shared/types';
 import { useCart } from '@shopify/hydrogen-react';
 import { useCallback } from 'react';
 
-
 export function useShopifyCart() {
   const cartData = useCart();
   const {
@@ -15,6 +14,8 @@ export function useShopifyCart() {
     linesAdd,
     linesRemove,
     linesUpdate,
+    buyerIdentityUpdate,
+    cartAttributesUpdate,
     error,
   } = cartData;
 
@@ -26,6 +27,12 @@ export function useShopifyCart() {
         .filter(([, value]) => value !== undefined && value !== '')
         .map(([key, value]) => ({ key, value: String(value) }));
 
+      // Include headless_origin so the thank-you checkout extension
+      // knows where to redirect back to
+      if (typeof window !== 'undefined') {
+        attributes.push({ key: 'headless_origin', value: window.location.origin });
+      }
+
       linesAdd([
         {
           merchandiseId: variantId,
@@ -33,8 +40,14 @@ export function useShopifyCart() {
           attributes,
         },
       ]);
+
+      // Also set headless_origin as a cart-level attribute so the checkout
+      // extension can read it from shopify.attributes.current
+      if (typeof window !== 'undefined') {
+        cartAttributesUpdate([{ key: 'headless_origin', value: window.location.origin }]);
+      }
     },
-    [linesAdd],
+    [linesAdd, cartAttributesUpdate],
   );
 
   const removeFromCart = useCallback(
@@ -51,14 +64,24 @@ export function useShopifyCart() {
     [linesUpdate],
   );
 
+  const attachCustomer = useCallback(
+    (customerAccessToken: string) => {
+      buyerIdentityUpdate({ customerAccessToken });
+    },
+    [buyerIdentityUpdate],
+  );
+
   return {
-    cost: (cartData as unknown as { cost?: { totalAmount?: { amount: string; currencyCode: string } } }).cost,
+    cost: (
+      cartData as unknown as { cost?: { totalAmount?: { amount: string; currencyCode: string } } }
+    ).cost,
     isLoading,
     totalQuantity: totalQuantity ?? 0,
     checkoutUrl: checkoutUrl ?? null,
     addItem,
     removeFromCart,
     updateQuantity,
+    attachCustomer,
     lines: lines ?? [],
     error: error ? new Error(String(error)) : null,
   };

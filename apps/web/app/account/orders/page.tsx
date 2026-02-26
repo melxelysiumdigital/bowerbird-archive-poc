@@ -1,8 +1,7 @@
 'use client';
 
-
 import { ORDER_STATUS_STYLES } from '@bowerbird-poc/shared/constants';
-import type { OrderStatus, DigitisationRequest, AdminOrder } from '@bowerbird-poc/shared/types';
+import type { OrderStatus, DigitisationRequest } from '@bowerbird-poc/shared/types';
 import { Badge } from '@bowerbird-poc/ui/components/badge';
 import {
   Breadcrumb,
@@ -37,7 +36,66 @@ import { useState, useEffect, useCallback } from 'react';
 import { DigitisationRequestCard } from '@/components/digitisation-request-card';
 import { useAuth } from '@/hooks/use-auth';
 import { useDigitisationRequests } from '@/hooks/use-digitisation-requests';
-import { useShopifySync } from '@/hooks/use-shopify-sync';
+
+// ─── Customer Account API GraphQL query ─────────────────────
+const CUSTOMER_ORDERS_QUERY = `
+  query CustomerOrders($first: Int!) {
+    customer {
+      orders(first: $first, sortKey: PROCESSED_AT, reverse: true) {
+        nodes {
+          id
+          number
+          name
+          processedAt
+          financialStatus
+          fulfillmentStatus
+          totalPrice {
+            amount
+            currencyCode
+          }
+          lineItems(first: 20) {
+            nodes {
+              title
+              quantity
+              variantTitle
+              price {
+                amount
+                currencyCode
+              }
+              image {
+                url
+                altText
+              }
+              customAttributes {
+                key
+                value
+              }
+            }
+          }
+          shippingAddress {
+            firstName
+            lastName
+            address1
+            address2
+            city
+            province
+            zip
+            country
+          }
+          fulfillments(first: 5) {
+            nodes {
+              trackingInformation {
+                company
+                number
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 
 // ─── Order data shape ────────────────────────────────────────
 interface OrderData {
@@ -67,17 +125,56 @@ interface OrderData {
   currentStep: number;
 }
 
-// ─── Transform Admin Order ───────────────────────────────────
-function transformAdminOrder(order: AdminOrder): OrderData {
+// ─── Customer Account API response types ─────────────────────
+interface CustomerLineItem {
+  title: string;
+  quantity: number;
+  variantTitle?: string;
+  price?: { amount: string; currencyCode: string };
+  image?: { url: string; altText?: string };
+  customAttributes: Array<{ key: string; value: string }>;
+}
+
+interface CustomerOrderNode {
+  id: string;
+  number: number;
+  name: string;
+  processedAt: string;
+  financialStatus: string;
+  fulfillmentStatus: string;
+  totalPrice: { amount: string; currencyCode: string };
+  lineItems: { nodes: CustomerLineItem[] };
+  shippingAddress?: {
+    firstName: string;
+    lastName: string;
+    address1: string;
+    address2?: string;
+    city: string;
+    province: string;
+    zip: string;
+    country: string;
+  };
+  fulfillments: {
+    nodes: Array<{
+      trackingInformation: Array<{
+        company?: string;
+        number?: string;
+        url?: string;
+      }>;
+    }>;
+  };
+}
+
+// ─── Transform Customer Account API Order ────────────────────
+function transformCustomerOrder(order: CustomerOrderNode): OrderData {
   const statusMap: Record<string, OrderStatus> = {
-    unfulfilled: 'processing',
-    partial: 'processing',
-    fulfilled: 'delivered',
-    restocked: 'cancelled',
-    null: 'processing',
+    UNFULFILLED: 'processing',
+    PARTIALLY_FULFILLED: 'processing',
+    FULFILLED: 'delivered',
+    RESTOCKED: 'cancelled',
   };
 
-  const fulfillmentStatus = order.fulfillment_status || 'null';
+  const fulfillmentStatus = order.fulfillmentStatus || 'UNFULFILLED';
   const status = statusMap[fulfillmentStatus] || 'processing';
 
   const stepMap: Record<OrderStatus, number> = {
@@ -88,44 +185,45 @@ function transformAdminOrder(order: AdminOrder): OrderData {
     cancelled: 1,
   };
 
-  const fulfillment = order.fulfillments?.[0];
+  const fulfillment = order.fulfillments.nodes[0];
+  const tracking = fulfillment?.trackingInformation[0];
 
-  const items = order.line_items.map((item) => {
-    const imageProperty = item.properties.find((p) => p.name === 'item_image');
-    const titleProperty = item.properties.find((p) => p.name === 'item_title');
+  const items = order.lineItems.nodes.map((item) => {
+    const imageAttr = item.customAttributes.find((a) => a.key === 'item_image');
+    const titleAttr = item.customAttributes.find((a) => a.key === 'item_title');
 
     return {
-      title: titleProperty?.value || item.title,
-      variant: item.variant_title || 'Standard',
-      price: `$${parseFloat(item.price).toFixed(2)}`,
+      title: titleAttr?.value || item.title,
+      variant: item.variantTitle || 'Standard',
+      price: item.price ? `$${parseFloat(item.price.amount).toFixed(2)}` : '$0.00',
       quantity: item.quantity,
-      image: imageProperty?.value || '',
+      image: imageAttr?.value || item.image?.url || '',
     };
   });
 
   return {
     id: order.name,
-    date: new Date(order.created_at).toLocaleDateString('en-AU', {
+    date: new Date(order.processedAt).toLocaleDateString('en-AU', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     }),
     status,
-    total: `$${parseFloat(order.total_price).toFixed(2)} ${order.currency}`,
-    itemCount: order.line_items.reduce((sum, item) => sum + item.quantity, 0),
-    trackingNumber: fulfillment?.tracking_number ?? undefined,
-    carrier: fulfillment?.tracking_company ?? undefined,
+    total: `$${parseFloat(order.totalPrice.amount).toFixed(2)} ${order.totalPrice.currencyCode}`,
+    itemCount: order.lineItems.nodes.reduce((sum, item) => sum + item.quantity, 0),
+    trackingNumber: tracking?.number ?? undefined,
+    carrier: tracking?.company ?? undefined,
     items,
-    shippingAddress: order.shipping_address
+    shippingAddress: order.shippingAddress
       ? {
-          name: `${order.shipping_address.first_name} ${order.shipping_address.last_name}`,
+          name: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`,
           line1:
-            order.shipping_address.address1 +
-            (order.shipping_address.address2 ? `, ${order.shipping_address.address2}` : ''),
-          city: order.shipping_address.city,
-          state: order.shipping_address.province,
-          postcode: order.shipping_address.zip,
-          country: order.shipping_address.country,
+            order.shippingAddress.address1 +
+            (order.shippingAddress.address2 ? `, ${order.shippingAddress.address2}` : ''),
+          city: order.shippingAddress.city,
+          state: order.shippingAddress.province,
+          postcode: order.shippingAddress.zip,
+          country: order.shippingAddress.country,
         }
       : undefined,
     currentStep: stepMap[status],
@@ -160,7 +258,7 @@ function OrderStep({
           className={cn(
             'flex items-center justify-center rounded-full transition-all',
             isCurrent &&
-              'border-primary/20 bg-primary -mt-2 size-10 border-4 text-white shadow-lg shadow-primary/30',
+              'border-primary/20 bg-primary shadow-primary/30 -mt-2 size-10 border-4 text-white shadow-lg',
             isCompleted && 'bg-primary size-6 text-white',
             isPending && 'size-6 bg-gray-200 text-gray-400',
           )}
@@ -179,9 +277,7 @@ function OrderStep({
         </span>
       </div>
       {step < 5 && (
-        <div
-          className={cn('h-0.5 flex-grow', currentStep > step ? 'bg-primary' : 'bg-gray-200')}
-        />
+        <div className={cn('h-0.5 flex-grow', currentStep > step ? 'bg-primary' : 'bg-gray-200')} />
       )}
     </>
   );
@@ -192,8 +288,14 @@ type Tab = 'orders' | 'digitisation';
 
 // ─── Page ────────────────────────────────────────────────────
 export default function OrdersPage() {
-  const { isAuthenticated, isLoading: isAuthLoading, user, loginWithRedirect, logout } = useAuth();
-  const { getOrders: getAdminOrders } = useShopifySync();
+  const {
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    user,
+    loginWithRedirect,
+    logout,
+    client,
+  } = useAuth();
   const { getRequests, cancelRequest, recreateRequest } = useDigitisationRequests();
   const userEmail = user?.email;
 
@@ -209,12 +311,15 @@ export default function OrdersPage() {
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
 
   const fetchOrders = useCallback(async () => {
-    if (!isAuthenticated || !userEmail) return;
+    if (!isAuthenticated || !client) return;
     setIsLoadingOrders(true);
     setOrdersError(null);
     try {
-      const adminOrders = await getAdminOrders(userEmail);
-      const transformedOrders = adminOrders.map(transformAdminOrder);
+      const data = await client.query<{
+        customer: { orders: { nodes: CustomerOrderNode[] } };
+      }>(CUSTOMER_ORDERS_QUERY, { first: 20 });
+
+      const transformedOrders = data.customer.orders.nodes.map(transformCustomerOrder);
       setOrders(transformedOrders);
       if (transformedOrders.length > 0 && !expandedOrder) {
         setExpandedOrder(transformedOrders[0].id);
@@ -224,7 +329,7 @@ export default function OrdersPage() {
     } finally {
       setIsLoadingOrders(false);
     }
-  }, [isAuthenticated, userEmail, getAdminOrders, expandedOrder]);
+  }, [isAuthenticated, client, expandedOrder]);
 
   const fetchRequests = useCallback(async () => {
     if (!isAuthenticated || !userEmail) return;
@@ -254,7 +359,7 @@ export default function OrdersPage() {
     return (
       <div className="mx-auto w-full max-w-[960px] px-6 py-8">
         <div className="flex flex-col items-center justify-center py-20">
-          <span className="mb-4 inline-block size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <span className="border-primary mb-4 inline-block size-8 animate-spin rounded-full border-4 border-t-transparent" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -277,13 +382,13 @@ export default function OrdersPage() {
         </Breadcrumb>
 
         <div className="py-12">
-          <div className="mx-auto max-w-md rounded-xl border bg-card p-8 shadow-sm">
+          <div className="bg-card mx-auto max-w-md rounded-xl border p-8 shadow-sm">
             <div className="mb-6 text-center">
-              <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
-                <User className="size-8 text-primary" />
+              <div className="bg-primary/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+                <User className="text-primary size-8" />
               </div>
               <h2 className="text-2xl font-bold">Sign in to view orders</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
+              <p className="text-muted-foreground mt-2 text-sm">
                 Sign in with your account to view your order history
               </p>
             </div>
@@ -333,8 +438,8 @@ export default function OrdersPage() {
       <div className="mb-10 flex items-start justify-between">
         <div>
           <h1 className="text-4xl font-black tracking-tight">Your Orders</h1>
-          <p className="mt-2 text-muted-foreground">
-            Signed in as <span className="font-semibold text-foreground">{userEmail}</span>
+          <p className="text-muted-foreground mt-2">
+            Signed in as <span className="text-foreground font-semibold">{userEmail}</span>
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -356,7 +461,7 @@ export default function OrdersPage() {
       </div>
 
       {/* Tab Switcher */}
-      <div className="mb-8 flex w-fit gap-1 rounded-lg bg-muted p-1">
+      <div className="bg-muted mb-8 flex w-fit gap-1 rounded-lg p-1">
         <button
           onClick={() => setActiveTab('orders')}
           className={cn(
@@ -398,24 +503,22 @@ export default function OrdersPage() {
         <>
           {isLoadingOrders && (
             <div className="flex flex-col items-center justify-center py-20">
-              <span className="mb-4 inline-block size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <span className="border-primary mb-4 inline-block size-8 animate-spin rounded-full border-4 border-t-transparent" />
               <p className="text-muted-foreground">Loading your orders...</p>
             </div>
           )}
 
           {!isLoadingOrders && ordersError && (
-            <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-destructive">
+            <div className="border-destructive/20 bg-destructive/5 text-destructive mb-6 rounded-lg border px-4 py-3">
               {ordersError}
             </div>
           )}
 
           {!isLoadingOrders && orders.length === 0 && !ordersError && (
-            <div className="rounded-xl border bg-muted/30 py-16 text-center">
-              <Receipt className="mx-auto mb-4 size-16 text-muted-foreground/30" />
+            <div className="bg-muted/30 rounded-xl border py-16 text-center">
+              <Receipt className="text-muted-foreground/30 mx-auto mb-4 size-16" />
               <h3 className="mb-2 text-xl font-bold">No orders yet</h3>
-              <p className="mb-6 text-muted-foreground">
-                Start exploring our archive collection!
-              </p>
+              <p className="text-muted-foreground mb-6">Start exploring our archive collection!</p>
               <Button asChild>
                 <Link href="/search">Browse Collection</Link>
               </Button>
@@ -432,15 +535,15 @@ export default function OrdersPage() {
                   <div
                     key={order.id}
                     className={cn(
-                      'overflow-hidden rounded-xl border bg-card shadow-sm transition-all',
-                      !isExpanded && 'cursor-pointer hover:border-primary/40',
+                      'bg-card overflow-hidden rounded-xl border shadow-sm transition-all',
+                      !isExpanded && 'hover:border-primary/40 cursor-pointer',
                     )}
                     onClick={() => !isExpanded && setExpandedOrder(order.id)}
                   >
                     <div
                       className={cn(
                         'flex flex-wrap items-center justify-between gap-4 p-6',
-                        isExpanded && 'border-b bg-muted/30',
+                        isExpanded && 'bg-muted/30 border-b',
                       )}
                     >
                       <div className="flex flex-col gap-1">
@@ -451,16 +554,16 @@ export default function OrdersPage() {
                             className={cn(
                               statusStyle.bg,
                               statusStyle.color,
-                              'uppercase tracking-wider',
+                              'tracking-wider uppercase',
                             )}
                           >
                             {statusStyle.label}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground text-sm">
                           Ordered on {order.date} &middot; {order.itemCount}{' '}
                           {order.itemCount === 1 ? 'Item' : 'Items'} &middot;{' '}
-                          <span className="font-semibold text-foreground">{order.total}</span>
+                          <span className="text-foreground font-semibold">{order.total}</span>
                         </p>
                       </div>
                       <button
@@ -468,7 +571,7 @@ export default function OrdersPage() {
                           e.stopPropagation();
                           setExpandedOrder(isExpanded ? null : order.id);
                         }}
-                        className="flex items-center gap-1 text-sm font-bold text-primary"
+                        className="text-primary flex items-center gap-1 text-sm font-bold"
                       >
                         {isExpanded ? 'Collapse' : 'Expand'} Order
                         {isExpanded ? (
@@ -483,54 +586,66 @@ export default function OrdersPage() {
                       <div className="p-6">
                         <div className="mb-10">
                           <div className="mb-4 flex justify-between">
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                            <h3 className="text-muted-foreground text-sm font-bold tracking-widest uppercase">
                               Order Progress
                             </h3>
                             {order.trackingNumber && (
                               <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-muted-foreground">
+                                <span className="text-muted-foreground text-sm font-medium">
                                   {order.carrier}
                                 </span>
-                                <span className="rounded bg-muted px-2 py-0.5 font-mono text-xs">
+                                <span className="bg-muted rounded px-2 py-0.5 font-mono text-xs">
                                   {order.trackingNumber}
                                 </span>
-                                <button className="rounded p-1 text-primary transition-colors hover:bg-primary/10">
+                                <button className="text-primary hover:bg-primary/10 rounded p-1 transition-colors">
                                   <Copy className="size-4" />
                                 </button>
                               </div>
                             )}
                           </div>
                           <div className="flex items-center justify-between px-2">
-                            <OrderStep step={1} label="Order Placed" currentStep={order.currentStep} />
-                            <OrderStep step={2} label="Processing" currentStep={order.currentStep} />
+                            <OrderStep
+                              step={1}
+                              label="Order Placed"
+                              currentStep={order.currentStep}
+                            />
+                            <OrderStep
+                              step={2}
+                              label="Processing"
+                              currentStep={order.currentStep}
+                            />
                             <OrderStep step={3} label="Shipped" currentStep={order.currentStep} />
-                            <OrderStep step={4} label="Out for Delivery" currentStep={order.currentStep} />
+                            <OrderStep
+                              step={4}
+                              label="Out for Delivery"
+                              currentStep={order.currentStep}
+                            />
                             <OrderStep step={5} label="Delivered" currentStep={order.currentStep} />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                           <div className="space-y-4 md:col-span-2">
-                            <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                            <h3 className="text-muted-foreground mb-4 text-sm font-bold tracking-widest uppercase">
                               Items in this order
                             </h3>
                             {order.items.map((item, idx) => (
                               <div
                                 key={idx}
-                                className="group flex items-center gap-4 rounded-lg border p-3 transition-all hover:border-primary/30"
+                                className="group hover:border-primary/30 flex items-center gap-4 rounded-lg border p-3 transition-all"
                               >
                                 <div
-                                  className="size-20 shrink-0 rounded bg-muted bg-cover bg-center"
+                                  className="bg-muted size-20 shrink-0 rounded bg-cover bg-center"
                                   style={{ backgroundImage: `url("${item.image}")` }}
                                 />
                                 <div className="flex-1">
-                                  <p className="text-sm font-bold transition-colors group-hover:text-primary">
+                                  <p className="group-hover:text-primary text-sm font-bold transition-colors">
                                     {item.title}
                                   </p>
-                                  <p className="text-xs font-bold text-accent-gold">
+                                  <p className="text-accent-gold text-xs font-bold">
                                     {item.variant}
                                   </p>
-                                  <p className="mt-1 text-xs text-muted-foreground">
+                                  <p className="text-muted-foreground mt-1 text-xs">
                                     Quantity: {item.quantity}
                                   </p>
                                 </div>
@@ -541,13 +656,13 @@ export default function OrdersPage() {
                             ))}
                           </div>
 
-                          <div className="space-y-6 rounded-xl bg-muted/30 p-4">
+                          <div className="bg-muted/30 space-y-6 rounded-xl p-4">
                             {order.shippingAddress && (
                               <div>
-                                <h4 className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                                <h4 className="text-muted-foreground mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
                                   Shipping Address
                                 </h4>
-                                <p className="text-sm font-medium leading-relaxed">
+                                <p className="text-sm leading-relaxed font-medium">
                                   {order.shippingAddress.name}
                                   <br />
                                   {order.shippingAddress.line1}
@@ -561,11 +676,11 @@ export default function OrdersPage() {
                             )}
                             {order.paymentMethod && (
                               <div>
-                                <h4 className="mb-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                                <h4 className="text-muted-foreground mb-2 text-[10px] font-black tracking-[0.2em] uppercase">
                                   Payment Method
                                 </h4>
                                 <div className="flex items-center gap-2">
-                                  <CreditCard className="size-4 text-primary" />
+                                  <CreditCard className="text-primary size-4" />
                                   <p className="text-sm font-medium">{order.paymentMethod}</p>
                                 </div>
                               </div>
@@ -590,22 +705,22 @@ export default function OrdersPage() {
         <>
           {isLoadingRequests && (
             <div className="flex flex-col items-center justify-center py-20">
-              <span className="mb-4 inline-block size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <span className="border-primary mb-4 inline-block size-8 animate-spin rounded-full border-4 border-t-transparent" />
               <p className="text-muted-foreground">Loading your digitisation requests...</p>
             </div>
           )}
 
           {!isLoadingRequests && requestsError && (
-            <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-destructive">
+            <div className="border-destructive/20 bg-destructive/5 text-destructive mb-6 rounded-lg border px-4 py-3">
               {requestsError}
             </div>
           )}
 
           {!isLoadingRequests && requests.length === 0 && !requestsError && (
-            <div className="rounded-xl border bg-muted/30 py-16 text-center">
-              <ScanLine className="mx-auto mb-4 size-16 text-muted-foreground/30" />
+            <div className="bg-muted/30 rounded-xl border py-16 text-center">
+              <ScanLine className="text-muted-foreground/30 mx-auto mb-4 size-16" />
               <h3 className="mb-2 text-xl font-bold">No digitisation requests yet</h3>
-              <p className="mb-6 text-muted-foreground">
+              <p className="text-muted-foreground mb-6">
                 Browse our collection to find items that can be digitised on request.
               </p>
               <Button asChild>
@@ -634,10 +749,10 @@ export default function OrdersPage() {
         </>
       )}
 
-      <div className="mt-12 flex flex-col items-center justify-between gap-6 rounded-2xl border border-primary/10 bg-primary/5 p-8 md:flex-row">
+      <div className="border-primary/10 bg-primary/5 mt-12 flex flex-col items-center justify-between gap-6 rounded-2xl border p-8 md:flex-row">
         <div>
           <h3 className="text-lg font-bold">Need help with an order?</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Our archive specialists are available Mon-Fri, 9am - 5pm AEST.
           </p>
         </div>

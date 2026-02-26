@@ -1,0 +1,53 @@
+api_version = "2026-04"
+
+[[extensions]]
+uid = "ae49898c-28a6-2242-51f4-fb2ca3a893cf1faf2806"
+type = "ui_extension"
+name = "Thank You Redirect"
+handle = "thank-you-redirect"
+
+[[extensions.targeting]]
+module = "./src/ThankYouRedirect.jsx"
+target = "purchase.thank-you.block.render"
+
+[[extensions.targeting]]
+module = "./src/ThankYouRedirect.jsx"
+target = "purchase.thank-you.footer.render-after"
+export = "thankYouFooter"
+
+[extensions.settings]
+[[extensions.settings.fields]]
+key = "return_url"
+type = "single_line_text_field"
+name = "Return URL"
+description = "URL to redirect users after checkout (e.g., https://collection.naa.gov.au)"
+
+[[extensions.settings.fields]]
+key = "button_text"
+type = "single_line_text_field"
+name = "Button text"
+description = "Text shown on the return button"
+
+[[extensions.settings.fields]]
+key = "message"
+type = "single_line_text_field"
+name = "Message"
+description = "Thank you message shown above the button"
+
+[[extensions.settings.fields]]
+key = "auto_redirect"
+type = "boolean"
+name = "Show countdown notice"
+description = "Show a notice about returning to the collection"
+
+[[extensions.settings.fields]]
+key = "redirect_delay"
+type = "number_integer"
+name = "Countdown seconds"
+description = "Seconds to show in countdown (for display only)"
+
+[[extensions.settings.fields]]
+key = "show_debug"
+type = "boolean"
+name = "Show debug info"
+description = "Show headless origin detection info (disable for production)"

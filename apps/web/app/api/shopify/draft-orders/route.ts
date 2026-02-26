@@ -1,4 +1,4 @@
-import type { NextRequest} from 'next/server';
+import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 import { shopifyAdminFetch, shopifyGraphQL } from '@/lib/shopify-admin';
@@ -162,18 +162,15 @@ export async function POST(request: NextRequest) {
         ? `${existingDraft.note}\n---\n${notes || ''}`
         : notes || '';
 
-      const updateData = (await shopifyAdminFetch(
-        `/draft_orders/${existingDraft.id}.json`,
-        {
-          method: 'PUT',
-          body: JSON.stringify({
-            draft_order: {
-              line_items: [...(existingDraft.line_items as unknown[]), newLineItem],
-              note: updatedNote,
-            },
-          }),
-        },
-      )) as { draft_order: any };
+      const updateData = (await shopifyAdminFetch(`/draft_orders/${existingDraft.id}.json`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          draft_order: {
+            line_items: [...(existingDraft.line_items as unknown[]), newLineItem],
+            note: updatedNote,
+          },
+        }),
+      })) as { draft_order: any };
 
       // 200 = bundled into existing
       return NextResponse.json(updateData.draft_order, { status: 200 });
@@ -207,10 +204,7 @@ export async function GET(request: NextRequest) {
   try {
     const email = request.nextUrl.searchParams.get('email');
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email query parameter is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Email query parameter is required' }, { status: 400 });
     }
 
     const gqlData = await shopifyGraphQL(`{
@@ -266,10 +260,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const id = request.nextUrl.searchParams.get('id');
     if (!id) {
-      return NextResponse.json(
-        { error: 'Draft order ID is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Draft order ID is required' }, { status: 400 });
     }
 
     // Fetch full draft before deleting (for recreation data)
@@ -295,13 +286,10 @@ export async function DELETE(request: NextRequest) {
     // Delete the draft order
     const storeDomain = process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || '';
     const adminToken = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN || '';
-    await fetch(
-      `https://${storeDomain}/admin/api/2025-01/draft_orders/${id}.json`,
-      {
-        method: 'DELETE',
-        headers: { 'X-Shopify-Access-Token': adminToken },
-      },
-    );
+    await fetch(`https://${storeDomain}/admin/api/2025-01/draft_orders/${id}.json`, {
+      method: 'DELETE',
+      headers: { 'X-Shopify-Access-Token': adminToken },
+    });
 
     return NextResponse.json({
       originalName: draft.name,

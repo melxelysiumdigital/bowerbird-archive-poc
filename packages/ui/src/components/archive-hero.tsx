@@ -16,10 +16,22 @@ export interface ArchiveHeroProps {
   imageUrl?: string;
   className?: string;
   /** Render a custom link element (e.g. Next.js Link). Receives href, className, and children. */
-  renderLink?: (props: { href: string; className?: string; children: React.ReactNode }) => React.ReactNode;
+  renderLink?: (props: {
+    href: string;
+    className?: string;
+    children: React.ReactNode;
+  }) => React.ReactNode;
 }
 
-function DefaultLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+function DefaultLink({
+  href,
+  className,
+  children,
+}: {
+  href: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   return (
     <a href={href} className={className}>
       {children}
@@ -52,16 +64,16 @@ export function ArchiveHero({
       <div className="flex flex-1 flex-col justify-center space-y-6 px-5 py-10 sm:space-y-8 sm:px-6 sm:py-16 lg:px-24">
         <div className="space-y-4">
           {tagline && (
-            <span className="text-xs font-bold uppercase tracking-[0.3em] text-accent-gold">
+            <span className="text-accent-gold text-xs font-bold tracking-[0.3em] uppercase">
               {tagline}
             </span>
           )}
-          <h1 className="text-3xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-7xl">
+          <h1 className="text-3xl leading-[1.1] font-black tracking-tight sm:text-5xl lg:text-7xl">
             {headingLine1} <br />
-            <span className="font-serif italic text-primary">{headingLine2}</span>
+            <span className="text-primary font-serif italic">{headingLine2}</span>
           </h1>
           {description && (
-            <p className="max-w-md text-base font-light leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="text-muted-foreground max-w-md text-base leading-relaxed font-light sm:text-lg">
               {description}
             </p>
           )}
@@ -96,8 +108,8 @@ export function ArchiveHero({
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url("${imageUrl}")` }}
           >
-            <div className="absolute inset-0 bg-primary/10 mix-blend-multiply" />
-            <div className="absolute inset-0 hidden bg-gradient-to-r from-background via-transparent to-transparent lg:block" />
+            <div className="bg-primary/10 absolute inset-0 mix-blend-multiply" />
+            <div className="from-background absolute inset-0 hidden bg-gradient-to-r via-transparent to-transparent lg:block" />
           </div>
         </div>
       )}

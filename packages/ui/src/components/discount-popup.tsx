@@ -23,8 +23,8 @@ export function DiscountPopup({
   delay = 15,
   discountCode = 'BOWERBIRD5',
   enabled = true,
-  heading = "Don\u2019t leave empty-handed!",
-  body = "Here\u2019s a special offer just for you \u2014 enjoy 5% off your order.",
+  heading = 'Don\u2019t leave empty-handed!',
+  body = 'Here\u2019s a special offer just for you \u2014 enjoy 5% off your order.',
   codeLabel = 'Use code at checkout:',
   buttonText = 'Continue shopping',
   storageKey = STORAGE_KEY,
@@ -62,19 +62,19 @@ export function DiscountPopup({
     <Dialog open={open} onOpenChange={(v) => !v && dismiss()}>
       <DialogContent className="max-w-md text-center sm:rounded-2xl">
         <DialogHeader className="flex flex-col items-center gap-4">
-          <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
-            <Tag className="size-8 text-primary" />
+          <div className="bg-primary/10 flex size-16 items-center justify-center rounded-full">
+            <Tag className="text-primary size-8" />
           </div>
           <DialogTitle className="font-serif text-2xl">{heading}</DialogTitle>
           <DialogDescription className="max-w-xs">{body}</DialogDescription>
         </DialogHeader>
 
         <div className="mt-2 w-full">
-          <span className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <span className="text-muted-foreground mb-2 block text-xs font-semibold tracking-wider uppercase">
             {codeLabel}
           </span>
-          <div className="flex items-center justify-center gap-3 rounded-xl border-2 border-dashed border-muted bg-muted/30 px-6 py-4">
-            <code className="text-2xl font-extrabold tracking-widest text-primary">
+          <div className="border-muted bg-muted/30 flex items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-4">
+            <code className="text-primary text-2xl font-extrabold tracking-widest">
               {discountCode}
             </code>
             <Button variant="ghost" size="icon-sm" onClick={handleCopy}>

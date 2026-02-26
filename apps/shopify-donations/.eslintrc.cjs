@@ -8,8 +8,8 @@
 module.exports = {
   root: true,
   parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
+    ecmaVersion: 'latest',
+    sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
@@ -19,50 +19,50 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client", "extensions/"],
+  ignorePatterns: ['!**/.server', '!**/.client', 'extensions/'],
 
   // Base config
-  extends: ["eslint:recommended"],
+  extends: ['eslint:recommended'],
 
   overrides: [
     // React
     {
-      files: ["**/*.{js,jsx,ts,tsx}"],
-      plugins: ["react", "jsx-a11y"],
+      files: ['**/*.{js,jsx,ts,tsx}'],
+      plugins: ['react', 'jsx-a11y'],
       extends: [
-        "plugin:react/recommended",
-        "plugin:react/jsx-runtime",
-        "plugin:react-hooks/recommended",
-        "plugin:jsx-a11y/recommended",
+        'plugin:react/recommended',
+        'plugin:react/jsx-runtime',
+        'plugin:react-hooks/recommended',
+        'plugin:jsx-a11y/recommended',
       ],
       settings: {
         react: {
-          version: "detect",
+          version: 'detect',
         },
-        formComponents: ["Form"],
+        formComponents: ['Form'],
         linkComponents: [
-          { name: "Link", linkAttribute: "to" },
-          { name: "NavLink", linkAttribute: "to" },
+          { name: 'Link', linkAttribute: 'to' },
+          { name: 'NavLink', linkAttribute: 'to' },
         ],
-        "import/resolver": {
+        'import/resolver': {
           typescript: {},
         },
       },
       rules: {
-        "react/no-unknown-property": ["error", { ignore: ["variant"] }],
+        'react/no-unknown-property': ['error', { ignore: ['variant'] }],
       },
     },
 
     // Typescript
     {
-      files: ["**/*.{ts,tsx}"],
-      plugins: ["@typescript-eslint", "import"],
-      parser: "@typescript-eslint/parser",
+      files: ['**/*.{ts,tsx}'],
+      plugins: ['@typescript-eslint', 'import'],
+      parser: '@typescript-eslint/parser',
       settings: {
-        "import/internal-regex": "^~/",
-        "import/resolver": {
+        'import/internal-regex': '^~/',
+        'import/resolver': {
           node: {
-            extensions: [".ts", ".tsx"],
+            extensions: ['.ts', '.tsx'],
           },
           typescript: {
             alwaysTryTypes: true,
@@ -70,20 +70,20 @@ module.exports = {
         },
       },
       extends: [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:import/recommended",
-        "plugin:import/typescript",
+        'plugin:@typescript-eslint/recommended',
+        'plugin:import/recommended',
+        'plugin:import/typescript',
       ],
     },
 
     // Node
     {
       files: [
-        ".eslintrc.cjs",
-        "vite.config.{js,ts}",
-        ".graphqlrc.{js,ts}",
-        "shopify.server.{js,ts}",
-        "**/*.server.{js,ts}",
+        '.eslintrc.cjs',
+        'vite.config.{js,ts}',
+        '.graphqlrc.{js,ts}',
+        'shopify.server.{js,ts}',
+        '**/*.server.{js,ts}',
       ],
       env: {
         node: true,
@@ -91,6 +91,6 @@ module.exports = {
     },
   ],
   globals: {
-    shopify: "readonly"
+    shopify: 'readonly',
   },
 };

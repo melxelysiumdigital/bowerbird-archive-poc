@@ -1,0 +1,23 @@
+{
+  "extension": {
+    "name": "Thank You Redirect"
+  },
+  "settings": {
+    "return_url": {
+      "label": "Return URL",
+      "description": "The URL to redirect users to after checkout"
+    },
+    "button_text": {
+      "label": "Button text"
+    },
+    "message": {
+      "label": "Message"
+    },
+    "auto_redirect": {
+      "label": "Show auto-redirect notice"
+    },
+    "redirect_delay": {
+      "label": "Countdown seconds"
+    }
+  }
+}

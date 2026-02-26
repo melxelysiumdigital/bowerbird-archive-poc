@@ -1,0 +1,10 @@
+{
+  "name": "thank-you-redirect",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "preact": "^10.10.0",
+    "@preact/signals": "^2.3.0",
+    "@shopify/ui-extensions": "2026.1.2"
+  }
+}

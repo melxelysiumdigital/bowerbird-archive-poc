@@ -7,13 +7,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "check-types": "tsc --noEmit",
+    "check-types": "next build --no-lint",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
-    "@auth0/auth0-react": "^2.2.0",
     "@bowerbird-poc/shared": "workspace:*",
     "@bowerbird-poc/ui": "workspace:*",
     "@shopify/hydrogen-react": "^2025.1.0",

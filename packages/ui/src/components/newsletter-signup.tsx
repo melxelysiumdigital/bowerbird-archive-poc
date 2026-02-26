@@ -34,25 +34,25 @@ export function NewsletterSignup({
 
   return (
     <section className={cn('mx-auto max-w-5xl px-6 py-24 text-center', className)}>
-      <div className="relative overflow-hidden rounded-3xl bg-primary/5 p-12 lg:p-20">
-        <div className="absolute right-0 top-0 p-8 opacity-10">
+      <div className="bg-primary/5 relative overflow-hidden rounded-3xl p-12 lg:p-20">
+        <div className="absolute top-0 right-0 p-8 opacity-10">
           <Mail className="size-36" />
         </div>
         <div className="relative z-10 space-y-6">
           <h3 className="text-3xl font-black tracking-tight lg:text-4xl">{heading}</h3>
-          <p className="mx-auto max-w-xl text-muted-foreground">{description}</p>
+          <p className="text-muted-foreground mx-auto max-w-xl">{description}</p>
           <form
             className="mx-auto mt-8 flex max-w-lg flex-col gap-4 sm:flex-row"
             onSubmit={handleSubmit}
           >
             <Input
               name="email"
-              className="flex-1 rounded-xl border-none px-6 py-4 ring-1 ring-border focus:ring-accent-gold"
+              className="ring-border focus:ring-accent-gold flex-1 rounded-xl border-none px-6 py-4 ring-1"
               placeholder={placeholder}
               type="email"
               required
             />
-            <Button type="submit" className="whitespace-nowrap rounded-xl px-8 py-4">
+            <Button type="submit" className="rounded-xl px-8 py-4 whitespace-nowrap">
               {buttonText}
             </Button>
           </form>

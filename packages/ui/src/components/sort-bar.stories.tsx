@@ -2,7 +2,6 @@ import type { SortOption } from '@bowerbird-poc/shared/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-
 import { SortBar } from './sort-bar';
 
 const meta: Meta<typeof SortBar> = {

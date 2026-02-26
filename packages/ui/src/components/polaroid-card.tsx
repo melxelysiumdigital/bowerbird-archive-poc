@@ -25,7 +25,7 @@ export function PolaroidCard({ item, onClick, className }: PolaroidCardProps) {
       )}
       onClick={onClick}
     >
-      <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+      <div className="bg-muted relative aspect-[3/4] overflow-hidden rounded-sm">
         {item.image ? (
           <img
             src={item.image}
@@ -34,25 +34,22 @@ export function PolaroidCard({ item, onClick, className }: PolaroidCardProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-sm text-muted-foreground">No image</span>
+            <span className="text-muted-foreground text-sm">No image</span>
           </div>
         )}
         {style && (
-          <Badge
-            variant="secondary"
-            className={cn('absolute top-2 left-2', style.bg, style.color)}
-          >
+          <Badge variant="secondary" className={cn('absolute top-2 left-2', style.bg, style.color)}>
             {style.label}
           </Badge>
         )}
       </div>
-      <div className="pb-3 pt-4">
-        <h3 className="line-clamp-2 text-sm font-bold leading-tight group-hover:text-primary">
+      <div className="pt-4 pb-3">
+        <h3 className="group-hover:text-primary line-clamp-2 text-sm leading-tight font-bold">
           {item.title}
         </h3>
-        <p className="mt-1 text-xs text-muted-foreground">{item.category}</p>
+        <p className="text-muted-foreground mt-1 text-xs">{item.category}</p>
         {item.forSale && item.price && (
-          <p className="mt-2 text-sm font-bold text-primary">{item.price}</p>
+          <p className="text-primary mt-2 text-sm font-bold">{item.price}</p>
         )}
         {!item.forSale && (
           <p className="mt-2 text-xs font-medium text-amber-600">Digitisation on request</p>
@@ -66,7 +63,7 @@ export function SkeletonCard() {
   return (
     <div className="rounded-xl border-[12px] border-white bg-white shadow-md">
       <Skeleton className="aspect-[3/4] w-full rounded-sm" />
-      <div className="pb-3 pt-4">
+      <div className="pt-4 pb-3">
         <Skeleton className="h-4 w-3/4" />
         <Skeleton className="mt-2 h-3 w-1/2" />
         <Skeleton className="mt-3 h-4 w-16" />

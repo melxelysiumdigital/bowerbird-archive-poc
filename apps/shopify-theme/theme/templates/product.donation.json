@@ -145,10 +145,7 @@
                   "blocks": {}
                 }
               },
-              "block_order": [
-                "text_xrnftG",
-                "price_tVjtKg"
-              ]
+              "block_order": ["text_xrnftG", "price_tVjtKg"]
             },
             "divider_VJhene": {
               "type": "_divider",
@@ -268,7 +265,5 @@
       }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["main"]
 }

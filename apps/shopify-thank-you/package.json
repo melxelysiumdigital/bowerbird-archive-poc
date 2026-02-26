@@ -1,0 +1,15 @@
+{
+  "name": "@bowerbird-poc/shopify-thank-you",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "shopify": "shopify",
+    "dev": "shopify app dev",
+    "deploy": "shopify app deploy",
+    "get-admin-token": "node scripts/get-admin-token.js"
+  },
+  "dependencies": {
+    "@shopify/cli": "^3.78.0"
+  }
+}

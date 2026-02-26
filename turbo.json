@@ -1,6 +1,15 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalEnv": ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SHOPIFY_SCOPES", "SHOPIFY_HOST_NAME"],
+  "globalEnv": [
+    "SHOPIFY_API_KEY",
+    "SHOPIFY_API_SECRET",
+    "SHOPIFY_SCOPES",
+    "SHOPIFY_HOST_NAME",
+    "AZURE_SEARCH_ENDPOINT",
+    "AZURE_SEARCH_INDEX",
+    "AZURE_SEARCH_API_KEY",
+    "SHOPIFY_ADMIN_ACCESS_TOKEN"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

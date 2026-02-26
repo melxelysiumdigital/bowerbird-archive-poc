@@ -1,0 +1,112 @@
+{%- comment -%}
+  Headless Storefront Redirect — App Embed Block
+
+  This app embed injects into every storefront page. It handles:
+  1. Saving headless_origin from URL params to a cookie
+  2. Redirecting to checkout URL
+  3. On subsequent page loads, redirecting back to the headless storefront
+  4. Passing order info (order_id, order_number) on thank-you page
+
+  Shopify-direct visitors are never affected (no cookie = no redirect).
+{%- endcomment -%}
+
+{%- if block.settings.enable_redirect -%}
+<script>
+  (function() {
+    // Skip redirect in theme editor
+    if (window.Shopify && window.Shopify.designMode) return;
+
+    var urlParams = new URLSearchParams(window.location.search);
+
+    // Skip theme preview URLs (admin preview, bypass tokens)
+    if (urlParams.has('preview_theme_id') || urlParams.has('_bt') || urlParams.has('key')) return;
+
+    function getCookie(name) {
+      var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? decodeURIComponent(match[2]) : null;
+    }
+
+    function setCookie(name, value, days) {
+      var expires = '';
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+      }
+      document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
+    }
+
+    // Check URL params (set when coming from headless app before checkout)
+    var headlessOriginParam = urlParams.get('headless_origin');
+    var checkoutUrlParam = urlParams.get('checkout_url');
+
+    if (headlessOriginParam && checkoutUrlParam) {
+      setCookie('headless_origin', headlessOriginParam, 1);
+      window.location.replace(checkoutUrlParam);
+      return;
+    }
+
+    // Check for cookie (set earlier when user came from headless)
+    var headlessOrigin = getCookie('headless_origin');
+    if (!headlessOrigin) return;
+
+    // Skip Shopify system pages
+    var skipPaths = ['/checkpoint', '/throttle/queue', '/challenge', '/admin', '/checkouts'];
+    for (var i = 0; i < skipPaths.length; i++) {
+      if (window.location.pathname.indexOf(skipPaths[i]) === 0) return;
+    }
+
+    // Parse the origin URL
+    var originUrl = new URL(headlessOrigin);
+    var redirectUrl = originUrl.origin + window.location.pathname;
+
+    // Handle custom path redirects (e.g., /collections > /shop)
+    var customRedirectsStr = {{ block.settings.custom_redirects | json }};
+    if (customRedirectsStr) {
+      var lines = customRedirectsStr.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var parts = lines[i].replace(/\s/g, '').split('>');
+        if (parts[0] && parts[1] && window.location.pathname.indexOf(parts[0]) === 0) {
+          redirectUrl = originUrl.origin + parts[1];
+          break;
+        }
+      }
+    }
+
+    // Add order info if available (for thank-you page redirects)
+    var url = new URL(redirectUrl);
+    {%- if order -%}
+      url.searchParams.set('order_id', '{{ order.id }}');
+      url.searchParams.set('order_number', '{{ order.name }}');
+      url.searchParams.set('status', 'complete');
+    {%- endif -%}
+
+    // Clear the cookie after use
+    document.cookie = 'headless_origin=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+
+    window.location.replace(url.toString());
+  })();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Headless Redirect",
+  "target": "head",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_redirect",
+      "label": "Enable headless redirect",
+      "default": true,
+      "info": "Redirects visitors who arrived from your headless storefront back after browsing. Shopify-direct visitors are never affected."
+    },
+    {
+      "type": "textarea",
+      "id": "custom_redirects",
+      "label": "Custom path redirects",
+      "info": "One per line: /shopify-path > /storefront-path"
+    }
+  ]
+}
+{% endschema %}

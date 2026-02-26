@@ -1,0 +1,22 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "3a53c081be65c9e6f9d631cf0b0ec08b"
+name = "bowerbird-archive-thank-you"
+application_url = "https://shopify.dev/apps/default-app-home"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+
+[webhooks]
+api_version = "2026-04"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_checkout_branding_settings,write_checkout_branding_settings,read_orders,read_draft_orders,write_draft_orders,read_themes,write_themes"
+
+[auth]
+redirect_urls = [
+  "https://shopify.dev/apps/default-app-home/api/auth",
+  "http://localhost:3456/auth/callback",
+]

@@ -1,0 +1,17 @@
+api_version = "2026-04"
+uid = "d71b01d3-dccb-3d16-1c2a-cc7818e5e0932046a4f7"
+type = "theme"
+
+[settings]
+[[settings.fields]]
+key = "enable_redirect"
+type = "boolean"
+name = "Enable headless redirect"
+description = "Redirect visitors who came from the headless storefront back after browsing"
+default = true
+
+[[settings.fields]]
+key = "custom_redirects"
+type = "multi_line_text_field"
+name = "Custom path redirects"
+description = "One per line, format: /shopify-path > /storefront-path (e.g. /collections > /shop)"

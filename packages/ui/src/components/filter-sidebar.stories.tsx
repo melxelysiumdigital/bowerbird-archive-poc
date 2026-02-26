@@ -3,7 +3,6 @@ import type { SearchFilters } from '@bowerbird-poc/shared/types';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
-
 import { FilterSidebar } from './filter-sidebar';
 
 const meta: Meta<typeof FilterSidebar> = {

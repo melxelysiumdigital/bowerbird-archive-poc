@@ -1,10 +1,7 @@
-import "@shopify/ui-extensions/preact";
-import { render } from "preact";
-import { useState, useEffect } from "preact/hooks";
-import {
-  useCartLines,
-  useApplyCartLinesChange,
-} from "@shopify/ui-extensions/preact";
+import '@shopify/ui-extensions/preact';
+import { render } from 'preact';
+import { useState, useEffect } from 'preact/hooks';
+import { useCartLines, useApplyCartLinesChange } from '@shopify/ui-extensions/preact';
 
 export default function extension() {
   render(<DonationUpsell />, document.body);
@@ -17,16 +14,15 @@ function DonationUpsell() {
   const [variants, setVariants] = useState([]);
   const [selectedVariantId, setSelectedVariantId] = useState(null);
   const [isCustom, setIsCustom] = useState(false);
-  const [customAmount, setCustomAmount] = useState("");
+  const [customAmount, setCustomAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const productHandle = shopify.settings.value.product_handle;
-  const heading = shopify.settings.value.heading || "Add a donation";
+  const heading = shopify.settings.value.heading || 'Add a donation';
   const description =
-    shopify.settings.value.description ||
-    "Support our mission with a one-time donation.";
+    shopify.settings.value.description || 'Support our mission with a one-time donation.';
 
   // Fetch donation product variants via Storefront API
   useEffect(() => {
@@ -50,7 +46,7 @@ function DonationUpsell() {
       )
       .then(({ data, errors }) => {
         if (errors?.length) {
-          setError("Could not load donation options.");
+          setError('Could not load donation options.');
           return;
         }
         if (data?.product?.variants?.nodes) {
@@ -58,19 +54,15 @@ function DonationUpsell() {
         }
       })
       .catch(() => {
-        setError("Could not load donation options.");
+        setError('Could not load donation options.');
       });
   }, [productHandle]);
 
   // Check if a donation is already in cart
   const donationVariantIds = variants.map((v) => v.id);
-  const donationInCart = cartLines.some((line) =>
-    donationVariantIds.includes(line.merchandise.id),
-  );
+  const donationInCart = cartLines.some((line) => donationVariantIds.includes(line.merchandise.id));
 
-  const presetVariants = variants.filter(
-    (v) => parseFloat(v.price.amount) > 0,
-  );
+  const presetVariants = variants.filter((v) => parseFloat(v.price.amount) > 0);
   const zeroVariant = variants.find((v) => parseFloat(v.price.amount) === 0);
 
   async function handleAddDonation() {
@@ -80,23 +72,23 @@ function DonationUpsell() {
     if (isCustom) {
       const amount = parseFloat(customAmount);
       if (isNaN(amount) || amount < 1) {
-        setError("Please enter an amount of at least $1.");
+        setError('Please enter an amount of at least $1.');
         return;
       }
     }
 
     setLoading(true);
-    setError("");
+    setError('');
 
     const attributes = isCustom
       ? [
-          { key: "_donation_amount", value: customAmount },
-          { key: "Donation Amount", value: `$${customAmount}` },
+          { key: '_donation_amount', value: customAmount },
+          { key: 'Donation Amount', value: `$${customAmount}` },
         ]
       : [];
 
     const result = await applyCartLinesChange({
-      type: "addCartLine",
+      type: 'addCartLine',
       merchandiseId: variantId,
       quantity: 1,
       ...(attributes.length > 0 && { attributes }),
@@ -104,8 +96,8 @@ function DonationUpsell() {
 
     setLoading(false);
 
-    if (result.type === "error") {
-      setError("Could not add donation. Please try again.");
+    if (result.type === 'error') {
+      setError('Could not add donation. Please try again.');
     } else {
       setAdded(true);
     }
@@ -131,12 +123,12 @@ function DonationUpsell() {
         {presetVariants.map((variant) => (
           <s-button
             key={variant.id}
-            kind={selectedVariantId === variant.id ? "primary" : "secondary"}
+            kind={selectedVariantId === variant.id ? 'primary' : 'secondary'}
             onClick={() => {
               setSelectedVariantId(variant.id);
               setIsCustom(false);
-              setCustomAmount("");
-              setError("");
+              setCustomAmount('');
+              setError('');
             }}
           >
             ${parseFloat(variant.price.amount).toFixed(0)}
@@ -144,11 +136,11 @@ function DonationUpsell() {
         ))}
         {zeroVariant && (
           <s-button
-            kind={isCustom ? "primary" : "secondary"}
+            kind={isCustom ? 'primary' : 'secondary'}
             onClick={() => {
               setIsCustom(true);
               setSelectedVariantId(null);
-              setError("");
+              setError('');
             }}
           >
             Custom

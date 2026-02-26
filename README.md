@@ -15,16 +15,17 @@ pnpm install
 
 ## Workspaces
 
-| Workspace                          | Path                         | Description                            |
-| ---------------------------------- | ---------------------------- | -------------------------------------- |
-| `@bowerbird-poc/web`               | `apps/web`                   | Next.js website (port 3000)            |
-| `@bowerbird-poc/shopify-app`       | `apps/shopify-app`           | Shopify embedded app (port 3001)       |
-| `@bowerbird-poc/shopify-theme`     | `apps/shopify-theme`         | Shopify theme with Vite build pipeline |
-| `@bowerbird-poc/ui`                | `packages/ui`                | Shared shadcn/ui component library     |
-| `@bowerbird-poc/shared`            | `packages/shared`            | Shared types, constants, and utilities |
-| `@bowerbird-poc/eslint-config`     | `packages/eslint-config`     | Shared ESLint flat config              |
-| `@bowerbird-poc/stylelint-config`  | `packages/stylelint-config`  | Shared Stylelint config                |
-| `@bowerbird-poc/typescript-config` | `packages/typescript-config` | Shared TypeScript configs              |
+| Workspace                          | Path                         | Description                                         |
+| ---------------------------------- | ---------------------------- | --------------------------------------------------- |
+| `@bowerbird-poc/web`               | `apps/web`                   | Next.js headless storefront (port 3000)             |
+| `@bowerbird-poc/shopify-app`       | `apps/shopify-donations`     | Shopify embedded app — donations (port 3001)        |
+| `@bowerbird-poc/shopify-theme`     | `apps/shopify-theme`         | Shopify theme with Vite build pipeline              |
+| `@bowerbird-poc/shopify-thank-you` | `apps/shopify-thank-you`     | Shopify app — checkout thank-you redirect extension |
+| `@bowerbird-poc/ui`                | `packages/ui`                | Shared shadcn/ui component library                  |
+| `@bowerbird-poc/shared`            | `packages/shared`            | Shared types, constants, and utilities              |
+| `@bowerbird-poc/eslint-config`     | `packages/eslint-config`     | Shared ESLint flat config                           |
+| `@bowerbird-poc/stylelint-config`  | `packages/stylelint-config`  | Shared Stylelint config                             |
+| `@bowerbird-poc/typescript-config` | `packages/typescript-config` | Shared TypeScript configs                           |
 
 ## Scripts
 
@@ -111,6 +112,33 @@ pnpm theme:pull     # Pull theme from Shopify
 
 The theme uses `@bowerbird-poc/ui` React components (HeroBanner, ProductCard) mounted via a Liquid snippet system, and `@bowerbird-poc/shared` for utilities.
 
+## Headless Checkout Flow
+
+The web app (`apps/web`) is a headless storefront — customers browse products there but checkout happens on Shopify. The Shopify app in `apps/shopify-thank-you` handles the entire redirect flow via two extensions:
+
+### 1. `headless-redirect` theme app extension (storefront redirect)
+
+A theme app extension (app embed) injected into the store `<head>`. Handles the full cookie-based redirect cycle:
+
+1. **Checkout redirect**: Web app sends customer to `https://store.myshopify.com/?headless_origin=<origin>&checkout_url=<checkout_url>`. The script saves `headless_origin` as a cookie and redirects to checkout.
+2. **Post-checkout redirect**: After purchase, any link back to the store triggers the script, which reads the cookie and redirects back to the headless app.
+
+No theme file modifications needed — the extension is installed by enabling the app embed in the Shopify admin (Online Store > Themes > Customize > App embeds).
+
+### 2. `thank-you-redirect` checkout UI extension (thank-you page)
+
+A Preact-based checkout UI extension that renders a "Continue to Your Order" button on the thank-you page with order details (`order_id`, `order_number`). Reads `headless_origin` from cart/line item attributes.
+
+### Password-protected stores
+
+The system password page (shown on dev stores) doesn't render theme code or app extensions. The store password must be entered in the browser first. Once authenticated, app extensions load and the redirect works.
+
+### Setup
+
+1. Deploy the app: `cd apps/shopify-thank-you && pnpm deploy`
+2. Enable the "Headless Redirect" app embed: Online Store > Themes > Customize > App embeds
+3. The redirect only acts when `headless_origin` params or cookies exist — direct Shopify customers are unaffected
+
 ## Deployment
 
 A GitHub Actions workflow (`.github/workflows/deploy.yml`) handles theme deployment:
@@ -127,11 +155,11 @@ Manual deployment via workflow dispatch supports `test`, `production`, and `cust
 
 Deploys preserve changes made through the Shopify admin (template customizations, theme settings). The workflow uses a two-pass rsync instead of a full branch replacement:
 
-| Category | Behavior | Examples |
-| --- | --- | --- |
-| **Fully synced** (old files cleaned up) | Overwritten every deploy | `assets/`, `sections/`, `snippets/`, `layout/`, `locales/`, `config/settings_schema.json` |
-| **New only** (never overwritten) | Repo templates are copied on first deploy; Shopify admin edits are preserved on subsequent deploys | `templates/**` |
-| **Excluded entirely** | Never touched by deploys; managed only via Shopify admin | `config/settings_data.json` |
+| Category                                | Behavior                                                                                           | Examples                                                                                  |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Fully synced** (old files cleaned up) | Overwritten every deploy                                                                           | `assets/`, `sections/`, `snippets/`, `layout/`, `locales/`, `config/settings_schema.json` |
+| **New only** (never overwritten)        | Repo templates are copied on first deploy; Shopify admin edits are preserved on subsequent deploys | `templates/**`                                                                            |
+| **Excluded entirely**                   | Never touched by deploys; managed only via Shopify admin                                           | `config/settings_data.json`                                                               |
 
 This means you can safely customize templates and theme settings in the Shopify admin without losing them on the next deploy.
 
@@ -140,8 +168,9 @@ This means you can safely customize templates and theme settings in the Shopify 
 ```
 bowerbird-archive-poc/
 ├── apps/
-│   ├── web/               # Next.js website
-│   ├── shopify-app/       # Shopify embedded app
+│   ├── web/               # Next.js headless storefront
+│   ├── shopify-donations/ # Shopify embedded app (donations)
+│   ├── shopify-thank-you/ # Shopify app (checkout extension)
 │   └── shopify-theme/     # Shopify theme + Vite
 ├── packages/
 │   ├── ui/                # Shared shadcn/ui components

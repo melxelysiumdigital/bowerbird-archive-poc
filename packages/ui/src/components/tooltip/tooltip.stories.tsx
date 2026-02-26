@@ -37,9 +37,7 @@ export const Default: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.hover(canvas.getByRole('button', { name: /Hover me/i }));
-    await expect(
-      await within(document.body).findByRole('tooltip'),
-    ).toBeVisible();
+    await expect(await within(document.body).findByRole('tooltip')).toBeVisible();
   },
 };
 

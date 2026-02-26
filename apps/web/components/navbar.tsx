@@ -36,7 +36,7 @@ export function Navbar({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+    <header className="border-border/40 bg-background/80 sticky top-0 z-40 w-full border-b backdrop-blur-md">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
@@ -46,7 +46,7 @@ export function Navbar({
         {/* Search — desktop */}
         <form onSubmit={handleSearch} className="hidden max-w-md flex-1 px-8 md:block">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -90,7 +90,7 @@ export function Navbar({
           <Button variant="ghost" size="icon" className="relative" onClick={onCartClick}>
             <ShoppingBag className="size-4" />
             {cartCount > 0 && (
-              <Badge className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full p-0 text-[10px]">
+              <Badge className="absolute -top-1 -right-1 flex size-5 items-center justify-center rounded-full p-0 text-[10px]">
                 {cartCount}
               </Badge>
             )}
@@ -113,7 +113,7 @@ export function Navbar({
         <div className="border-t px-6 py-4 md:hidden">
           <form onSubmit={handleSearch} className="mb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
               <Input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}

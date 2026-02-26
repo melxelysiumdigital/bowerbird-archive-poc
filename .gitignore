@@ -6,6 +6,7 @@ node_modules/
 dist/
 .next/
 out/
+storybook-static/
 *.tsbuildinfo
 
 # Turbo
@@ -28,6 +29,7 @@ Thumbs.db
 # Debug
 npm-debug.log*
 pnpm-debug.log*
+debug-storybook.log
 yarn-debug.log*
 yarn-error.log*
 
@@ -39,7 +41,8 @@ apps/shopify-theme/theme/assets/*.bundle.js
 apps/shopify-theme/theme/assets/*.min.css
 apps/shopify-theme/theme/assets/*.chunk.js
 
-# Shopify app extension build artifacts
+# Shopify app build artifacts
+apps/shopify-donations/build/
 apps/shopify-donations/extensions/*/dist/
 apps/shopify-donations/extensions/*/generated/
 apps/shopify-donations/extensions/*/node_modules/

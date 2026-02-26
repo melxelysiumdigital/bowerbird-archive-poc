@@ -3972,7 +3972,8 @@ type Localization {
   """
   The market of the active localized experience.
   """
-  market: Market! @deprecated(reason: "This `market` field will be removed in a future version of the API.")
+  market: Market!
+    @deprecated(reason: "This `market` field will be removed in a future version of the API.")
 }
 
 """

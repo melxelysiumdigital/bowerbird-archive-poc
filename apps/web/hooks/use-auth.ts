@@ -1,36 +1,57 @@
 'use client';
 
-import { useAuth0 } from '@auth0/auth0-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
-const auth0Configured = Boolean(
-  process.env.NEXT_PUBLIC_AUTH0_DOMAIN && process.env.NEXT_PUBLIC_AUTH0_CLIENT_ID,
-);
+import { ShopifyCustomerAuth } from '@/lib/shopify-customer-auth';
+
+const client = typeof window !== 'undefined' ? new ShopifyCustomerAuth() : null;
 
 export function useAuth() {
-  if (!auth0Configured) {
-    return {
-      isAuthenticated: false,
-      isLoading: false,
-      user: undefined as undefined | { email?: string; name?: string; picture?: string },
-      loginWithRedirect: () => Promise.resolve(),
-      logout: () => {},
-      getAccessTokenSilently: () => Promise.resolve(''),
-    };
-  }
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<{ email?: string; name?: string; picture?: string } | undefined>(
+    undefined,
+  );
+  const initRef = useRef(false);
 
-   
-  const {
-    isAuthenticated,
-    isLoading,
-    user,
-    loginWithRedirect,
-    logout: auth0Logout,
-    getAccessTokenSilently,
-  } = useAuth0();
+  useEffect(() => {
+    if (initRef.current || !client) return;
+    initRef.current = true;
 
-  const logout = () => {
-    auth0Logout({ logoutParams: { returnTo: window.location.origin } });
-  };
+    if (!client.configured) {
+      setIsLoading(false);
+      return;
+    }
+
+    if (client.isAuthenticated()) {
+      // Pre-emptively refresh if near expiry
+      client
+        .getAccessToken()
+        .then((token) => {
+          if (token) {
+            setIsAuthenticated(true);
+            setUser(client.getUserFromIdToken() ?? undefined);
+          }
+        })
+        .catch(() => {
+          // Token refresh failed — treat as logged out
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const loginWithRedirect = useCallback(async () => {
+    if (!client?.configured) return;
+    const url = await client.getAuthorizationUrl();
+    window.location.href = url;
+  }, []);
+
+  const logout = useCallback(() => {
+    if (!client?.configured) return;
+    client.logout();
+  }, []);
 
   return {
     isAuthenticated,
@@ -38,6 +59,6 @@ export function useAuth() {
     user,
     loginWithRedirect,
     logout,
-    getAccessTokenSilently,
+    client,
   };
 }

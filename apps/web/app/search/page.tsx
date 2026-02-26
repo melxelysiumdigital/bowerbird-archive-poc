@@ -1,6 +1,5 @@
 'use client';
 
-
 import { EMPTY_FILTERS } from '@bowerbird-poc/shared/constants';
 import type { SearchFilters, SortOption } from '@bowerbird-poc/shared/types';
 import { createSlug } from '@bowerbird-poc/shared/utils/slug';
@@ -19,11 +18,11 @@ import { SortBar } from '@bowerbird-poc/ui/components/sort-bar';
 import { SlidersHorizontal, SearchX } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 
 import { useAzureSearch } from '@/hooks/use-azure-search';
 
-export default function SearchResultsPage() {
+function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [filters, setFilters] = useState<SearchFilters>(EMPTY_FILTERS);
@@ -67,7 +66,7 @@ export default function SearchResultsPage() {
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+        <div className="border-destructive/20 bg-destructive/5 text-destructive mb-6 rounded-lg border px-4 py-3 text-sm">
           {error}
         </div>
       )}
@@ -106,10 +105,10 @@ export default function SearchResultsPage() {
           </div>
 
           {!isLoading && items.length === 0 && !error && (
-            <div className="rounded-xl border bg-muted/30 py-16 text-center">
-              <SearchX className="mx-auto mb-4 size-16 text-muted-foreground/30" />
+            <div className="bg-muted/30 rounded-xl border py-16 text-center">
+              <SearchX className="text-muted-foreground/30 mx-auto mb-4 size-16" />
               <h3 className="mb-2 text-xl font-bold">No results found</h3>
-              <p className="mb-6 text-muted-foreground">
+              <p className="text-muted-foreground mb-6">
                 Try a different search term or adjust your filters.
               </p>
               <Button asChild>
@@ -120,5 +119,13 @@ export default function SearchResultsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SearchResultsPage() {
+  return (
+    <Suspense>
+      <SearchResults />
+    </Suspense>
   );
 }

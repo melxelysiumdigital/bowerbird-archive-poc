@@ -40,7 +40,7 @@ function StepperDot({
           className={cn(
             'flex items-center justify-center rounded-full transition-all',
             isCurrent &&
-              'border-primary/20 bg-primary -mt-2 size-10 border-4 text-white shadow-lg shadow-primary/30',
+              'border-primary/20 bg-primary shadow-primary/30 -mt-2 size-10 border-4 text-white shadow-lg',
             isCompleted && 'bg-primary size-6 text-white',
             isPending && 'size-6 bg-gray-200 text-gray-400',
           )}
@@ -59,9 +59,7 @@ function StepperDot({
         </span>
       </div>
       {!isLast && (
-        <div
-          className={cn('h-0.5 flex-grow', currentStep > step ? 'bg-primary' : 'bg-gray-200')}
-        />
+        <div className={cn('h-0.5 flex-grow', currentStep > step ? 'bg-primary' : 'bg-gray-200')} />
       )}
     </>
   );

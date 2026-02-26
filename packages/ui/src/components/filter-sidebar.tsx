@@ -4,7 +4,6 @@ import { ITEM_TYPE_STYLE } from '@bowerbird-poc/shared/constants';
 import type { SearchFilters, SearchItem, ItemType } from '@bowerbird-poc/shared/types';
 import * as React from 'react';
 
-
 import { cn } from '@bowerbird-poc/ui/lib/utils';
 
 import { Checkbox } from './checkbox';
@@ -17,18 +16,10 @@ interface FilterSidebarProps {
   className?: string;
 }
 
-function FilterGroup({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h3 className="mb-3 text-xs font-black uppercase tracking-[0.15em] text-gray-400">
-        {title}
-      </h3>
+      <h3 className="mb-3 text-xs font-black tracking-[0.15em] text-gray-400 uppercase">{title}</h3>
       <div className="space-y-2">{children}</div>
     </div>
   );
@@ -115,9 +106,7 @@ export function FilterSidebar({ filters, onChange, items, className }: FilterSid
           <Checkbox
             id="for-sale"
             checked={filters.forSaleOnly}
-            onCheckedChange={(checked) =>
-              onChange({ ...filters, forSaleOnly: checked === true })
-            }
+            onCheckedChange={(checked) => onChange({ ...filters, forSaleOnly: checked === true })}
           />
           <Label htmlFor="for-sale" className="text-sm">
             Available for purchase

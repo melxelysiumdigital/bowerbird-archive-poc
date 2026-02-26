@@ -12,7 +12,7 @@ export function ShopifyProviderWrapper({ children }: { children: React.ReactNode
       <ShopifyProvider
         storeDomain="placeholder.myshopify.com"
         storefrontToken="placeholder"
-        storefrontApiVersion="2025-01"
+        storefrontApiVersion="2025-10"
         countryIsoCode="AU"
         languageIsoCode="EN"
       >
@@ -25,7 +25,7 @@ export function ShopifyProviderWrapper({ children }: { children: React.ReactNode
     <ShopifyProvider
       storeDomain={storeDomain}
       storefrontToken={storefrontToken}
-      storefrontApiVersion="2025-01"
+      storefrontApiVersion="2025-10"
       countryIsoCode="AU"
       languageIsoCode="EN"
     >

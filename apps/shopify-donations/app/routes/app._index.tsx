@@ -1,13 +1,9 @@
-import { useEffect } from "react";
-import type {
-  ActionFunctionArgs,
-  HeadersFunction,
-  LoaderFunctionArgs,
-} from "react-router";
-import { useLoaderData, useFetcher } from "react-router";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
-import { boundary } from "@shopify/shopify-app-react-router/server";
+import { useEffect } from 'react';
+import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from 'react-router';
+import { useLoaderData, useFetcher } from 'react-router';
+import { useAppBridge } from '@shopify/app-bridge-react';
+import { authenticate } from '../shopify.server';
+import { boundary } from '@shopify/shopify-app-react-router/server';
 
 const CART_TRANSFORM_QUERY = `#graphql
   query {
@@ -51,12 +47,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   // Find our cart transform function
   const cartTransformFn = functions.find(
-    (f: any) => f.apiType === "cart_transform",
+    (f: { apiType: string; id: string }) => f.apiType === 'cart_transform',
   );
 
   // Check if it's already activated
   const isActivated = cartTransformFn
-    ? transforms.some((t: any) => t.functionId === cartTransformFn.id)
+    ? transforms.some((t: { functionId: string }) => t.functionId === cartTransformFn.id)
     : false;
 
   return {
@@ -69,12 +65,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
   const formData = await request.formData();
-  const intent = formData.get("intent");
+  const intent = formData.get('intent');
 
-  if (intent === "activate") {
-    const functionId = formData.get("functionId") as string;
+  if (intent === 'activate') {
+    const functionId = formData.get('functionId') as string;
     if (!functionId) {
-      return { error: "No function ID provided" };
+      return { error: 'No function ID provided' };
     }
 
     const response = await admin.graphql(
@@ -98,7 +94,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const userErrors = data.data?.cartTransformCreate?.userErrors ?? [];
 
     if (userErrors.length > 0) {
-      return { error: userErrors.map((e: any) => e.message).join(", ") };
+      return { error: userErrors.map((e: { message: string }) => e.message).join(', ') };
     }
 
     return {
@@ -107,22 +103,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     };
   }
 
-  return { error: "Unknown intent" };
+  return { error: 'Unknown intent' };
 };
 
 export default function Index() {
-  const { transforms, cartTransformFunction, isActivated } =
-    useLoaderData<typeof loader>();
+  const { transforms, cartTransformFunction, isActivated } = useLoaderData<typeof loader>();
   const fetcher = useFetcher<typeof action>();
   const shopify = useAppBridge();
 
   const isLoading =
-    ["loading", "submitting"].includes(fetcher.state) &&
-    fetcher.formMethod === "POST";
+    ['loading', 'submitting'].includes(fetcher.state) && fetcher.formMethod === 'POST';
 
   useEffect(() => {
     if (fetcher.data?.success) {
-      shopify.toast.show("Cart Transform activated!");
+      shopify.toast.show('Cart Transform activated!');
     }
     if (fetcher.data?.error) {
       shopify.toast.show(fetcher.data.error, { isError: true });
@@ -132,8 +126,8 @@ export default function Index() {
   const activateTransform = () => {
     if (!cartTransformFunction) return;
     fetcher.submit(
-      { intent: "activate", functionId: cartTransformFunction.id },
-      { method: "POST" },
+      { intent: 'activate', functionId: cartTransformFunction.id },
+      { method: 'POST' },
     );
   };
 
@@ -143,23 +137,22 @@ export default function Index() {
         {!cartTransformFunction ? (
           <s-banner tone="warning">
             <s-paragraph>
-              No cart transform function found. Make sure the app is deployed
-              with <s-text tone="code">shopify app deploy</s-text>.
+              No cart transform function found. Make sure the app is deployed with{' '}
+              <s-text tone="code">shopify app deploy</s-text>.
             </s-paragraph>
           </s-banner>
         ) : isActivated || fetcher.data?.success ? (
           <s-banner tone="success">
             <s-paragraph>
-              Cart Transform is active. Custom donation amounts will be repriced
-              at checkout.
+              Cart Transform is active. Custom donation amounts will be repriced at checkout.
             </s-paragraph>
           </s-banner>
         ) : (
           <s-stack direction="block" gap="base">
             <s-banner tone="warning">
               <s-paragraph>
-                Cart Transform function is deployed but not activated. Custom
-                donation amounts won't work until you activate it.
+                Cart Transform function is deployed but not activated. Custom donation amounts
+                won&apos;t work until you activate it.
               </s-paragraph>
             </s-banner>
             <s-button onClick={activateTransform} loading={isLoading || undefined}>
@@ -172,17 +165,13 @@ export default function Index() {
       <s-section heading="Setup Checklist">
         <s-ordered-list>
           <s-list-item>
-            Create a donation product with preset amount variants ($5, $10, $25,
-            etc.) and one $0 "Custom Amount" variant
+            Create a donation product with preset amount variants ($5, $10, $25, etc.) and one $0
+            &quot;Custom Amount&quot; variant
           </s-list-item>
+          <s-list-item>Enable donations in Theme Settings → Donation section</s-list-item>
+          <s-list-item>Activate the Cart Transform above (for custom amounts)</s-list-item>
           <s-list-item>
-            Enable donations in Theme Settings → Donation section
-          </s-list-item>
-          <s-list-item>
-            Activate the Cart Transform above (for custom amounts)
-          </s-list-item>
-          <s-list-item>
-            Assign the donation product to the "product.donation" template
+            Assign the donation product to the &quot;product.donation&quot; template
           </s-list-item>
           <s-list-item>
             Place the checkout donation block in Settings → Checkout → Customize
@@ -193,15 +182,11 @@ export default function Index() {
       <s-section slot="aside" heading="Status">
         <s-paragraph>
           <s-text fontWeight="bold">Function: </s-text>
-          <s-text>
-            {cartTransformFunction ? cartTransformFunction.title : "Not found"}
-          </s-text>
+          <s-text>{cartTransformFunction ? cartTransformFunction.title : 'Not found'}</s-text>
         </s-paragraph>
         <s-paragraph>
           <s-text fontWeight="bold">Activated: </s-text>
-          <s-text>
-            {isActivated || fetcher.data?.success ? "Yes" : "No"}
-          </s-text>
+          <s-text>{isActivated || fetcher.data?.success ? 'Yes' : 'No'}</s-text>
         </s-paragraph>
         <s-paragraph>
           <s-text fontWeight="bold">Active transforms: </s-text>

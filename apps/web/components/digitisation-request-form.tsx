@@ -1,6 +1,5 @@
 'use client';
 
-
 import type { SearchItem } from '@bowerbird-poc/shared/types';
 import { Alert, AlertDescription } from '@bowerbird-poc/ui/components/alert';
 import { Button } from '@bowerbird-poc/ui/components/button';
@@ -90,13 +89,13 @@ export function DigitisationRequestForm({
 
   if (!isAuthenticated) {
     return (
-      <div className="flex flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm">
+      <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
         <div className="py-4 text-center">
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-amber-100">
             <Lock className="size-5 text-amber-600" />
           </div>
           <h3 className="mb-2 text-lg font-bold">Digitisation Request</h3>
-          <p className="mb-4 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mb-4 text-sm">
             This item hasn&apos;t been digitised yet. Sign in to request digitisation and receive a
             quote.
           </p>
@@ -111,7 +110,7 @@ export function DigitisationRequestForm({
 
   if (isSuccess) {
     return (
-      <div className="flex flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm">
+      <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
         <div className="py-4 text-center">
           <div
             className={`mx-auto mb-4 flex size-12 items-center justify-center rounded-full ${wasBundled ? 'bg-blue-100' : 'bg-green-100'}`}
@@ -125,21 +124,21 @@ export function DigitisationRequestForm({
           <h3 className="mb-2 text-lg font-bold">
             {wasBundled ? 'Item Added to Request' : 'Request Submitted'}
           </h3>
-          <p className="mb-6 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mb-6 text-sm">
             {wasBundled
               ? 'This item has been added to your existing digitisation request.'
               : "We've received your digitisation request and will review it shortly."}
           </p>
 
           {!wasBundled && (
-            <div className="mb-6 rounded-lg bg-muted p-4 text-left">
-              <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <div className="bg-muted mb-6 rounded-lg p-4 text-left">
+              <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
                 What happens next
               </h4>
               <div className="space-y-3">
                 {NEXT_STEPS.map((step) => (
                   <div key={step.text} className="flex items-center gap-3">
-                    <step.icon className="size-4 text-primary" />
+                    <step.icon className="text-primary size-4" />
                     <span className="text-sm">{step.text}</span>
                   </div>
                 ))}
@@ -159,13 +158,13 @@ export function DigitisationRequestForm({
   }
 
   return (
-    <div className="flex flex-col gap-6 rounded-xl border bg-card p-6 shadow-sm">
+    <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
       <div>
         <div className="mb-1 flex items-center gap-2">
-          <ScanLine className="size-5 text-primary" />
+          <ScanLine className="text-primary size-5" />
           <h3 className="text-lg font-bold">Digitisation Request</h3>
         </div>
-        <p className="text-sm text-muted-foreground">Quote on request</p>
+        <p className="text-muted-foreground text-sm">Quote on request</p>
       </div>
 
       <Alert variant="default" className="border-amber-200 bg-amber-50">
@@ -178,14 +177,14 @@ export function DigitisationRequestForm({
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
             Name
           </Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
             Email <span className="text-destructive">*</span>
           </Label>
           <Input
@@ -198,7 +197,7 @@ export function DigitisationRequestForm({
         </div>
 
         <div className="flex flex-col gap-1">
-          <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
             Notes (optional)
           </Label>
           <Textarea
@@ -210,7 +209,7 @@ export function DigitisationRequestForm({
         </div>
 
         {error && (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+          <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-3 py-2 text-sm">
             {error}
           </div>
         )}

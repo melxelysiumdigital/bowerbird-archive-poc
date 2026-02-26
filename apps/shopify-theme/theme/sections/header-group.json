@@ -28,9 +28,7 @@
           "blocks": {}
         }
       },
-      "block_order": [
-        "announcement_BxgCk9"
-      ],
+      "block_order": ["announcement_BxgCk9"],
       "name": "t:names.announcement_bar",
       "settings": {
         "speed": 5,
@@ -111,8 +109,5 @@
       }
     }
   },
-  "order": [
-    "header_announcements_9jGBFp",
-    "header_section"
-  ]
+  "order": ["header_announcements_9jGBFp", "header_section"]
 }

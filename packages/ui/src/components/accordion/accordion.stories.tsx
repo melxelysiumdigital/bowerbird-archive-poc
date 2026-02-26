@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from './accordion';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './accordion';
 
 const meta = {
   title: 'Components/Accordion',
@@ -23,9 +18,7 @@ export const Default: Story = {
     <Accordion type="single" collapsible className="w-[400px]">
       <AccordionItem value="item-1">
         <AccordionTrigger>Is it accessible?</AccordionTrigger>
-        <AccordionContent>
-          Yes. It adheres to the WAI-ARIA design pattern.
-        </AccordionContent>
+        <AccordionContent>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Is it styled?</AccordionTrigger>
@@ -46,9 +39,7 @@ export const Default: Story = {
     const trigger = canvas.getByRole('button', { name: /Is it accessible\?/i });
 
     await userEvent.click(trigger);
-    await expect(
-      canvas.getByText('Yes. It adheres to the WAI-ARIA design pattern.'),
-    ).toBeVisible();
+    await expect(canvas.getByText('Yes. It adheres to the WAI-ARIA design pattern.')).toBeVisible();
 
     await userEvent.click(trigger);
   },
@@ -56,22 +47,14 @@ export const Default: Story = {
 
 export const Multiple: Story = {
   render: () => (
-    <Accordion
-      type="multiple"
-      defaultValue={['item-1', 'item-2']}
-      className="w-[400px]"
-    >
+    <Accordion type="multiple" defaultValue={['item-1', 'item-2']} className="w-[400px]">
       <AccordionItem value="item-1">
         <AccordionTrigger>First section</AccordionTrigger>
-        <AccordionContent>
-          This section is open by default.
-        </AccordionContent>
+        <AccordionContent>This section is open by default.</AccordionContent>
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>Second section</AccordionTrigger>
-        <AccordionContent>
-          This section is also open by default.
-        </AccordionContent>
+        <AccordionContent>This section is also open by default.</AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
@@ -83,7 +66,7 @@ export const WithRichContent: Story = {
       <AccordionItem value="item-1">
         <AccordionTrigger>Features</AccordionTrigger>
         <AccordionContent>
-          <ul className="list-disc pl-4 space-y-1">
+          <ul className="list-disc space-y-1 pl-4">
             <li>Fully accessible</li>
             <li>Keyboard navigation</li>
             <li>Customisable styling</li>
@@ -94,7 +77,7 @@ export const WithRichContent: Story = {
         <AccordionTrigger>Resources</AccordionTrigger>
         <AccordionContent>
           <p className="mb-2">Learn more about the accordion component:</p>
-          <ul className="list-disc pl-4 space-y-1">
+          <ul className="list-disc space-y-1 pl-4">
             <li>
               <a href="#" className="underline">
                 Documentation

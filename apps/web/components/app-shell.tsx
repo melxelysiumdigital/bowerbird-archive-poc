@@ -8,26 +8,24 @@ import { Navbar } from './navbar';
 
 import { useAuth } from '@/hooks/use-auth';
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
-import { useShopifySync } from '@/hooks/use-shopify-sync';
-
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
-  const { isAuthenticated, user, loginWithRedirect } = useAuth();
-  const { syncCustomer } = useShopifySync();
-  const { totalQuantity } = useShopifyCart();
-  const hasSynced = useRef(false);
+  const { isAuthenticated, user, loginWithRedirect, client } = useAuth();
+  const { totalQuantity, attachCustomer } = useShopifyCart();
+  const hasAttached = useRef(false);
 
-  // Sync Auth0 user to Shopify on first login
+  // Attach customer identity to cart so checkout recognises the user
   useEffect(() => {
-    if (isAuthenticated && user?.email && !hasSynced.current) {
-      hasSynced.current = true;
-      const auth0User = user as { email?: string; given_name?: string; family_name?: string };
-      syncCustomer(user.email, auth0User.given_name, auth0User.family_name).catch((err: unknown) =>
-        console.error('Customer sync failed:', err),
-      );
-    }
-  }, [isAuthenticated, user, syncCustomer]);
+    if (!isAuthenticated || !client || hasAttached.current) return;
+    hasAttached.current = true;
+
+    client.getAccessToken().then((token) => {
+      if (token) {
+        attachCustomer(token);
+      }
+    });
+  }, [isAuthenticated, client, attachCustomer]);
 
   return (
     <>
@@ -40,7 +38,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       />
       {children}
       <DiscountPopup />
-      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartDrawer
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        isCustomerLoggedIn={isAuthenticated}
+      />
     </>
   );
 }

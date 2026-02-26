@@ -3,7 +3,6 @@
 import type { ItemType, SearchItem, SearchFilters, SortOption } from '@bowerbird-poc/shared/types';
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-
 interface AzureSearchResult {
   product_id: string;
   name: string;
@@ -106,68 +105,65 @@ export function useAzureSearch(debounceMs = 300) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const search = useCallback(
-    async (query: string, filters?: SearchFilters, sort?: SortOption) => {
-      abortControllerRef.current?.abort();
+  const search = useCallback(async (query: string, filters?: SearchFilters, sort?: SortOption) => {
+    abortControllerRef.current?.abort();
 
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
 
-      setState((prev) => ({ ...prev, isLoading: true, error: null, query }));
+    setState((prev) => ({ ...prev, isLoading: true, error: null, query }));
 
-      const filterStr = buildFilterExpression(filters);
-      const orderBy = buildOrderBy(sort);
+    const filterStr = buildFilterExpression(filters);
+    const orderBy = buildOrderBy(sort);
 
-      const body: Record<string, unknown> = {
-        search: query || '*',
-        searchFields: 'name, description, shortDescription, category, tags, title',
-        select:
-          'product_id, name, item_type, series, controlSymbol, barcode, description, shortDescription, category, price, price_value, image_url, tags, release, for_sale, specs',
-        top: 20,
-      };
+    const body: Record<string, unknown> = {
+      search: query || '*',
+      searchFields: 'name, description, shortDescription, category, tags, title',
+      select:
+        'product_id, name, item_type, series, controlSymbol, barcode, description, shortDescription, category, price, price_value, image_url, tags, release, for_sale, specs',
+      top: 20,
+    };
 
-      if (!orderBy) {
-        body.vectorQueries = [
-          {
-            kind: 'text',
-            text: query || 'historical archival documents and records',
-            fields: 'content_vector',
-            k: 20,
-          },
-        ];
+    if (!orderBy) {
+      body.vectorQueries = [
+        {
+          kind: 'text',
+          text: query || 'historical archival documents and records',
+          fields: 'content_vector',
+          k: 20,
+        },
+      ];
+    }
+
+    if (filterStr) body.filter = filterStr;
+    if (orderBy) body.orderby = orderBy;
+
+    try {
+      const res = await fetch('/api/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Search failed (${res.status}): ${errorText}`);
       }
 
-      if (filterStr) body.filter = filterStr;
-      if (orderBy) body.orderby = orderBy;
+      const data = await res.json();
+      const items = (data.value || []).map(mapResult);
 
-      try {
-        const res = await fetch('/api/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Search failed (${res.status}): ${errorText}`);
-        }
-
-        const data = await res.json();
-        const items = (data.value || []).map(mapResult);
-
-        setState({ items, isLoading: false, error: null, query, hasSearched: true });
-      } catch (err) {
-        if (err instanceof DOMException && err.name === 'AbortError') return;
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: err instanceof Error ? err.message : 'Search failed',
-        }));
-      }
-    },
-    [],
-  );
+      setState({ items, isLoading: false, error: null, query, hasSearched: true });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: err instanceof Error ? err.message : 'Search failed',
+      }));
+    }
+  }, []);
 
   const debouncedSearch = useCallback(
     (query: string, filters?: SearchFilters, sort?: SortOption) => {
