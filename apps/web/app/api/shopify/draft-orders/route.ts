@@ -39,11 +39,10 @@ function transformGQLDraftToRest(node: any) {
         }
       : null,
     order_id: node.order ? parseInt(node.order.legacyResourceId, 10) : null,
-    order_tags: node.order?.tags
-      ? Array.isArray(node.order.tags)
-        ? node.order.tags.join(', ')
-        : node.order.tags
-      : '',
+    order_tags: (() => {
+      if (!node.order?.tags) return '';
+      return Array.isArray(node.order.tags) ? node.order.tags.join(', ') : node.order.tags;
+    })(),
     order_fulfillment: node.order?.displayFulfillmentStatus || null,
     order_cancelled: Boolean(node.order?.cancelledAt),
   };
@@ -191,6 +190,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data.draft_order, { status: 201 });
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('[draft-orders POST]', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal server error' },
@@ -247,6 +247,7 @@ export async function GET(request: NextRequest) {
     const draftOrders = filtered.map(transformGQLDraftToRest);
     return NextResponse.json({ draft_orders: draftOrders });
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('[draft-orders GET]', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal server error' },
@@ -295,6 +296,7 @@ export async function DELETE(request: NextRequest) {
       notes: draft.note || '',
     });
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('[draft-orders DELETE]', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Internal server error' },

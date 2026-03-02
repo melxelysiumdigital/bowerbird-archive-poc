@@ -1,6 +1,7 @@
 import js from '@eslint/js';
+import prettierConfig from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import-x';
-import onlyWarn from 'eslint-plugin-only-warn';
+import prettierPlugin from 'eslint-plugin-prettier';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -10,8 +11,8 @@ export default [
   ...tseslint.configs.recommended,
   {
     plugins: {
-      'only-warn': onlyWarn,
       'import-x': importPlugin,
+      prettier: prettierPlugin,
     },
   },
   {
@@ -21,21 +22,32 @@ export default [
       },
     },
     rules: {
-      // Enforce LoggingService instead of raw console usage
-      'no-console': [
-        'warn',
-        {
-          allow: ['warn', 'error', 'info', 'debug'],
-        },
-      ],
+      // Prettier
+      'prettier/prettier': 'warn',
+
+      // Code size limits
+      'max-lines': ['warn', { max: 500, skipBlankLines: true, skipComments: true }],
+      'max-lines-per-function': ['warn', { max: 100, skipBlankLines: true, skipComments: true }],
+
+      // Best practices
+      'no-console': 'error',
+      'no-debugger': 'error',
+      'no-var': 'error',
+      'prefer-const': 'error',
+      'prefer-arrow-callback': 'error',
+      'arrow-body-style': ['error', 'as-needed'],
+      'object-shorthand': ['error', 'always'],
+      'prefer-template': 'error',
+      'no-nested-ternary': 'warn',
 
       // TypeScript
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports' }],
+      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/explicit-function-return-type': 'off',
 
       // Imports
       'import-x/order': [
@@ -63,4 +75,5 @@ export default [
       'theme/assets/',
     ],
   },
+  prettierConfig,
 ];

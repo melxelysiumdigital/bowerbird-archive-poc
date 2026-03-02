@@ -12,6 +12,7 @@ function parseProps(el: Element): Record<string, unknown> {
     try {
       return JSON.parse(inlineJson);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error('[react-mount] Failed to parse inline props:', e);
       return {};
     }
@@ -24,6 +25,7 @@ function parseProps(el: Element): Record<string, unknown> {
       try {
         return JSON.parse(scriptEl.textContent);
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.error('[react-mount] Failed to parse props from script:', e);
         return {};
       }
@@ -43,6 +45,7 @@ export function mountComponents(registry: ComponentRegistry, scope?: Element): v
 
     const Component = registry[name];
     if (!Component) {
+      // eslint-disable-next-line no-console
       console.warn(`[react-mount] Unknown component: "${name}"`);
       return;
     }

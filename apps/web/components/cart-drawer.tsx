@@ -14,6 +14,79 @@ import { useCallback } from 'react';
 
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
 
+interface CartLineItemProps {
+  line: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  onRemove: (lineId: string) => void;
+  onUpdateQuantity: (lineId: string, quantity: number) => void;
+  isLoading: boolean;
+}
+
+function CartLineItem({ line, onRemove, onUpdateQuantity, isLoading }: CartLineItemProps) {
+  const lineId = line.id as string;
+  const qty = (line.quantity as number) ?? 1;
+  const attrs = (line.attributes ?? []) as Array<{ key: string; value: string }>;
+  const title =
+    attrs.find((a) => a.key === 'item_title')?.value ?? line.merchandise?.title ?? 'Item';
+  const image = attrs.find((a) => a.key === 'item_image')?.value;
+  const variant = line.merchandise?.title as string | undefined;
+  const price = line.cost?.totalAmount as { amount: string } | undefined;
+
+  return (
+    <li className="border-muted flex flex-col border-b pb-6">
+      <div className="flex gap-4">
+        {image ? (
+          <div
+            className="bg-muted size-24 shrink-0 rounded-lg border bg-cover bg-center"
+            style={{ backgroundImage: `url("${image}")` }}
+          />
+        ) : (
+          <div className="bg-muted text-muted-foreground flex size-24 shrink-0 items-center justify-center rounded-lg border text-xs">
+            No image
+          </div>
+        )}
+        <div className="flex flex-1 flex-col justify-between">
+          <div>
+            <p className="text-sm font-semibold">{title}</p>
+            {variant && variant !== 'Default Title' && (
+              <p className="text-muted-foreground mt-1 text-sm">{variant}</p>
+            )}
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-3 rounded-lg border p-1">
+              <button
+                className="text-muted-foreground hover:bg-muted flex size-6 items-center justify-center rounded-md"
+                onClick={() => onUpdateQuantity(lineId, qty - 1)}
+                disabled={isLoading || qty <= 1}
+              >
+                <Minus className="size-3" />
+              </button>
+              <span className="w-6 text-center text-sm font-bold">{qty}</span>
+              <button
+                className="text-muted-foreground hover:bg-muted flex size-6 items-center justify-center rounded-md"
+                onClick={() => onUpdateQuantity(lineId, qty + 1)}
+                disabled={isLoading}
+              >
+                <Plus className="size-3" />
+              </button>
+            </div>
+            {price && (
+              <span className="font-bold">${parseFloat(price.amount || '0').toFixed(2)}</span>
+            )}
+          </div>
+        </div>
+      </div>
+      <button
+        className="text-primary mt-3 ml-auto flex items-center gap-1 text-xs font-semibold hover:underline"
+        onClick={() => onRemove(lineId)}
+        disabled={isLoading}
+      >
+        <Trash2 className="size-3.5" />
+        Remove
+      </button>
+    </li>
+  );
+}
+
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -67,76 +140,19 @@ export function CartDrawer({ isOpen, onClose, isCustomerLoggedIn }: CartDrawerPr
           </div>
         ) : (
           <ul className="flex-1 space-y-6 overflow-y-auto px-6 py-4">
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {lines.map((line: any) => {
-              const lineId = line.id as string;
-              const qty = (line.quantity as number) ?? 1;
-              const attrs = (line.attributes ?? []) as Array<{ key: string; value: string }>;
-              const title =
-                attrs.find((a) => a.key === 'item_title')?.value ??
-                line.merchandise?.title ??
-                'Item';
-              const image = attrs.find((a) => a.key === 'item_image')?.value;
-              const variant = line.merchandise?.title as string | undefined;
-              const price = line.cost?.totalAmount as { amount: string } | undefined;
-
-              return (
-                <li key={lineId} className="border-muted flex flex-col border-b pb-6">
-                  <div className="flex gap-4">
-                    {image ? (
-                      <div
-                        className="bg-muted size-24 shrink-0 rounded-lg border bg-cover bg-center"
-                        style={{ backgroundImage: `url("${image}")` }}
-                      />
-                    ) : (
-                      <div className="bg-muted text-muted-foreground flex size-24 shrink-0 items-center justify-center rounded-lg border text-xs">
-                        No image
-                      </div>
-                    )}
-                    <div className="flex flex-1 flex-col justify-between">
-                      <div>
-                        <p className="text-sm font-semibold">{title}</p>
-                        {variant && variant !== 'Default Title' && (
-                          <p className="text-muted-foreground mt-1 text-sm">{variant}</p>
-                        )}
-                      </div>
-                      <div className="mt-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3 rounded-lg border p-1">
-                          <button
-                            className="text-muted-foreground hover:bg-muted flex size-6 items-center justify-center rounded-md"
-                            onClick={() => updateQuantity(lineId, qty - 1)}
-                            disabled={isLoading || qty <= 1}
-                          >
-                            <Minus className="size-3" />
-                          </button>
-                          <span className="w-6 text-center text-sm font-bold">{qty}</span>
-                          <button
-                            className="text-muted-foreground hover:bg-muted flex size-6 items-center justify-center rounded-md"
-                            onClick={() => updateQuantity(lineId, qty + 1)}
-                            disabled={isLoading}
-                          >
-                            <Plus className="size-3" />
-                          </button>
-                        </div>
-                        {price && (
-                          <span className="font-bold">
-                            ${parseFloat(price.amount || '0').toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    className="text-primary mt-3 ml-auto flex items-center gap-1 text-xs font-semibold hover:underline"
-                    onClick={() => removeFromCart(lineId)}
-                    disabled={isLoading}
-                  >
-                    <Trash2 className="size-3.5" />
-                    Remove
-                  </button>
-                </li>
-              );
-            })}
+            {lines.map(
+              (
+                line: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+              ) => (
+                <CartLineItem
+                  key={line.id}
+                  line={line}
+                  onRemove={removeFromCart}
+                  onUpdateQuantity={updateQuantity}
+                  isLoading={isLoading}
+                />
+              ),
+            )}
           </ul>
         )}
 

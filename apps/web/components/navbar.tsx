@@ -9,6 +9,66 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+interface SearchFormProps {
+  className?: string;
+  searchInput: string;
+  onSearchInputChange: (value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+function SearchForm({ className, searchInput, onSearchInputChange, onSubmit }: SearchFormProps) {
+  return (
+    <form onSubmit={onSubmit} className={className}>
+      <div className="relative">
+        <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+        <Input
+          value={searchInput}
+          onChange={(e) => onSearchInputChange(e.target.value)}
+          placeholder="Search the archive..."
+          className="pl-9"
+        />
+      </div>
+    </form>
+  );
+}
+
+interface MobileMenuProps {
+  searchInput: string;
+  onSearchInputChange: (value: string) => void;
+  onSearchSubmit: (e: React.FormEvent) => void;
+  onClose: () => void;
+}
+
+function MobileMenu({
+  searchInput,
+  onSearchInputChange,
+  onSearchSubmit,
+  onClose,
+}: MobileMenuProps) {
+  return (
+    <div className="border-t px-6 py-4 md:hidden">
+      <SearchForm
+        className="mb-4"
+        searchInput={searchInput}
+        onSearchInputChange={onSearchInputChange}
+        onSubmit={onSearchSubmit}
+      />
+      <div className="flex flex-col gap-2">
+        <Button variant="ghost" size="sm" className="justify-start" asChild>
+          <Link href="/search" onClick={onClose}>
+            Browse Collection
+          </Link>
+        </Button>
+        <Button variant="ghost" size="sm" className="justify-start" asChild>
+          <Link href="/account/orders" onClick={onClose}>
+            Orders
+          </Link>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface NavbarProps {
   onCartClick: () => void;
   cartCount?: number;
@@ -44,17 +104,12 @@ export function Navbar({
         </Link>
 
         {/* Search — desktop */}
-        <form onSubmit={handleSearch} className="hidden max-w-md flex-1 px-8 md:block">
-          <div className="relative">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-            <Input
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search the archive..."
-              className="pl-9"
-            />
-          </div>
-        </form>
+        <SearchForm
+          className="hidden max-w-md flex-1 px-8 md:block"
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          onSubmit={handleSearch}
+        />
 
         {/* Actions */}
         <div className="flex items-center gap-2">
@@ -65,6 +120,9 @@ export function Navbar({
             </Button>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/account/orders">Orders</Link>
+            </Button>
+            <Button variant="ghost" size="sm" className="text-muted-foreground text-xs" asChild>
+              <Link href="/staff">Staff</Link>
             </Button>
           </div>
 
@@ -110,31 +168,12 @@ export function Navbar({
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="border-t px-6 py-4 md:hidden">
-          <form onSubmit={handleSearch} className="mb-4">
-            <div className="relative">
-              <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-              <Input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search the archive..."
-                className="pl-9"
-              />
-            </div>
-          </form>
-          <div className="flex flex-col gap-2">
-            <Button variant="ghost" size="sm" className="justify-start" asChild>
-              <Link href="/search" onClick={() => setMobileMenuOpen(false)}>
-                Browse Collection
-              </Link>
-            </Button>
-            <Button variant="ghost" size="sm" className="justify-start" asChild>
-              <Link href="/account/orders" onClick={() => setMobileMenuOpen(false)}>
-                Orders
-              </Link>
-            </Button>
-          </div>
-        </div>
+        <MobileMenu
+          searchInput={searchInput}
+          onSearchInputChange={setSearchInput}
+          onSearchSubmit={handleSearch}
+          onClose={() => setMobileMenuOpen(false)}
+        />
       )}
     </header>
   );

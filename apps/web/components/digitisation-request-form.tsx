@@ -38,6 +38,154 @@ const NEXT_STEPS = [
   { icon: ScanLine, text: 'Item is digitised and delivered' },
 ];
 
+function LoginPrompt({ onLogin }: { onLogin: () => void }) {
+  return (
+    <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
+      <div className="py-4 text-center">
+        <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-amber-100">
+          <Lock className="size-5 text-amber-600" />
+        </div>
+        <h3 className="mb-2 text-lg font-bold">Digitisation Request</h3>
+        <p className="text-muted-foreground mb-4 text-sm">
+          This item hasn&apos;t been digitised yet. Sign in to request digitisation and receive a
+          quote.
+        </p>
+        <Button className="w-full gap-2" onClick={onLogin}>
+          <LogIn className="size-4" />
+          Sign in to request
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function SuccessMessage({ wasBundled }: { wasBundled: boolean }) {
+  return (
+    <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
+      <div className="py-4 text-center">
+        <div
+          className={`mx-auto mb-4 flex size-12 items-center justify-center rounded-full ${wasBundled ? 'bg-blue-100' : 'bg-green-100'}`}
+        >
+          {wasBundled ? (
+            <ListChecks className="size-6 text-blue-600" />
+          ) : (
+            <CircleCheckBig className="size-6 text-green-600" />
+          )}
+        </div>
+        <h3 className="mb-2 text-lg font-bold">
+          {wasBundled ? 'Item Added to Request' : 'Request Submitted'}
+        </h3>
+        <p className="text-muted-foreground mb-6 text-sm">
+          {wasBundled
+            ? 'This item has been added to your existing digitisation request.'
+            : "We've received your digitisation request and will review it shortly."}
+        </p>
+
+        {!wasBundled && (
+          <div className="bg-muted mb-6 rounded-lg p-4 text-left">
+            <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
+              What happens next
+            </h4>
+            <div className="space-y-3">
+              {NEXT_STEPS.map((step) => (
+                <div key={step.text} className="flex items-center gap-3">
+                  <step.icon className="text-primary size-4" />
+                  <span className="text-sm">{step.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <Button className="w-full gap-2" asChild>
+          <a href="/account/orders">
+            <Receipt className="size-4" />
+            View Digitisation Requests
+          </a>
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function RequestFormFields({
+  name,
+  setName,
+  email,
+  setEmail,
+  notes,
+  setNotes,
+  error,
+  isSubmitting,
+  onSubmit,
+}: {
+  name: string;
+  setName: (v: string) => void;
+  email: string;
+  setEmail: (v: string) => void;
+  notes: string;
+  setNotes: (v: string) => void;
+  error: string | null;
+  isSubmitting: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
+  return (
+    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1">
+        <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+          Name
+        </Label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+          Email <span className="text-destructive">*</span>
+        </Label>
+        <Input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          required
+        />
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+          Notes (optional)
+        </Label>
+        <Textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Any specific requirements or notes..."
+          rows={3}
+        />
+      </div>
+
+      {error && (
+        <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-3 py-2 text-sm">
+          {error}
+        </div>
+      )}
+
+      <Button type="submit" disabled={isSubmitting || !email} className="gap-2">
+        {isSubmitting ? (
+          <>
+            <span className="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            Submitting...
+          </>
+        ) : (
+          <>
+            <Send className="size-4" />
+            Submit Request
+          </>
+        )}
+      </Button>
+    </form>
+  );
+}
+
 export function DigitisationRequestForm({
   item,
   isAuthenticated,
@@ -87,75 +235,8 @@ export function DigitisationRequestForm({
     }
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
-        <div className="py-4 text-center">
-          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-amber-100">
-            <Lock className="size-5 text-amber-600" />
-          </div>
-          <h3 className="mb-2 text-lg font-bold">Digitisation Request</h3>
-          <p className="text-muted-foreground mb-4 text-sm">
-            This item hasn&apos;t been digitised yet. Sign in to request digitisation and receive a
-            quote.
-          </p>
-          <Button className="w-full gap-2" onClick={onLogin}>
-            <LogIn className="size-4" />
-            Sign in to request
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (isSuccess) {
-    return (
-      <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
-        <div className="py-4 text-center">
-          <div
-            className={`mx-auto mb-4 flex size-12 items-center justify-center rounded-full ${wasBundled ? 'bg-blue-100' : 'bg-green-100'}`}
-          >
-            {wasBundled ? (
-              <ListChecks className="size-6 text-blue-600" />
-            ) : (
-              <CircleCheckBig className="size-6 text-green-600" />
-            )}
-          </div>
-          <h3 className="mb-2 text-lg font-bold">
-            {wasBundled ? 'Item Added to Request' : 'Request Submitted'}
-          </h3>
-          <p className="text-muted-foreground mb-6 text-sm">
-            {wasBundled
-              ? 'This item has been added to your existing digitisation request.'
-              : "We've received your digitisation request and will review it shortly."}
-          </p>
-
-          {!wasBundled && (
-            <div className="bg-muted mb-6 rounded-lg p-4 text-left">
-              <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
-                What happens next
-              </h4>
-              <div className="space-y-3">
-                {NEXT_STEPS.map((step) => (
-                  <div key={step.text} className="flex items-center gap-3">
-                    <step.icon className="text-primary size-4" />
-                    <span className="text-sm">{step.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <Button className="w-full gap-2" asChild>
-            <a href="/account/orders">
-              <Receipt className="size-4" />
-              View Digitisation Requests
-            </a>
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  if (!isAuthenticated) return <LoginPrompt onLogin={onLogin} />;
+  if (isSuccess) return <SuccessMessage wasBundled={wasBundled} />;
 
   return (
     <div className="bg-card flex flex-col gap-6 rounded-xl border p-6 shadow-sm">
@@ -175,59 +256,17 @@ export function DigitisationRequestForm({
         </AlertDescription>
       </Alert>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-            Name
-          </Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-            Email <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            required
-          />
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <Label className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-            Notes (optional)
-          </Label>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Any specific requirements or notes..."
-            rows={3}
-          />
-        </div>
-
-        {error && (
-          <div className="border-destructive/20 bg-destructive/5 text-destructive rounded-lg border px-3 py-2 text-sm">
-            {error}
-          </div>
-        )}
-
-        <Button type="submit" disabled={isSubmitting || !email} className="gap-2">
-          {isSubmitting ? (
-            <>
-              <span className="inline-block size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-              Submitting...
-            </>
-          ) : (
-            <>
-              <Send className="size-4" />
-              Submit Request
-            </>
-          )}
-        </Button>
-      </form>
+      <RequestFormFields
+        name={name}
+        setName={setName}
+        email={email}
+        setEmail={setEmail}
+        notes={notes}
+        setNotes={setNotes}
+        error={error}
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 }

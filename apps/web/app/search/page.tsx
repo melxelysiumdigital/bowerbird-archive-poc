@@ -21,7 +21,10 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense as ReactSuspense, useState, useEffect, useCallback } from 'react';
 
 // Workaround for React types version conflict in monorepo
-const Suspense = ReactSuspense as unknown as React.FC<{ fallback?: React.ReactNode; children: React.ReactNode }>;
+const Suspense = ReactSuspense as unknown as React.FC<{
+  fallback?: React.ReactNode;
+  children: React.ReactNode;
+}>;
 
 import { useAzureSearch } from '@/hooks/use-azure-search';
 

@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data);
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error('[customer-graphql]', err);
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Customer API query failed' },

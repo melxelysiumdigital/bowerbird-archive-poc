@@ -7,6 +7,7 @@ const storefrontToken = process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN || '';
 
 export function ShopifyProviderWrapper({ children }: { children: React.ReactNode }) {
   if (!storeDomain || !storefrontToken) {
+    // eslint-disable-next-line no-console
     console.warn('Shopify env vars missing — cart features will be unavailable');
     return (
       <ShopifyProvider

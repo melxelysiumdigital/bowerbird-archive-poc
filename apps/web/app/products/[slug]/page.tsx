@@ -1,7 +1,7 @@
 'use client';
 
 import { ITEM_TYPE_STYLE } from '@bowerbird-poc/shared/constants';
-import type { ItemType } from '@bowerbird-poc/shared/types';
+import type { ItemType, SearchItem } from '@bowerbird-poc/shared/types';
 import { createSlug } from '@bowerbird-poc/shared/utils/slug';
 import { Badge } from '@bowerbird-poc/ui/components/badge';
 import {
@@ -65,6 +65,290 @@ async function fetchVariantsForHandle(handle: string): Promise<ShopifyVariant[]>
   return variants;
 }
 
+// ─── Sub-components ──────────────────────────────────────────
+
+function ProductOrderCard({
+  chosenVariant,
+  price,
+  variants,
+  selectedVariant,
+  onSelectVariant,
+  onAddToCart,
+  isCartLoading,
+  addedToCart,
+}: {
+  chosenVariant: ShopifyVariant | undefined;
+  price: string;
+  variants: ShopifyVariant[];
+  selectedVariant: string | null;
+  onSelectVariant: (id: string) => void;
+  onAddToCart: () => void;
+  isCartLoading: boolean;
+  addedToCart: boolean;
+}) {
+  return (
+    <div className="bg-card flex flex-col gap-5 rounded-xl border p-6 shadow-sm">
+      <div className="flex items-end justify-between">
+        <div className="flex flex-col gap-1">
+          <span className="text-muted-foreground text-sm font-medium tracking-widest uppercase">
+            {chosenVariant ? 'Service Price' : 'From'}
+          </span>
+          <span className="text-primary text-3xl font-bold">
+            {chosenVariant
+              ? `$${parseFloat(chosenVariant.price.amount).toFixed(2)} ${chosenVariant.price.currencyCode}`
+              : price}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-sm font-bold text-green-600">
+          <span className="size-2 rounded-full bg-green-500" />
+          Available
+        </div>
+      </div>
+
+      {variants.length > 1 && (
+        <div className="flex flex-col gap-2">
+          <label className="text-muted-foreground text-sm font-bold">Service Option</label>
+          <div className="flex flex-col gap-2">
+            {variants.map((v) => (
+              <button
+                key={v.id}
+                onClick={() => onSelectVariant(v.id)}
+                className={cn(
+                  'flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all',
+                  selectedVariant === v.id
+                    ? 'border-primary bg-primary/5 font-bold'
+                    : 'hover:border-primary/40',
+                )}
+              >
+                <span>{v.title}</span>
+                <span className="font-semibold">${parseFloat(v.price.amount).toFixed(2)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <Button
+        size="lg"
+        className="w-full gap-2"
+        disabled={!selectedVariant || isCartLoading}
+        onClick={onAddToCart}
+      >
+        {addedToCart ? (
+          <>
+            <Check className="size-5" />
+            Added to Cart
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="size-5" />
+            Add to Cart
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+
+function ProductSpecs({
+  specs,
+}: {
+  specs: { pages: string; dimensions: string; resolution: string; format: string };
+}) {
+  return (
+    <div className="flex flex-col divide-y border-t">
+      <details className="group py-4" open>
+        <summary className="flex cursor-pointer list-none items-center justify-between font-bold">
+          <span>Specifications</span>
+          <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="text-muted-foreground space-y-2 pt-4 font-mono text-sm">
+          {[
+            ['Page Count', specs.pages],
+            ['Dimensions', specs.dimensions],
+            ['Scan Resolution', specs.resolution],
+            ['File Format', specs.format],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="flex justify-between border-b border-dotted border-current pb-1"
+            >
+              <span>{label}</span>
+              <span className="text-foreground">{value}</span>
+            </div>
+          ))}
+        </div>
+      </details>
+      <details className="group py-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between font-bold">
+          <span>Delivery Information</span>
+          <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="text-muted-foreground pt-4 text-sm leading-relaxed">
+          Digital downloads are processed instantly and a link will be emailed to your account
+          address. Physical facsimiles are produced on-demand using acid-free archival paper and
+          shipped within 3-5 business days via secure courier.
+        </div>
+      </details>
+    </div>
+  );
+}
+
+function RelatedCollections({
+  relatedItems,
+}: {
+  relatedItems: { id: string; title: string; image: string; category: string }[];
+}) {
+  if (relatedItems.length === 0) return null;
+
+  return (
+    <div className="mt-20 border-t pt-12">
+      <h3 className="mb-6 text-xl font-bold">Explore Related Collections</h3>
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+        {relatedItems.map((relatedItem) => (
+          <Link
+            key={relatedItem.id}
+            href={`/products/${createSlug(relatedItem.title)}`}
+            className="group"
+          >
+            <div className="mb-3 aspect-video overflow-hidden rounded-lg border">
+              <div
+                className="h-full w-full bg-cover bg-center transition-transform group-hover:scale-105"
+                style={{ backgroundImage: `url("${relatedItem.image}")` }}
+              />
+            </div>
+            <h4 className="group-hover:text-primary text-sm font-bold transition-colors">
+              {relatedItem.title}
+            </h4>
+            <p className="text-muted-foreground text-xs">{relatedItem.category}</p>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── ProductImage ────────────────────────────────────────────
+
+function ProductImage({ src }: { src: string }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="group bg-card relative w-full cursor-zoom-in rounded-xl border p-4 shadow-sm">
+        <div
+          className="aspect-[3/4] w-full rounded-lg bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url("${src}")` }}
+        />
+        <div className="bg-background/90 absolute right-8 bottom-8 rounded-full p-3 opacity-0 shadow-lg backdrop-blur-sm transition-opacity group-hover:opacity-100">
+          <ZoomIn className="text-primary size-5" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── ProductDetails (right column) ───────────────────────────
+
+function ProductDetails({
+  item,
+  style,
+  variants,
+  selectedVariant,
+  chosenVariant,
+  onSelectVariant,
+  onAddToCart,
+  isCartLoading,
+  addedToCart,
+  isAuthenticated,
+  user,
+  loginWithRedirect,
+}: {
+  item: SearchItem;
+  style: (typeof ITEM_TYPE_STYLE)[keyof typeof ITEM_TYPE_STYLE] | undefined;
+  variants: ShopifyVariant[];
+  selectedVariant: string | null;
+  chosenVariant: ShopifyVariant | undefined;
+  onSelectVariant: (id: string) => void;
+  onAddToCart: () => void;
+  isCartLoading: boolean;
+  addedToCart: boolean;
+  isAuthenticated: boolean;
+  user: { email?: string; name?: string } | undefined;
+  loginWithRedirect: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <div className="mb-4 flex gap-3">
+          {style && (
+            <Badge variant="secondary" className={`${style.bg} ${style.color}`}>
+              {style.label}
+            </Badge>
+          )}
+          <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">
+            Historical Archive
+          </Badge>
+        </div>
+        <h1 className="mb-2 text-4xl leading-tight font-extrabold">{item.title}</h1>
+        <div className="text-muted-foreground font-mono text-sm tracking-tight">
+          Series {item.series} &middot; Control Symbol {item.controlSymbol}
+        </div>
+      </div>
+
+      <div className="text-muted-foreground leading-relaxed">
+        <p>{item.description}</p>
+      </div>
+
+      {item.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {item.tags.map((tag) => (
+            <Badge key={tag} variant="outline" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      {item.forSale ? (
+        <ProductOrderCard
+          chosenVariant={chosenVariant}
+          price={item.price}
+          variants={variants}
+          selectedVariant={selectedVariant}
+          onSelectVariant={onSelectVariant}
+          onAddToCart={onAddToCart}
+          isCartLoading={isCartLoading}
+          addedToCart={addedToCart}
+        />
+      ) : (
+        <DigitisationRequestForm
+          item={item}
+          isAuthenticated={isAuthenticated}
+          userEmail={user?.email}
+          userName={user?.name}
+          onLogin={() => loginWithRedirect()}
+        />
+      )}
+
+      <ProductSpecs specs={item.specs} />
+    </div>
+  );
+}
+
+// ─── ProductNotFound ─────────────────────────────────────────
+
+function ProductNotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <SearchX className="text-muted-foreground/30 mb-4 size-16" />
+      <h2 className="mb-2 text-2xl font-bold">Item not found</h2>
+      <p className="text-muted-foreground mb-6">This item may no longer be available.</p>
+      <Button asChild>
+        <Link href="/search">Browse Collection</Link>
+      </Button>
+    </div>
+  );
+}
+
 // ─── Page ────────────────────────────────────────────────────
 
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -85,7 +369,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   const item = items.find((i) => createSlug(i.title) === slug || i.id === slug);
 
-  // Fetch variants when we have a forSale item
   useEffect(() => {
     if (!item?.forSale) return;
     const handle = ITEM_TYPE_TO_PRODUCT_HANDLE[item.itemType as ItemType];
@@ -119,19 +402,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       </div>
     );
   }
-
-  if (!item) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <SearchX className="text-muted-foreground/30 mb-4 size-16" />
-        <h2 className="mb-2 text-2xl font-bold">Item not found</h2>
-        <p className="text-muted-foreground mb-6">This item may no longer be available.</p>
-        <Button asChild>
-          <Link href="/search">Browse Collection</Link>
-        </Button>
-      </div>
-    );
-  }
+  if (!item) return <ProductNotFound />;
 
   const style = ITEM_TYPE_STYLE[item.itemType];
   const relatedItems = items.filter((i) => i.id !== item.id).slice(0, 4);
@@ -139,7 +410,6 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="mx-auto w-full max-w-7xl px-6 py-8">
-      {/* Breadcrumbs */}
       <Breadcrumb className="mb-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -157,192 +427,25 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
       </Breadcrumb>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-        {/* Left: Image */}
-        <div className="flex flex-col gap-4">
-          <div className="group bg-card relative w-full cursor-zoom-in rounded-xl border p-4 shadow-sm">
-            <div
-              className="aspect-[3/4] w-full rounded-lg bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url("${item.image}")` }}
-            />
-            <div className="bg-background/90 absolute right-8 bottom-8 rounded-full p-3 opacity-0 shadow-lg backdrop-blur-sm transition-opacity group-hover:opacity-100">
-              <ZoomIn className="text-primary size-5" />
-            </div>
-          </div>
-        </div>
+        <ProductImage src={item.image} />
 
-        {/* Right: Details */}
-        <div className="flex flex-col gap-6">
-          <div>
-            <div className="mb-4 flex gap-3">
-              {style && (
-                <Badge variant="secondary" className={`${style.bg} ${style.color}`}>
-                  {style.label}
-                </Badge>
-              )}
-              <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-600">
-                Historical Archive
-              </Badge>
-            </div>
-            <h1 className="mb-2 text-4xl leading-tight font-extrabold">{item.title}</h1>
-            <div className="text-muted-foreground font-mono text-sm tracking-tight">
-              Series {item.series} &middot; Control Symbol {item.controlSymbol}
-            </div>
-          </div>
-
-          <div className="text-muted-foreground leading-relaxed">
-            <p>{item.description}</p>
-          </div>
-
-          {item.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {item.tags.map((tag) => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Order Card or Digitisation Request Form */}
-          {item.forSale ? (
-            <div className="bg-card flex flex-col gap-5 rounded-xl border p-6 shadow-sm">
-              <div className="flex items-end justify-between">
-                <div className="flex flex-col gap-1">
-                  <span className="text-muted-foreground text-sm font-medium tracking-widest uppercase">
-                    {chosenVariant ? 'Service Price' : 'From'}
-                  </span>
-                  <span className="text-primary text-3xl font-bold">
-                    {chosenVariant
-                      ? `$${parseFloat(chosenVariant.price.amount).toFixed(2)} ${chosenVariant.price.currencyCode}`
-                      : item.price}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-bold text-green-600">
-                  <span className="size-2 rounded-full bg-green-500" />
-                  Available
-                </div>
-              </div>
-
-              {/* Variant selector */}
-              {variants.length > 1 && (
-                <div className="flex flex-col gap-2">
-                  <label className="text-muted-foreground text-sm font-bold">Service Option</label>
-                  <div className="flex flex-col gap-2">
-                    {variants.map((v) => (
-                      <button
-                        key={v.id}
-                        onClick={() => setSelectedVariant(v.id)}
-                        className={cn(
-                          'flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all',
-                          selectedVariant === v.id
-                            ? 'border-primary bg-primary/5 font-bold'
-                            : 'hover:border-primary/40',
-                        )}
-                      >
-                        <span>{v.title}</span>
-                        <span className="font-semibold">
-                          ${parseFloat(v.price.amount).toFixed(2)}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <Button
-                size="lg"
-                className="w-full gap-2"
-                disabled={!selectedVariant || isCartLoading}
-                onClick={handleAddToCart}
-              >
-                {addedToCart ? (
-                  <>
-                    <Check className="size-5" />
-                    Added to Cart
-                  </>
-                ) : (
-                  <>
-                    <ShoppingCart className="size-5" />
-                    Add to Cart
-                  </>
-                )}
-              </Button>
-            </div>
-          ) : (
-            <DigitisationRequestForm
-              item={item}
-              isAuthenticated={isAuthenticated}
-              userEmail={user?.email}
-              userName={(user as { name?: string })?.name}
-              onLogin={() => loginWithRedirect()}
-            />
-          )}
-
-          {/* Accordions */}
-          <div className="flex flex-col divide-y border-t">
-            <details className="group py-4" open>
-              <summary className="flex cursor-pointer list-none items-center justify-between font-bold">
-                <span>Specifications</span>
-                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="text-muted-foreground space-y-2 pt-4 font-mono text-sm">
-                {[
-                  ['Page Count', item.specs.pages],
-                  ['Dimensions', item.specs.dimensions],
-                  ['Scan Resolution', item.specs.resolution],
-                  ['File Format', item.specs.format],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    className="flex justify-between border-b border-dotted border-current pb-1"
-                  >
-                    <span>{label}</span>
-                    <span className="text-foreground">{value}</span>
-                  </div>
-                ))}
-              </div>
-            </details>
-            <details className="group py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between font-bold">
-                <span>Delivery Information</span>
-                <ChevronDown className="size-4 transition-transform group-open:rotate-180" />
-              </summary>
-              <div className="text-muted-foreground pt-4 text-sm leading-relaxed">
-                Digital downloads are processed instantly and a link will be emailed to your account
-                address. Physical facsimiles are produced on-demand using acid-free archival paper
-                and shipped within 3-5 business days via secure courier.
-              </div>
-            </details>
-          </div>
-        </div>
+        <ProductDetails
+          item={item}
+          style={style}
+          variants={variants}
+          selectedVariant={selectedVariant}
+          chosenVariant={chosenVariant}
+          onSelectVariant={setSelectedVariant}
+          onAddToCart={handleAddToCart}
+          isCartLoading={isCartLoading}
+          addedToCart={addedToCart}
+          isAuthenticated={isAuthenticated}
+          user={user as { email?: string; name?: string }}
+          loginWithRedirect={loginWithRedirect}
+        />
       </div>
 
-      {/* Related Collections */}
-      {relatedItems.length > 0 && (
-        <div className="mt-20 border-t pt-12">
-          <h3 className="mb-6 text-xl font-bold">Explore Related Collections</h3>
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            {relatedItems.map((relatedItem) => (
-              <Link
-                key={relatedItem.id}
-                href={`/products/${createSlug(relatedItem.title)}`}
-                className="group"
-              >
-                <div className="mb-3 aspect-video overflow-hidden rounded-lg border">
-                  <div
-                    className="h-full w-full bg-cover bg-center transition-transform group-hover:scale-105"
-                    style={{ backgroundImage: `url("${relatedItem.image}")` }}
-                  />
-                </div>
-                <h4 className="group-hover:text-primary text-sm font-bold transition-colors">
-                  {relatedItem.title}
-                </h4>
-                <p className="text-muted-foreground text-xs">{relatedItem.category}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      <RelatedCollections relatedItems={relatedItems} />
     </div>
   );
 }

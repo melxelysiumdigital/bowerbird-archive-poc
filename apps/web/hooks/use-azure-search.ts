@@ -178,12 +178,13 @@ export function useAzureSearch(debounceMs = 300) {
     search('');
   }, [search]);
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       abortControllerRef.current?.abort();
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-    };
-  }, []);
+    },
+    [],
+  );
 
   return { ...state, search, debouncedSearch };
 }
