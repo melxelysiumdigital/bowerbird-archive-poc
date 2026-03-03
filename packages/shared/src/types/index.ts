@@ -14,3 +14,12 @@ export type {
 } from './digitisation';
 export type { AdminOrder, AdminDraftOrder } from './shopify-admin';
 export type { CustomerInfo } from './auth';
+export type {
+  RefTrackerStatus,
+  RefTrackerEvent,
+  RefTrackerJob,
+  TechOneStatus,
+  TechOneCostLine,
+  TechOneWorkOrder,
+  IntegrationState,
+} from './integrations';

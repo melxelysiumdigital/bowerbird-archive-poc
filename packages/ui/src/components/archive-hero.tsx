@@ -44,7 +44,7 @@ export function ArchiveHero({
   headingLine1 = 'The Archive',
   headingLine2 = 'Awaits.',
   description = 'Preserving human history through a curated collection of premium historical documents, original manuscripts, and archival treasures from the 17th century to the modern era.',
-  primaryCtaText = 'Shop Collection',
+  primaryCtaText = 'Explore the Collection',
   primaryCtaUrl = '/search',
   secondaryCtaText = 'Collection',
   secondaryCtaUrl = '/search',

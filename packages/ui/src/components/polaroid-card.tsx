@@ -50,9 +50,6 @@ export function PolaroidCard({ item, onClick, className }: PolaroidCardProps) {
           {item.title}
         </h3>
         <p className="text-muted-foreground mt-1 text-xs">{item.category}</p>
-        {item.forSale && item.price && (
-          <p className="text-primary mt-2 text-sm font-bold">{item.price}</p>
-        )}
         {!item.forSale && (
           <p className="mt-2 text-xs font-medium text-amber-800">Digitisation on request</p>
         )}
