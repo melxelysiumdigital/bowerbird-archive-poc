@@ -80,12 +80,19 @@
     "donation_product": "donation",
     "content_for_index": [],
     "blocks": {
-      "13578273684786698590": {
-        "type": "shopify://apps/bowerbird-archive-thank-you/blocks/redirect/019c92b9-08cc-7bfc-ad47-62118e040ca0",
+      "4654449243000970445": {
+        "type": "shopify://apps/bowerbird-archive-thank-you/blocks/redirect/019c92e9-301b-740c-873f-1614c19bfb77",
         "disabled": false,
         "settings": {
           "enable_redirect": true,
           "custom_redirects": ""
+        }
+      },
+      "14557984015611806977": {
+        "type": "shopify://apps/bowerbird-archive-donate/blocks/donation/019cdac9-2be0-7cc3-a47b-55e22d2cf2c2",
+        "disabled": false,
+        "settings": {
+          "donation_product": "donation"
         }
       }
     },
