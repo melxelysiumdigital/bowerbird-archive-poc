@@ -76,6 +76,8 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
+    "donation_enabled": true,
+    "donation_product": "donation",
     "content_for_index": [],
     "blocks": {
       "13578273684786698590": {
