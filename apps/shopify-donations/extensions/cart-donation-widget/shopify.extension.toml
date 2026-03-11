@@ -1,0 +1,12 @@
+api_version = "2026-01"
+uid = "a4d2e8f1-b3c7-4a91-9e52-donation-cart01"
+type = "theme"
+name = "Cart Donation Widget"
+
+[settings]
+[[settings.fields]]
+key = "enable_donation"
+type = "boolean"
+name = "Enable donation widget"
+description = "Shows a floating donate button site-wide and a round-up option on the cart page"
+default = true

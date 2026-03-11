@@ -1,0 +1,362 @@
+{%- comment -%}
+  Donation App Embed — three features:
+  1. Floating donate button + modal (site-wide) — presets + custom amount
+  2. "Add a donation" widget injected into the cart drawer
+  3. Round-up prompt injected into the cart drawer
+{%- endcomment -%}
+
+{%- unless block.settings.enable_donation == false -%}
+{%- assign donation_product = block.settings.donation_product -%}
+{%- if donation_product == blank -%}
+  {%- break -%}
+{%- endif -%}
+
+{%- assign presets_json = '' -%}
+{%- assign zero_variant_id = 0 -%}
+{%- assign all_ids_json = '' -%}
+{%- for variant in donation_product.variants -%}
+  {%- capture all_ids_json -%}{{ all_ids_json }}{% unless all_ids_json == '' %},{% endunless %}{{ variant.id }}{%- endcapture -%}
+  {%- if variant.price == 0 -%}
+    {%- assign zero_variant_id = variant.id -%}
+  {%- else -%}
+    {%- capture presets_json -%}{{ presets_json }}{% unless presets_json == '' %},{% endunless %}{"id":{{ variant.id }},"label":"${{ variant.price | divided_by: 100 }}","price":{{ variant.price | divided_by: 100.0 }}}{%- endcapture -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<!-- Floating donate button -->
+<button id="bw-donate-trigger" class="bw-donate-trigger" aria-label="Donate">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+</button>
+
+<!-- Donation modal overlay -->
+<div id="bw-donate-modal" class="bw-donate-overlay" style="display:none;">
+  <div class="bw-donate-modal">
+    <div class="bw-donate-header">
+      <h2 class="bw-donate-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Make a Donation
+      </h2>
+      <button id="bw-donate-close" class="bw-donate-close" aria-label="Close">&times;</button>
+    </div>
+    <div class="bw-donate-body">
+      <div id="bw-donate-form">
+        <p class="bw-donate-desc">Support the Bowerbird Archive. Choose a preset amount or enter a custom donation.</p>
+        <div class="bw-donate-buttons" id="bw-donate-buttons"></div>
+        <div id="bw-donate-custom" style="display:none;">
+          <label class="bw-donate-label" for="bw-donate-amount">Custom amount</label>
+          <div class="bw-donate-input-wrap">
+            <span class="bw-donate-prefix">$</span>
+            <input class="bw-donate-input" id="bw-donate-amount" type="number" min="1" step="0.01" placeholder="Enter amount" />
+          </div>
+          <p class="bw-donate-error" id="bw-donate-error" style="display:none;"></p>
+        </div>
+        <button class="bw-donate-submit" id="bw-donate-submit" disabled>Add Donation</button>
+      </div>
+      <div id="bw-donate-success" style="display:none;" class="bw-donate-success">
+        <div class="bw-donate-check">&#10003;</div>
+        <p class="bw-donate-thanks">Thank you!</p>
+        <p class="bw-donate-sub">Your donation has been added to the cart.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  if (window.Shopify && window.Shopify.designMode) return;
+
+  var presets = [{{ presets_json }}];
+  var zeroVariantId = {{ zero_variant_id }};
+  var allIds = [{{ all_ids_json }}];
+  var productId = {{ donation_product.id }};
+
+  /* ── Donation Modal (floating button) ── */
+  var trigger = document.getElementById('bw-donate-trigger');
+  var modal = document.getElementById('bw-donate-modal');
+  var closeBtn = document.getElementById('bw-donate-close');
+  var buttonsEl = document.getElementById('bw-donate-buttons');
+  var customEl = document.getElementById('bw-donate-custom');
+  var amountEl = document.getElementById('bw-donate-amount');
+  var errorEl = document.getElementById('bw-donate-error');
+  var submitBtn = document.getElementById('bw-donate-submit');
+  var formEl = document.getElementById('bw-donate-form');
+  var successEl = document.getElementById('bw-donate-success');
+
+  var selectedId = null;
+  var isCustom = false;
+
+  trigger.onclick = function() { modal.style.display = 'flex'; };
+  closeBtn.onclick = closeModal;
+  modal.onclick = function(e) { if (e.target === modal) closeModal(); };
+
+  function closeModal() {
+    modal.style.display = 'none';
+    selectedId = null; isCustom = false;
+    customEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    formEl.style.display = 'block';
+    successEl.style.display = 'none';
+    amountEl.value = '';
+    updateSubmit();
+    renderButtons();
+  }
+
+  function renderButtons() {
+    buttonsEl.innerHTML = '';
+    presets.forEach(function(p) {
+      var btn = document.createElement('button');
+      btn.textContent = p.label;
+      btn.className = 'bw-donate-btn' + (selectedId === p.id && !isCustom ? ' bw-donate-btn--active' : '');
+      btn.onclick = function() {
+        selectedId = p.id; isCustom = false;
+        customEl.style.display = 'none'; errorEl.style.display = 'none';
+        updateSubmit(); renderButtons();
+      };
+      buttonsEl.appendChild(btn);
+    });
+    if (zeroVariantId) {
+      var cb = document.createElement('button');
+      cb.textContent = 'Custom';
+      cb.className = 'bw-donate-btn' + (isCustom ? ' bw-donate-btn--active' : '');
+      cb.onclick = function() {
+        isCustom = true; selectedId = null;
+        customEl.style.display = 'block';
+        updateSubmit(); renderButtons();
+      };
+      buttonsEl.appendChild(cb);
+    }
+  }
+
+  function updateSubmit() {
+    var ok = isCustom ? (function(){ var a=parseFloat(amountEl.value); return !isNaN(a)&&a>=1; })() : !!selectedId;
+    submitBtn.disabled = !ok;
+  }
+
+  amountEl.addEventListener('input', function() { errorEl.style.display = 'none'; updateSubmit(); });
+
+  submitBtn.onclick = function() {
+    var vid, props = {};
+    if (isCustom) {
+      var amt = parseFloat(amountEl.value);
+      if (isNaN(amt) || amt < 1) { errorEl.textContent = 'Minimum donation is $1.00'; errorEl.style.display = 'block'; return; }
+      vid = zeroVariantId;
+      props = { '_donation_amount': String(amt), 'Donation Amount': '$' + amt.toFixed(2) };
+    } else { vid = selectedId; }
+
+    submitBtn.disabled = true; submitBtn.textContent = 'Adding...';
+    addToCart(vid, props, function() {
+      formEl.style.display = 'none';
+      successEl.style.display = 'block';
+      setTimeout(closeModal, 2000);
+    }, function() {
+      submitBtn.disabled = false; submitBtn.textContent = 'Add Donation';
+    });
+  };
+
+  renderButtons();
+
+  /* ── Shared: add to cart + dispatch event ── */
+  function addToCart(variantId, properties, onSuccess, onError) {
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1, properties: properties })
+    }).then(function(r) {
+      if (!r.ok) throw new Error('Cart add failed');
+      return r.json();
+    }).then(function(data) {
+      /* Dispatch cart:update so Horizon theme refreshes the drawer */
+      var evt = new Event('cart:update', { bubbles: true });
+      evt.detail = { resource: data, sourceId: 'bw-donation', data: { source: 'bw-donation', itemCount: 1 } };
+      document.dispatchEvent(evt);
+      if (onSuccess) onSuccess();
+    }).catch(function() {
+      if (onError) onError();
+    });
+  }
+
+  /* ── Cart Drawer Injection ── */
+  function cartHasDonation(cartData) {
+    if (!cartData || !cartData.items) return false;
+    return cartData.items.some(function(item) { return item.product_id === productId; });
+  }
+
+  function buildDrawerWidget(cartData) {
+    var hasDonation = cartHasDonation(cartData);
+    var container = document.createElement('div');
+    container.className = 'bw-drawer-donation';
+
+    if (hasDonation) return container; /* Empty — donation already in cart */
+
+    /* Round-up section */
+    if (zeroVariantId && cartData && cartData.items && cartData.items.length > 0) {
+      var total = cartData.total_price / 100;
+      var ceil = Math.ceil(total);
+      var diff = ceil - total;
+      if (diff < 0.01) diff = 1.0;
+      var target = diff < 1 ? ceil : total + 1;
+
+      var roundup = document.createElement('button');
+      roundup.className = 'bw-drawer-roundup';
+      roundup.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg> Round up to $' + target.toFixed(2) + ' <span class="bw-drawer-roundup-note">(+$' + diff.toFixed(2) + ' donation)</span>';
+      roundup.onclick = function() {
+        roundup.disabled = true; roundup.textContent = 'Adding...';
+        addToCart(zeroVariantId, { '_donation_amount': diff.toFixed(2), 'Donation Amount': '$' + diff.toFixed(2) }, null, function() {
+          roundup.disabled = false;
+        });
+      };
+      container.appendChild(roundup);
+    }
+
+    /* Preset donation buttons */
+    var heading = document.createElement('p');
+    heading.className = 'bw-drawer-heading';
+    heading.textContent = 'Add a donation';
+    container.appendChild(heading);
+
+    var grid = document.createElement('div');
+    grid.className = 'bw-drawer-amounts';
+    presets.forEach(function(p) {
+      var btn = document.createElement('button');
+      btn.className = 'bw-drawer-amount-btn';
+      btn.textContent = p.label;
+      btn.onclick = function() {
+        btn.disabled = true; btn.textContent = '...';
+        addToCart(p.id, {}, null, function() {
+          btn.disabled = false; btn.textContent = p.label;
+        });
+      };
+      grid.appendChild(btn);
+    });
+    if (zeroVariantId) {
+      var customBtn = document.createElement('button');
+      customBtn.className = 'bw-drawer-amount-btn';
+      customBtn.textContent = 'Custom';
+      customBtn.onclick = function() {
+        /* Open the floating modal instead */
+        modal.style.display = 'flex';
+      };
+      grid.appendChild(customBtn);
+    }
+    container.appendChild(grid);
+
+    return container;
+  }
+
+  function injectIntoDrawer() {
+    var target = document.querySelector('.cart-drawer__donation');
+    if (!target) return;
+
+    fetch('/cart.js').then(function(r) { return r.json(); }).then(function(cartData) {
+      /* Clear any existing injection */
+      var existing = target.querySelector('.bw-drawer-donation');
+      if (existing) existing.remove();
+
+      var widget = buildDrawerWidget(cartData);
+      target.appendChild(widget);
+    });
+  }
+
+  /* Inject when drawer opens (observed via dialog[open] or MutationObserver) */
+  var drawerDialog = document.querySelector('cart-drawer-component dialog');
+  if (drawerDialog) {
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'open' && drawerDialog.hasAttribute('open')) {
+          injectIntoDrawer();
+        }
+      });
+    });
+    observer.observe(drawerDialog, { attributes: true });
+  }
+
+  /* Also re-inject after cart updates (theme dispatches cart:update) */
+  document.addEventListener('cart:update', function(e) {
+    /* Skip our own events to avoid loops */
+    if (e.detail && e.detail.sourceId === 'bw-donation') {
+      /* Re-inject after a short delay to let the theme re-render the drawer */
+      setTimeout(injectIntoDrawer, 500);
+    }
+  });
+
+  /* Inject immediately if drawer is already open */
+  if (drawerDialog && drawerDialog.hasAttribute('open')) {
+    injectIntoDrawer();
+  }
+})();
+</script>
+
+<style>
+  /* Floating trigger button */
+  .bw-donate-trigger { position:fixed; bottom:24px; right:24px; z-index:9998; width:48px; height:48px; border-radius:50%; background:#111; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); transition:transform 0.15s; }
+  .bw-donate-trigger:hover { transform:scale(1.1); }
+
+  /* Modal overlay */
+  .bw-donate-overlay { position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; padding:16px; }
+  .bw-donate-modal { background:#fff; border-radius:16px; width:100%; max-width:420px; overflow:hidden; box-shadow:0 24px 48px rgba(0,0,0,0.2); }
+  .bw-donate-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid #e5e5e5; }
+  .bw-donate-title { font-size:18px; font-weight:600; margin:0; }
+  .bw-donate-close { background:none; border:none; font-size:24px; cursor:pointer; color:#666; padding:0; line-height:1; }
+  .bw-donate-body { padding:24px; }
+  .bw-donate-desc { font-size:14px; color:#666; margin:0 0 16px; }
+
+  /* Preset buttons (modal) */
+  .bw-donate-buttons { display:flex; gap:8px; margin-bottom:16px; }
+  .bw-donate-btn { flex:1; padding:10px 8px; border:1px solid #ccc; border-radius:8px; background:#fff; color:#111; font-size:14px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+  .bw-donate-btn:hover { border-color:#111; }
+  .bw-donate-btn--active { background:#111; color:#fff; border-color:#111; }
+
+  /* Custom amount (modal) */
+  .bw-donate-label { display:block; font-size:13px; font-weight:500; margin-bottom:4px; }
+  .bw-donate-input-wrap { position:relative; }
+  .bw-donate-prefix { position:absolute; top:50%; left:12px; transform:translateY(-50%); font-size:14px; color:#666; }
+  .bw-donate-input { width:100%; padding:10px 12px 10px 28px; border:1px solid #ccc; border-radius:8px; font-size:14px; box-sizing:border-box; }
+  .bw-donate-error { color:#e53e3e; font-size:12px; margin:4px 0 0; }
+
+  /* Submit (modal) */
+  .bw-donate-submit { width:100%; margin-top:16px; padding:12px; border:none; border-radius:8px; background:#111; color:#fff; font-size:14px; font-weight:600; cursor:pointer; }
+  .bw-donate-submit:disabled { opacity:0.5; cursor:not-allowed; }
+
+  /* Success (modal) */
+  .bw-donate-success { text-align:center; padding:24px 0; }
+  .bw-donate-check { width:56px; height:56px; border-radius:50%; background:rgba(22,163,74,0.1); color:#16a34a; font-size:28px; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; }
+  .bw-donate-thanks { font-size:18px; font-weight:600; margin:0 0 4px; }
+  .bw-donate-sub { font-size:14px; color:#666; margin:0; }
+
+  /* ── Cart drawer injection styles ── */
+  .bw-drawer-donation { padding:16px 0 0; border-top:1px solid #e5e5e5; margin-top:8px; }
+  .bw-drawer-heading { font-size:13px; font-weight:600; margin:0 0 8px; color:#111; }
+  .bw-drawer-amounts { display:grid; grid-template-columns:repeat(auto-fit, minmax(60px,1fr)); gap:6px; }
+  .bw-drawer-amount-btn { padding:8px 6px; border:1px solid #ccc; border-radius:6px; background:#fff; color:#111; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.15s; }
+  .bw-drawer-amount-btn:hover { border-color:#111; }
+  .bw-drawer-amount-btn:disabled { opacity:0.5; cursor:not-allowed; }
+
+  /* Round-up button in drawer */
+  .bw-drawer-roundup { width:100%; padding:10px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; font-size:13px; cursor:pointer; margin-bottom:12px; transition:border-color 0.15s; text-align:left; }
+  .bw-drawer-roundup:hover { border-color:#111; }
+  .bw-drawer-roundup:disabled { opacity:0.5; cursor:not-allowed; }
+  .bw-drawer-roundup-note { color:#666; }
+</style>
+
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Cart Donation",
+  "target": "body",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_donation",
+      "label": "Enable donation widget",
+      "default": true,
+      "info": "Shows a floating donate button site-wide and donation options in the cart drawer."
+    },
+    {
+      "type": "product",
+      "id": "donation_product",
+      "label": "Donation product"
+    }
+  ]
+}
+{% endschema %}
