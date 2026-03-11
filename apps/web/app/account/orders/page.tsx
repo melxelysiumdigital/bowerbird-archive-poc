@@ -1,7 +1,7 @@
 'use client';
 
 import { AuthenticatedOrders } from './authenticated-orders';
-import { SignInPrompt } from './orders-components';
+import { SignInPrompt } from './sign-in-prompt';
 
 import { useAuth } from '@/hooks/use-auth';
 import { useDigitisationRequests } from '@/hooks/use-digitisation-requests';

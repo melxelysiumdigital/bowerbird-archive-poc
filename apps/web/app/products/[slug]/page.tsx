@@ -13,12 +13,12 @@ import {
   BreadcrumbSeparator,
 } from '@bowerbird-poc/ui/components/breadcrumb';
 import { Button } from '@bowerbird-poc/ui/components/button';
-import { cn } from '@bowerbird-poc/ui/lib/utils';
-import { ChevronDown, ZoomIn, SearchX, ShoppingCart, Check } from 'lucide-react';
+import { ChevronDown, ZoomIn, SearchX, ShoppingCart, Check, Info } from 'lucide-react';
 import Link from 'next/link';
 import { use, useEffect, useState, useCallback } from 'react';
 
 import { DigitisationRequestForm } from '@/components/digitisation-request-form';
+import { ResearchCentreRequest } from '@/components/research-centre-request';
 import { useAuth } from '@/hooks/use-auth';
 import { useAzureSearch } from '@/hooks/use-azure-search';
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
@@ -67,9 +67,79 @@ async function fetchVariantsForHandle(handle: string): Promise<ShopifyVariant[]>
 
 // ─── Sub-components ──────────────────────────────────────────
 
+function OrderItemMeta({ item }: { item: SearchItem }) {
+  return (
+    <div className="border-b px-6 py-4">
+      <dl className="text-sm">
+        {[
+          ['Item title', item.title],
+          ['Series number', item.series],
+          ['Control symbol', item.controlSymbol],
+          ['Barcode', item.barcode],
+        ].map(([label, value]) => (
+          <div key={label} className="flex gap-2 py-1">
+            <dt className="font-semibold">{label}:</dt>
+            <dd className="text-muted-foreground">{value}</dd>
+          </div>
+        ))}
+        <div className="flex gap-2 py-1">
+          <dt className="font-semibold">Access status:</dt>
+          <dd className="font-medium text-green-600">Open</dd>
+        </div>
+      </dl>
+    </div>
+  );
+}
+
+function OrderPriceBreakdown({ price, gst, total }: { price: number; gst: number; total: number }) {
+  return (
+    <div className="border-b px-6 py-4">
+      <div className="flex flex-col gap-1 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Sub-Total</span>
+          <span className="font-medium">${price.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">
+            GST<sup>*</sup>
+          </span>
+          <span className="font-medium">${gst.toFixed(2)}</span>
+        </div>
+        <div className="mt-1 flex justify-between border-t pt-2">
+          <span className="font-semibold">
+            Total (inc GST)<sup>**</sup>
+          </span>
+          <span className="font-bold">${total.toFixed(2)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OrderFootnotes() {
+  return (
+    <div className="border-b px-6 py-4">
+      <div className="text-muted-foreground flex items-start gap-2 text-xs leading-relaxed">
+        <Info className="mt-0.5 size-3.5 shrink-0 text-amber-500" />
+        <div>
+          <p>
+            <sup>*</sup>GST (10%) will be added at checkout for all orders with an Australian
+            address.
+          </p>
+          <p className="mt-2">
+            <sup>**</sup>National Archives of Australia is currently upgrading its
+            digitisation-on-demand service. As we transition to a new payment system, fees for
+            standard public paper digitisation services will be temporarily waived.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProductOrderCard({
+  item,
   chosenVariant,
-  price,
   variants,
   selectedVariant,
   onSelectVariant,
@@ -77,8 +147,8 @@ function ProductOrderCard({
   isCartLoading,
   addedToCart,
 }: {
+  item: SearchItem;
   chosenVariant: ShopifyVariant | undefined;
-  price: string;
   variants: ShopifyVariant[];
   selectedVariant: string | null;
   onSelectVariant: (id: string) => void;
@@ -86,66 +156,63 @@ function ProductOrderCard({
   isCartLoading: boolean;
   addedToCart: boolean;
 }) {
+  const price = chosenVariant ? parseFloat(chosenVariant.price.amount) : 0;
+  const gst = price * 0.1;
+  const total = price + gst;
+  const currency = chosenVariant?.price.currencyCode ?? 'AUD';
+
   return (
-    <div className="bg-card flex flex-col gap-5 rounded-xl border p-6 shadow-sm">
-      <div className="flex items-end justify-between">
-        <div className="flex flex-col gap-1">
-          <span className="text-muted-foreground text-sm font-medium tracking-widest uppercase">
-            {chosenVariant ? 'Service Price' : 'From'}
-          </span>
-          <span className="text-primary text-3xl font-bold">
-            {chosenVariant
-              ? `$${parseFloat(chosenVariant.price.amount).toFixed(2)} ${chosenVariant.price.currencyCode}`
-              : price}
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-sm font-bold text-green-600">
-          <span className="size-2 rounded-full bg-green-500" />
-          Available
-        </div>
+    <div className="bg-card flex flex-col gap-0 rounded-xl border shadow-sm">
+      {/* Header */}
+      <div className="border-b px-6 py-4">
+        <h3 className="text-lg font-bold">Request a Copy</h3>
       </div>
 
-      {variants.length > 1 && (
-        <div className="flex flex-col gap-2">
-          <label className="text-muted-foreground text-sm font-bold">Service Option</label>
-          <div className="flex flex-col gap-2">
-            {variants.map((v) => (
-              <button
-                key={v.id}
-                onClick={() => onSelectVariant(v.id)}
-                className={cn(
-                  'flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all',
-                  selectedVariant === v.id
-                    ? 'border-primary bg-primary/5 font-bold'
-                    : 'hover:border-primary/40',
-                )}
-              >
-                <span>{v.title}</span>
-                <span className="font-semibold">${parseFloat(v.price.amount).toFixed(2)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <OrderItemMeta item={item} />
 
-      <Button
-        size="lg"
-        className="w-full gap-2"
-        disabled={!selectedVariant || isCartLoading}
-        onClick={onAddToCart}
-      >
-        {addedToCart ? (
-          <>
-            <Check className="size-5" />
-            Added to Cart
-          </>
-        ) : (
-          <>
-            <ShoppingCart className="size-5" />
-            Add to Cart
-          </>
-        )}
-      </Button>
+      {/* Product selector */}
+      <div className="border-b px-6 py-4">
+        <label className="text-sm font-semibold">Please select a product:</label>
+        <select
+          className="border-input bg-background mt-2 w-full rounded-md border px-3 py-2 text-sm"
+          value={selectedVariant ?? ''}
+          onChange={(e) => onSelectVariant(e.target.value)}
+        >
+          <option value="" disabled>
+            -- Please select product --
+          </option>
+          {variants.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.title} ${parseFloat(v.price.amount).toFixed(2)}({currency})
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <OrderPriceBreakdown price={price} gst={gst} total={total} />
+      <OrderFootnotes />
+
+      {/* Action */}
+      <div className="px-6 py-4">
+        <Button
+          size="lg"
+          className="w-full gap-2"
+          disabled={!selectedVariant || isCartLoading}
+          onClick={onAddToCart}
+        >
+          {addedToCart ? (
+            <>
+              <Check className="size-5" />
+              Added to Cart
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="size-5" />
+              Proceed to Checkout
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -310,8 +377,8 @@ function ProductDetails({
 
       {item.forSale ? (
         <ProductOrderCard
+          item={item}
           chosenVariant={chosenVariant}
-          price={item.price}
           variants={variants}
           selectedVariant={selectedVariant}
           onSelectVariant={onSelectVariant}
@@ -328,6 +395,8 @@ function ProductDetails({
           onLogin={() => loginWithRedirect()}
         />
       )}
+
+      {isAuthenticated && <ResearchCentreRequest item={item} />}
 
       <ProductSpecs specs={item.specs} />
     </div>

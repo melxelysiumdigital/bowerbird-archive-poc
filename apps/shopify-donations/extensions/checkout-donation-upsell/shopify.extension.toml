@@ -7,28 +7,8 @@ name = "Donation"
 handle = "checkout-donation-upsell"
 
   [[extensions.targeting]]
-  target = "purchase.checkout.block.render"
+  target = "purchase.checkout.actions.render-before"
   module = "./src/Checkout.jsx"
 
   [extensions.capabilities]
   api_access = true
-
-  [extensions.settings]
-
-    [[extensions.settings.fields]]
-    key = "product_handle"
-    type = "single_line_text_field"
-    name = "Donation product handle"
-    description = "The handle of the donation product (e.g. 'donate')"
-
-    [[extensions.settings.fields]]
-    key = "heading"
-    type = "single_line_text_field"
-    name = "Heading"
-    description = "Widget heading text"
-
-    [[extensions.settings.fields]]
-    key = "description"
-    type = "single_line_text_field"
-    name = "Description"
-    description = "Widget description text"

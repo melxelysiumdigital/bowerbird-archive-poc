@@ -15,9 +15,6 @@ import {
   ScanLine,
   RefreshCw,
   LogOut,
-  User,
-  LogIn,
-  Info,
   Check,
   Truck,
   Package,
@@ -26,6 +23,7 @@ import {
   CreditCard,
   ChevronDown,
   ChevronUp,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -85,57 +83,7 @@ function OrderStep({
 }
 
 // ─── Tab type ────────────────────────────────────────────────
-export type Tab = 'orders' | 'digitisation';
-
-// ─── SignInPrompt ────────────────────────────────────────────
-export function SignInPrompt({ loginWithRedirect }: { loginWithRedirect: () => void }) {
-  return (
-    <div className="mx-auto w-full max-w-[960px] px-6 py-8">
-      <Breadcrumb className="mb-6">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Home</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Sign In</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <div className="py-12">
-        <div className="bg-card mx-auto max-w-md rounded-xl border p-8 shadow-sm">
-          <div className="mb-6 text-center">
-            <div className="bg-primary/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
-              <User className="text-primary size-8" />
-            </div>
-            <h2 className="text-2xl font-bold">Sign in to view orders</h2>
-            <p className="text-muted-foreground mt-2 text-sm">
-              Sign in with your account to view your order history
-            </p>
-          </div>
-          <Button className="w-full gap-2" onClick={() => loginWithRedirect()}>
-            <LogIn className="size-4" />
-            Sign in
-          </Button>
-        </div>
-      </div>
-
-      <div className="mx-auto mt-8 max-w-md rounded-xl border border-amber-200 bg-amber-50 p-6">
-        <div className="flex gap-3">
-          <Info className="size-5 shrink-0 text-amber-600" />
-          <div>
-            <h4 className="font-bold text-amber-800">Secure Sign In</h4>
-            <p className="mt-1 text-sm text-amber-700">
-              Sign in or create an account to view your order history and track your archival
-              acquisitions.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+export type Tab = 'orders' | 'digitisation' | 'copy-quotes';
 
 // ─── TabSwitcher ─────────────────────────────────────────────
 export function TabSwitcher({
@@ -143,14 +91,16 @@ export function TabSwitcher({
   setActiveTab,
   ordersCount,
   requestsCount,
+  copyQuotesCount,
 }: {
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
   ordersCount: number;
   requestsCount: number;
+  copyQuotesCount?: number;
 }) {
   return (
-    <div className="bg-muted mb-8 flex w-fit gap-1 rounded-lg p-1">
+    <div className="bg-muted mb-8 flex w-fit flex-wrap gap-1 rounded-lg p-1">
       <button
         onClick={() => setActiveTab('orders')}
         className={cn(
@@ -182,6 +132,23 @@ export function TabSwitcher({
         {requestsCount > 0 && (
           <Badge variant="secondary" className="text-xs">
             {requestsCount}
+          </Badge>
+        )}
+      </button>
+      <button
+        onClick={() => setActiveTab('copy-quotes')}
+        className={cn(
+          'flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition-all',
+          activeTab === 'copy-quotes'
+            ? 'bg-background text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground',
+        )}
+      >
+        <Copy className="size-4" />
+        Research Centre Requests
+        {(copyQuotesCount ?? 0) > 0 && (
+          <Badge variant="secondary" className="text-xs">
+            {copyQuotesCount}
           </Badge>
         )}
       </button>
@@ -270,7 +237,13 @@ function OrderProgress({ order }: { order: OrderData }) {
 }
 
 // ─── OrderItemsList ──────────────────────────────────────────
-function OrderItemsList({ items }: { items: NonNullable<OrderData['items']> }) {
+function OrderItemsList({
+  items,
+  isCompleted,
+}: {
+  items: NonNullable<OrderData['items']>;
+  isCompleted: boolean;
+}) {
   return (
     <div className="space-y-4 md:col-span-2">
       <h3 className="text-muted-foreground mb-4 text-sm font-bold tracking-widest uppercase">
@@ -279,22 +252,41 @@ function OrderItemsList({ items }: { items: NonNullable<OrderData['items']> }) {
       {items.map((item, idx) => (
         <div
           key={idx}
-          className="group hover:border-primary/30 flex items-center gap-4 rounded-lg border p-3 transition-all"
+          className="group hover:border-primary/30 flex flex-col gap-3 rounded-lg border p-3 transition-all"
         >
-          <div
-            className="bg-muted size-20 shrink-0 rounded bg-cover bg-center"
-            style={{ backgroundImage: `url("${item.image}")` }}
-          />
-          <div className="flex-1">
-            <p className="group-hover:text-primary text-sm font-bold transition-colors">
-              {item.title}
-            </p>
-            <p className="text-accent-gold text-xs font-bold">{item.variant}</p>
-            <p className="text-muted-foreground mt-1 text-xs">Quantity: {item.quantity}</p>
+          <div className="flex items-center gap-4">
+            <div
+              className="bg-muted size-20 shrink-0 rounded bg-cover bg-center"
+              style={{ backgroundImage: `url("${item.image}")` }}
+            />
+            <div className="flex-1">
+              <p className="group-hover:text-primary text-sm font-bold transition-colors">
+                {item.title}
+              </p>
+              <p className="text-accent-gold text-xs font-bold">{item.variant}</p>
+              <p className="text-muted-foreground mt-1 text-xs">Quantity: {item.quantity}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm font-bold">{item.price}</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-sm font-bold">{item.price}</p>
-          </div>
+          {isCompleted && (
+            <div className="border-t pt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-xs"
+                onClick={() =>
+                  alert(
+                    `Mock download: "${item.title}" (${item.variant})\n\nIn production this would download the digitised record file.`,
+                  )
+                }
+              >
+                <Download className="size-3.5" />
+                Download Record
+              </Button>
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -303,6 +295,8 @@ function OrderItemsList({ items }: { items: NonNullable<OrderData['items']> }) {
 
 // ─── OrderSidebar ────────────────────────────────────────────
 function OrderSidebar({ order }: { order: OrderData }) {
+  const isCompleted = order.status === 'delivered';
+
   return (
     <div className="bg-muted/30 space-y-6 rounded-xl p-4">
       {order.shippingAddress && (
@@ -333,8 +327,23 @@ function OrderSidebar({ order }: { order: OrderData }) {
           </div>
         </div>
       )}
-      <div className="border-t pt-4">
-        <Button className="w-full">Download Invoice</Button>
+      <div className="space-y-2 border-t pt-4">
+        {isCompleted && (
+          <Button
+            className="w-full gap-2"
+            onClick={() =>
+              alert(
+                'Mock download: All records in this order.\n\nIn production this would download a ZIP of all digitised record files.',
+              )
+            }
+          >
+            <Download className="size-4" />
+            Download All Records
+          </Button>
+        )}
+        <Button variant={isCompleted ? 'outline' : 'default'} className="w-full">
+          Download Invoice
+        </Button>
       </div>
     </div>
   );
@@ -365,7 +374,7 @@ function OrderCard({
           <OrderProgress order={order} />
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <OrderItemsList items={order.items} />
+            <OrderItemsList items={order.items} isCompleted={order.status === 'delivered'} />
             <OrderSidebar order={order} />
           </div>
         </div>

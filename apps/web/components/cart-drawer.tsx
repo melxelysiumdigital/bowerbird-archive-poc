@@ -12,6 +12,7 @@ import {
 import { Minus, Plus, Trash2, X } from 'lucide-react';
 import { useCallback } from 'react';
 
+import { CartRoundUp } from '@/components/cart-round-up';
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
 
 interface CartLineItemProps {
@@ -166,6 +167,7 @@ export function CartDrawer({ isOpen, onClose, isCustomerLoggedIn }: CartDrawerPr
                 </span>
               )}
             </div>
+            {totalAmount && <CartRoundUp totalAmount={parseFloat(totalAmount.amount || '0')} />}
             <Separator />
             <p className="text-muted-foreground text-center text-xs">
               Shipping calculated at checkout

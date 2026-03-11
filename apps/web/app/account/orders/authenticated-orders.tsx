@@ -8,6 +8,7 @@ import { ScanLine } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
 
+import { CopyQuotesTab, MOCK_COPY_QUOTES } from './copy-quote-components';
 import { TabSwitcher, OrdersTab, OrdersHeader, OrdersFooter } from './orders-components';
 import type { OrderData, CustomerOrderNode } from './orders-utils';
 import { CUSTOMER_ORDERS_QUERY, transformCustomerOrder } from './orders-utils';
@@ -202,10 +203,18 @@ export function AuthenticatedOrders({
   recreateRequest,
   getIntegrationState,
 }: AuthenticatedOrdersProps) {
-  const [activeTab, setActiveTab] = useState<'orders' | 'digitisation'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'digitisation' | 'copy-quotes'>('orders');
   const data = useOrdersData({ client, userEmail, getRequests, getIntegrationState });
+  const [expandedQuote, setExpandedQuote] = useState<string | null>(
+    MOCK_COPY_QUOTES[0]?.id ?? null,
+  );
 
-  const isLoading = activeTab === 'orders' ? data.isLoadingOrders : data.isLoadingRequests;
+  const loadingByTab: Record<string, boolean> = {
+    orders: data.isLoadingOrders,
+    digitisation: data.isLoadingRequests,
+    'copy-quotes': false,
+  };
+  const isLoading = loadingByTab[activeTab] ?? false;
   const onRefresh = activeTab === 'orders' ? data.fetchOrders : data.fetchRequests;
 
   return (
@@ -221,6 +230,7 @@ export function AuthenticatedOrders({
         setActiveTab={setActiveTab}
         ordersCount={data.orders.length}
         requestsCount={data.requests.length}
+        copyQuotesCount={MOCK_COPY_QUOTES.length}
       />
       {activeTab === 'orders' && (
         <OrdersTab
@@ -242,6 +252,13 @@ export function AuthenticatedOrders({
           recreateRequest={recreateRequest}
           fetchRequests={data.fetchRequests}
           integrationStates={data.integrationStates}
+        />
+      )}
+      {activeTab === 'copy-quotes' && (
+        <CopyQuotesTab
+          quotes={MOCK_COPY_QUOTES}
+          expandedQuote={expandedQuote}
+          setExpandedQuote={setExpandedQuote}
         />
       )}
       <OrdersFooter />

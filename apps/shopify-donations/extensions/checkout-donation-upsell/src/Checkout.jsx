@@ -1,48 +1,32 @@
-import '@shopify/ui-extensions/preact';
 import { render } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
-import { useCartLines, useApplyCartLinesChange } from '@shopify/ui-extensions/preact';
+import {
+  useCartLines,
+  useApplyCartLinesChange,
+  useTotalAmount,
+} from '@shopify/ui-extensions/checkout/preact';
+
+const PRODUCT_HANDLE = 'donation';
 
 export default function extension() {
-  render(<DonationUpsell />, document.body);
+  render(<DonationBlock />, document.body);
 }
 
-function DonationUpsell() {
-  const cartLines = useCartLines();
-  const applyCartLinesChange = useApplyCartLinesChange();
-
+function DonationBlock() {
   const [variants, setVariants] = useState([]);
-  const [selectedVariantId, setSelectedVariantId] = useState(null);
-  const [isCustom, setIsCustom] = useState(false);
-  const [customAmount, setCustomAmount] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(false);
   const [error, setError] = useState('');
 
-  const productHandle = shopify.settings.value.product_handle;
-  const heading = shopify.settings.value.heading || 'Add a donation';
-  const description =
-    shopify.settings.value.description || 'Support our mission with a one-time donation.';
-
-  // Fetch donation product variants via Storefront API
   useEffect(() => {
-    if (!productHandle) return;
-
     shopify
       .query(
         `query DonationProduct($handle: String!) {
           product(handle: $handle) {
-            id
             variants(first: 20) {
-              nodes {
-                id
-                title
-                price { amount currencyCode }
-              }
+              nodes { id title price { amount currencyCode } }
             }
           }
         }`,
-        { variables: { handle: productHandle } },
+        { variables: { handle: PRODUCT_HANDLE } },
       )
       .then(({ data, errors }) => {
         if (errors?.length) {
@@ -53,32 +37,61 @@ function DonationUpsell() {
           setVariants(data.product.variants.nodes);
         }
       })
-      .catch(() => {
-        setError('Could not load donation options.');
-      });
-  }, [productHandle]);
+      .catch(() => setError('Could not load donation options.'));
+  }, []);
 
-  // Check if a donation is already in cart
-  const donationVariantIds = variants.map((v) => v.id);
-  const donationInCart = cartLines.some((line) => donationVariantIds.includes(line.merchandise.id));
+  if (variants.length === 0 && !error) return null;
 
   const presetVariants = variants.filter((v) => parseFloat(v.price.amount) > 0);
   const zeroVariant = variants.find((v) => parseFloat(v.price.amount) === 0);
+  const allVariantIds = variants.map((v) => v.id);
 
-  async function handleAddDonation() {
+  return (
+    <s-stack direction="block" gap="base">
+      {error && <s-banner status="critical">{error}</s-banner>}
+      <DonationForm
+        presetVariants={presetVariants}
+        zeroVariant={zeroVariant}
+        allVariantIds={allVariantIds}
+        onError={setError}
+      />
+      <RoundUpDonation zeroVariant={zeroVariant} allVariantIds={allVariantIds} />
+    </s-stack>
+  );
+}
+
+function DonationForm({ presetVariants, zeroVariant, allVariantIds, onError }) {
+  const cartLines = useCartLines();
+  const applyCartLinesChange = useApplyCartLinesChange();
+
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+  const [isCustom, setIsCustom] = useState(false);
+  const [customAmount, setCustomAmount] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const donationInCart = cartLines.some((line) => allVariantIds.includes(line.merchandise.id));
+
+  if (added || donationInCart) {
+    return <s-banner status="success">Thank you for your donation!</s-banner>;
+  }
+
+  const canAdd = isCustom ? parseFloat(customAmount) >= 1 : !!selectedVariantId;
+
+  async function handleAdd() {
     const variantId = isCustom ? zeroVariant?.id : selectedVariantId;
     if (!variantId) return;
 
     if (isCustom) {
       const amount = parseFloat(customAmount);
       if (isNaN(amount) || amount < 1) {
-        setError('Please enter an amount of at least $1.');
+        onError('Please enter an amount of at least $1.');
         return;
       }
     }
 
     setLoading(true);
-    setError('');
+    onError('');
 
     const attributes = isCustom
       ? [
@@ -97,38 +110,27 @@ function DonationUpsell() {
     setLoading(false);
 
     if (result.type === 'error') {
-      setError('Could not add donation. Please try again.');
+      onError('Could not add donation. Please try again.');
     } else {
       setAdded(true);
     }
   }
 
-  if (!productHandle) return null;
-  if (variants.length === 0 && !error) return null;
-
-  if (added || donationInCart) {
-    return <s-banner status="success">Thank you for adding a donation!</s-banner>;
-  }
-
-  const canAdd = isCustom ? parseFloat(customAmount) >= 1 : !!selectedVariantId;
-
   return (
-    <s-stack direction="block" gap="base">
-      <s-heading level={3}>{heading}</s-heading>
-      <s-text>{description}</s-text>
-
-      {error && <s-banner status="critical">{error}</s-banner>}
+    <>
+      <s-heading level={3}>Add a donation</s-heading>
+      <s-text>Support the Bowerbird Archive with a donation.</s-text>
 
       <s-stack direction="inline" gap="base">
         {presetVariants.map((variant) => (
           <s-button
             key={variant.id}
-            kind={selectedVariantId === variant.id ? 'primary' : 'secondary'}
+            kind={selectedVariantId === variant.id && !isCustom ? 'primary' : 'secondary'}
             onClick={() => {
               setSelectedVariantId(variant.id);
               setIsCustom(false);
               setCustomAmount('');
-              setError('');
+              onError('');
             }}
           >
             ${parseFloat(variant.price.amount).toFixed(0)}
@@ -140,7 +142,7 @@ function DonationUpsell() {
             onClick={() => {
               setIsCustom(true);
               setSelectedVariantId(null);
-              setError('');
+              onError('');
             }}
           >
             Custom
@@ -151,7 +153,7 @@ function DonationUpsell() {
       {isCustom && (
         <s-text-field
           type="number"
-          label="Custom amount"
+          label="Custom amount ($)"
           value={customAmount}
           onInput={(e) => setCustomAmount(e.target.value)}
         />
@@ -159,12 +161,51 @@ function DonationUpsell() {
 
       <s-button
         kind="primary"
-        onClick={handleAddDonation}
+        onClick={handleAdd}
         loading={loading || undefined}
         disabled={!canAdd || undefined}
       >
         Add donation
       </s-button>
-    </s-stack>
+    </>
+  );
+}
+
+function RoundUpDonation({ zeroVariant, allVariantIds }) {
+  const cartLines = useCartLines();
+  const totalAmount = useTotalAmount();
+  const applyCartLinesChange = useApplyCartLinesChange();
+  const [loading, setLoading] = useState(false);
+
+  if (!zeroVariant) return null;
+
+  const hasDonation = cartLines.some((line) => allVariantIds.includes(line.merchandise.id));
+  if (hasDonation) return null;
+
+  const total = parseFloat(totalAmount.amount);
+  const ceilTotal = Math.ceil(total);
+  let roundUpAmount = ceilTotal - total;
+  if (roundUpAmount < 0.01) roundUpAmount = 1.0;
+
+  const targetTotal = roundUpAmount < 1 ? ceilTotal : total + 1;
+
+  async function handleRoundUp() {
+    setLoading(true);
+    await applyCartLinesChange({
+      type: 'addCartLine',
+      merchandiseId: zeroVariant.id,
+      quantity: 1,
+      attributes: [
+        { key: '_donation_amount', value: roundUpAmount.toFixed(2) },
+        { key: 'Donation Amount', value: `$${roundUpAmount.toFixed(2)}` },
+      ],
+    });
+    setLoading(false);
+  }
+
+  return (
+    <s-button kind="secondary" onClick={handleRoundUp} loading={loading || undefined}>
+      Round up to ${targetTotal.toFixed(2)} (+${roundUpAmount.toFixed(2)} donation)
+    </s-button>
   );
 }

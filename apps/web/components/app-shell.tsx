@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { CartDrawer } from './cart-drawer';
 import { DiscountPopup } from './discount-popup';
+import { DonationDrawer } from './donation-drawer';
 import { Navbar } from './navbar';
 
 import { useAuth } from '@/hooks/use-auth';
@@ -11,6 +12,7 @@ import { useShopifyCart } from '@/hooks/use-shopify-cart';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
   const { isAuthenticated, user, loginWithRedirect, client } = useAuth();
   const { totalQuantity, attachCustomer } = useShopifyCart();
   const hasAttached = useRef(false);
@@ -31,6 +33,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <Navbar
         onCartClick={() => setCartOpen(true)}
+        onDonateClick={() => setDonationOpen(true)}
         cartCount={totalQuantity}
         isAuthenticated={isAuthenticated}
         userAvatar={(user as { picture?: string })?.picture}
@@ -43,6 +46,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         onClose={() => setCartOpen(false)}
         isCustomerLoggedIn={isAuthenticated}
       />
+      <DonationDrawer isOpen={donationOpen} onClose={() => setDonationOpen(false)} />
     </>
   );
 }

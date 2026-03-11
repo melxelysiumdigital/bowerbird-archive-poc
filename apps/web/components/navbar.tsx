@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@bowerbird-poc/ui/component
 import { Badge } from '@bowerbird-poc/ui/components/badge';
 import { Button } from '@bowerbird-poc/ui/components/button';
 import { Input } from '@bowerbird-poc/ui/components/input';
-import { Search, ShoppingBag, User, LogIn, Menu, X } from 'lucide-react';
+import { Search, ShoppingBag, User, LogIn, Menu, X, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -71,6 +71,7 @@ function MobileMenu({
 
 interface NavbarProps {
   onCartClick: () => void;
+  onDonateClick: () => void;
   cartCount?: number;
   isAuthenticated?: boolean;
   userAvatar?: string;
@@ -79,6 +80,7 @@ interface NavbarProps {
 
 export function Navbar({
   onCartClick,
+  onDonateClick,
   cartCount = 0,
   isAuthenticated,
   userAvatar,
@@ -143,6 +145,11 @@ export function Navbar({
               <LogIn className="size-4" />
             </Button>
           )}
+
+          {/* Donate */}
+          <Button variant="ghost" size="icon" onClick={onDonateClick}>
+            <Heart className="size-4" />
+          </Button>
 
           {/* Cart */}
           <Button variant="ghost" size="icon" className="relative" onClick={onCartClick}>

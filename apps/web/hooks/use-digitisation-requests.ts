@@ -29,7 +29,11 @@ function transformDraftOrder(draft: AdminDraftOrder): DigitisationRequest {
   let status: DigitisationStatus;
   let currentStep: number;
 
-  const orderTags = (draft.order_tags || '').split(',').map((t) => t.trim().toLowerCase());
+  // Check tags from both the converted order AND the draft order itself.
+  // tagForDraftOrder writes to the order if it exists, otherwise the draft order,
+  // so we need to merge both sources to reliably detect status tags like 'digitising'.
+  const allTagsRaw = [draft.order_tags, draft.tags].filter(Boolean).join(',');
+  const orderTags = allTagsRaw.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
   const isCancelled = draft.order_cancelled;
   const isFulfilled = draft.order_fulfillment === 'FULFILLED';
 
