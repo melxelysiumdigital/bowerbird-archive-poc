@@ -9,6 +9,55 @@
  */
 {
   "sections": {
+    "177370327786e974df": {
+      "type": "_blocks",
+      "blocks": {
+        "subscriptions_app_block_Wgp7x8": {
+          "type": "shopify://apps/subscriptions/blocks/app-block/a3bfe9ec-96f8-4508-a003-df608a36d2ad",
+          "settings": {
+            "widget_style": "button",
+            "widget_style_card_selector": "radio_button",
+            "subscription_policy_url": "",
+            "color_text_body": "#6D7175",
+            "dividers_color": "#8F8D8D",
+            "background_color": "#FFFFFF",
+            "border_thickness": 3.5,
+            "border_radius": 0,
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "subscriptions_app_block_Wgp7x8"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "page-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
     "main": {
       "type": "product-information",
       "blocks": {
@@ -254,9 +303,9 @@
                 "widget_style": "card",
                 "widget_style_card_selector": "radio_button",
                 "subscription_policy_url": "",
-                "color_text_body": "#6D7175",
-                "dividers_color": "#8F8D8D",
-                "background_color": "#FFFFFF",
+                "color_text_body": "#6d7175",
+                "dividers_color": "#8f8d8d",
+                "background_color": "#ffffff",
                 "border_thickness": 1,
                 "border_radius": 0,
                 "product": "{{product}}"
@@ -458,6 +507,7 @@
     }
   },
   "order": [
+    "177370327786e974df",
     "main",
     "product_recommendations_qggXJq",
     "177370268061672372"
