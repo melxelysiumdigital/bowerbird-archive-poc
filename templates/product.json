@@ -15,7 +15,7 @@
         "subscriptions_app_block_Wgp7x8": {
           "type": "shopify://apps/subscriptions/blocks/app-block/a3bfe9ec-96f8-4508-a003-df608a36d2ad",
           "settings": {
-            "widget_style": "button",
+            "widget_style": "toggle",
             "widget_style_card_selector": "radio_button",
             "subscription_policy_url": "",
             "color_text_body": "#6D7175",
@@ -300,7 +300,7 @@
             "subscriptions_app_block_Ve6EUA": {
               "type": "shopify://apps/subscriptions/blocks/app-block/a3bfe9ec-96f8-4508-a003-df608a36d2ad",
               "settings": {
-                "widget_style": "card",
+                "widget_style": "toggle",
                 "widget_style_card_selector": "radio_button",
                 "subscription_policy_url": "",
                 "color_text_body": "#6d7175",
