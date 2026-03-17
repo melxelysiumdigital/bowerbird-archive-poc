@@ -12,10 +12,6 @@
     "main": {
       "type": "product-information",
       "blocks": {
-        "appstle_memberships_appstle_membership_product_page_widget_pJntAa": {
-          "type": "shopify://apps/appstle-memberships/blocks/appstle-membership-product-page-widget/76528d70-5fbe-48f8-8e19-590d109aa2b7",
-          "settings": {}
-        },
         "media-gallery": {
           "type": "_product-media-gallery",
           "static": true,
@@ -251,6 +247,10 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "appstle_memberships_appstle_membership_product_page_widget_LnKkND": {
+              "type": "shopify://apps/appstle-memberships/blocks/appstle-membership-product-page-widget/76528d70-5fbe-48f8-8e19-590d109aa2b7",
+              "settings": {}
             }
           },
           "block_order": [
@@ -258,13 +258,11 @@
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "text_aEtTtq"
+            "text_aEtTtq",
+            "appstle_memberships_appstle_membership_product_page_widget_LnKkND"
           ]
         }
       },
-      "block_order": [
-        "appstle_memberships_appstle_membership_product_page_widget_pJntAa"
-      ],
       "settings": {
         "content_width": "content-center-aligned",
         "desktop_media_position": "left",
