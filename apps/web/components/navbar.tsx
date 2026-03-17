@@ -64,7 +64,31 @@ function MobileMenu({
             Orders
           </Link>
         </Button>
+        <Button variant="ghost" size="sm" className="justify-start" asChild>
+          <Link href="/account/membership" onClick={onClose}>
+            Membership
+          </Link>
+        </Button>
       </div>
+    </div>
+  );
+}
+
+function DesktopNavLinks() {
+  return (
+    <div className="hidden items-center gap-1 md:flex">
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/search">Browse</Link>
+      </Button>
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/account/orders">Orders</Link>
+      </Button>
+      <Button variant="ghost" size="sm" asChild>
+        <Link href="/account/membership">Membership</Link>
+      </Button>
+      <Button variant="ghost" size="sm" className="text-muted-foreground text-xs" asChild>
+        <Link href="/staff">Staff</Link>
+      </Button>
     </div>
   );
 }
@@ -115,18 +139,7 @@ export function Navbar({
 
         {/* Actions */}
         <div className="flex items-center gap-2">
-          {/* Nav links — desktop */}
-          <div className="hidden items-center gap-1 md:flex">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/search">Browse</Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/account/orders">Orders</Link>
-            </Button>
-            <Button variant="ghost" size="sm" className="text-muted-foreground text-xs" asChild>
-              <Link href="/staff">Staff</Link>
-            </Button>
-          </div>
+          <DesktopNavLinks />
 
           {/* Auth */}
           {isAuthenticated ? (
