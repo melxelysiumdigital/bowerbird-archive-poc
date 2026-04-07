@@ -9,12 +9,14 @@ import { Navbar } from './navbar';
 
 import { useAuth } from '@/hooks/use-auth';
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
+import { useUnifiedCart } from '@/hooks/use-unified-cart';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
   const { isAuthenticated, user, loginWithRedirect, client } = useAuth();
-  const { totalQuantity, attachCustomer } = useShopifyCart();
+  const { attachCustomer } = useShopifyCart();
+  const { totalQuantity } = useUnifiedCart();
   const hasAttached = useRef(false);
 
   // Attach customer identity to cart so checkout recognises the user
@@ -41,11 +43,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       />
       {children}
       <DiscountPopup />
-      <CartDrawer
-        isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
-        isCustomerLoggedIn={isAuthenticated}
-      />
+      <CartDrawer isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       <DonationDrawer isOpen={donationOpen} onClose={() => setDonationOpen(false)} />
     </>
   );

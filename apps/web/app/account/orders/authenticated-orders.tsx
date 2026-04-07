@@ -6,6 +6,7 @@ import type {
 import { Button } from '@bowerbird-poc/ui/components/button';
 import { ScanLine } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback } from 'react';
 
 import { CopyQuotesTab, MOCK_COPY_QUOTES } from './copy-quote-components';
@@ -203,7 +204,13 @@ export function AuthenticatedOrders({
   recreateRequest,
   getIntegrationState,
 }: AuthenticatedOrdersProps) {
-  const [activeTab, setActiveTab] = useState<'orders' | 'digitisation' | 'copy-quotes'>('orders');
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const validTabs = ['orders', 'digitisation', 'copy-quotes'] as const;
+  const initialTab = validTabs.includes(tabParam as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+    ? (tabParam as 'orders' | 'digitisation' | 'copy-quotes')
+    : 'orders';
+  const [activeTab, setActiveTab] = useState<'orders' | 'digitisation' | 'copy-quotes'>(initialTab);
   const data = useOrdersData({ client, userEmail, getRequests, getIntegrationState });
   const [expandedQuote, setExpandedQuote] = useState<string | null>(
     MOCK_COPY_QUOTES[0]?.id ?? null,

@@ -82,6 +82,7 @@ export function useShopifyCart() {
     removeFromCart,
     updateQuantity,
     attachCustomer,
+    updateCartAttributes: cartAttributesUpdate,
     lines: lines ?? [],
     error: error ? new Error(String(error)) : null,
   };

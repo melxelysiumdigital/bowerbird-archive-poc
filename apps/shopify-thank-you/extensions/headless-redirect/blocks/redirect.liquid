@@ -42,6 +42,7 @@
 
     if (headlessOriginParam && checkoutUrlParam) {
       setCookie('headless_origin', headlessOriginParam, 1);
+      setCookie('has_request_items', urlParams.get('has_request_items') || 'false', 1);
       window.location.replace(checkoutUrlParam);
       return;
     }

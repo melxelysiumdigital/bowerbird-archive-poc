@@ -5,6 +5,7 @@ import { AppShell } from '@/components/app-shell';
 import { Footer } from '@/components/footer';
 import { AuthProvider } from '@/components/providers/auth-provider';
 import { ShopifyProviderWrapper } from '@/components/providers/shopify-provider';
+import { UnifiedCartProvider } from '@/hooks/use-unified-cart';
 
 import './globals.css';
 
@@ -36,12 +37,14 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <AuthProvider>
           <ShopifyProviderWrapper>
-            <div className="flex min-h-screen flex-col">
-              <AppShell>
-                <main className="flex-1">{children}</main>
-              </AppShell>
-              <Footer />
-            </div>
+            <UnifiedCartProvider>
+              <div className="flex min-h-screen flex-col">
+                <AppShell>
+                  <main className="flex-1">{children}</main>
+                </AppShell>
+                <Footer />
+              </div>
+            </UnifiedCartProvider>
           </ShopifyProviderWrapper>
         </AuthProvider>
       </body>

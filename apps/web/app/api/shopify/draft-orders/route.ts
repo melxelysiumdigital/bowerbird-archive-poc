@@ -97,8 +97,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, firstName, lastName, notes, item } = body;
 
-    if (!email || (!item && !body.recreate)) {
-      return NextResponse.json({ error: 'Email and item are required' }, { status: 400 });
+    if (!item && !body.items && !body.recreate) {
+      return NextResponse.json({ error: 'Item(s) are required' }, { status: 400 });
     }
 
     let customerId: number | undefined;
@@ -122,6 +122,25 @@ export async function POST(request: NextRequest) {
             ...(customerId ? { customer: { id: customerId } } : { email }),
             tags: 'digitisation-request',
             note: recreateNote,
+          },
+        }),
+      })) as { draft_order: any };
+
+      return NextResponse.json(data.draft_order, { status: 201 });
+    }
+
+    // Batch create: multiple items in one draft order
+    if (Array.isArray(body.items) && body.items.length > 0) {
+      const lineItems = body.items.map(buildLineItem);
+
+      const data = (await shopifyAdminFetch('/draft_orders.json', {
+        method: 'POST',
+        body: JSON.stringify({
+          draft_order: {
+            line_items: lineItems,
+            ...(customerId ? { customer: { id: customerId } } : { email }),
+            tags: 'digitisation-request',
+            note: notes || '',
           },
         }),
       })) as { draft_order: any };

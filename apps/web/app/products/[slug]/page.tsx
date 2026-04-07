@@ -17,11 +17,12 @@ import { ChevronDown, ZoomIn, SearchX, ShoppingCart, Check, Info } from 'lucide-
 import Link from 'next/link';
 import { use, useEffect, useState, useCallback } from 'react';
 
-import { DigitisationRequestForm } from '@/components/digitisation-request-form';
+import { RequestQuoteCard } from '@/components/request-quote-card';
 import { ResearchCentreRequest } from '@/components/research-centre-request';
 import { useAuth } from '@/hooks/use-auth';
 import { useAzureSearch } from '@/hooks/use-azure-search';
 import { useShopifyCart } from '@/hooks/use-shopify-cart';
+import { useUnifiedCart } from '@/hooks/use-unified-cart';
 import { ITEM_TYPE_TO_PRODUCT_HANDLE } from '@/lib/shopify-product-map';
 
 // ─── Storefront API variant fetcher ──────────────────────────
@@ -323,11 +324,11 @@ function ProductDetails({
   chosenVariant,
   onSelectVariant,
   onAddToCart,
+  onAddRequestToCart,
   isCartLoading,
   addedToCart,
+  requestInCart,
   isAuthenticated,
-  user,
-  loginWithRedirect,
 }: {
   item: SearchItem;
   style: (typeof ITEM_TYPE_STYLE)[keyof typeof ITEM_TYPE_STYLE] | undefined;
@@ -336,11 +337,11 @@ function ProductDetails({
   chosenVariant: ShopifyVariant | undefined;
   onSelectVariant: (id: string) => void;
   onAddToCart: () => void;
+  onAddRequestToCart: () => void;
   isCartLoading: boolean;
   addedToCart: boolean;
+  requestInCart: boolean;
   isAuthenticated: boolean;
-  user: { email?: string; name?: string } | undefined;
-  loginWithRedirect: () => void;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -387,12 +388,10 @@ function ProductDetails({
           addedToCart={addedToCart}
         />
       ) : (
-        <DigitisationRequestForm
+        <RequestQuoteCard
           item={item}
-          isAuthenticated={isAuthenticated}
-          userEmail={user?.email}
-          userName={user?.name}
-          onLogin={() => loginWithRedirect()}
+          onAddToCart={onAddRequestToCart}
+          alreadyInCart={requestInCart}
         />
       )}
 
@@ -423,8 +422,9 @@ function ProductNotFound() {
 export default function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const { items, isLoading, search } = useAzureSearch();
-  const { isAuthenticated, user, loginWithRedirect } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { addItem, isLoading: isCartLoading } = useShopifyCart();
+  const { addRequestItem, hasRequestItem } = useUnifiedCart();
 
   const [variants, setVariants] = useState<ShopifyVariant[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
@@ -463,6 +463,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   }, [selectedVariant, item, addItem]);
+
+  const handleAddRequestToCart = useCallback(() => {
+    if (!item) return;
+    addRequestItem(item);
+  }, [item, addRequestItem]);
 
   if (isLoading && !item) {
     return (
@@ -506,11 +511,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           chosenVariant={chosenVariant}
           onSelectVariant={setSelectedVariant}
           onAddToCart={handleAddToCart}
+          onAddRequestToCart={handleAddRequestToCart}
           isCartLoading={isCartLoading}
           addedToCart={addedToCart}
+          requestInCart={item ? hasRequestItem(item.id) : false}
           isAuthenticated={isAuthenticated}
-          user={user as { email?: string; name?: string }}
-          loginWithRedirect={loginWithRedirect}
         />
       </div>
 
