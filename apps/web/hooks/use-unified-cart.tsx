@@ -200,9 +200,6 @@ export function UnifiedCartProvider({ children }: { children: React.ReactNode })
             throw new Error(text || 'Failed to create digitisation request');
           }
 
-          // Clear request items from local cart
-          setRequestItems([]);
-          saveRequestItems([]);
         }
 
         // --- Redirect to Shopify checkout for paid items ---
@@ -215,11 +212,17 @@ export function UnifiedCartProvider({ children }: { children: React.ReactNode })
           storeUrl.searchParams.set('headless_origin', window.location.origin);
           storeUrl.searchParams.set('has_request_items', hadRequestItems ? 'true' : 'false');
           storeUrl.searchParams.set('checkout_url', checkoutUrlObj.toString());
+          // Clear localStorage only (don't update React state to avoid UI flash)
+          saveRequestItems([]);
           window.location.href = storeUrl.toString();
           return; // page is navigating away
         }
 
-        // Only had request items — show success state
+        // Only had request items (no redirect) — clear and show success
+        if (hadRequestItems) {
+          setRequestItems([]);
+          saveRequestItems([]);
+        }
         setCheckoutResult('requests_submitted');
       } catch (err) {
         setCheckoutResult('error');
