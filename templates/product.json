@@ -6,8 +6,7 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */ {
   "sections": {
     "main": {
       "type": "product-information",
@@ -25,7 +24,6 @@
             "slideshow_mobile_controls_style": "dots",
             "thumbnail_position": "right",
             "thumbnail_width": 44,
-            "thumbnail_radius": 0,
             "aspect_ratio": "adapt",
             "constrain_to_viewport": true,
             "media_fit": "contain",
@@ -72,6 +70,7 @@
               "type": "group",
               "name": "Header",
               "settings": {
+                "open_in_new_tab": false,
                 "content_direction": "column",
                 "vertical_on_mobile": true,
                 "horizontal_alignment": "flex-start",
@@ -99,9 +98,6 @@
                 "overlay_color": "#00000026",
                 "overlay_style": "solid",
                 "gradient_direction": "to top",
-                "link": "",
-                "open_in_new_tab": false,
-                "placeholder": "",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -157,10 +153,7 @@
                   "blocks": {}
                 }
               },
-              "block_order": [
-                "text_xrnftG",
-                "price_tVjtKg"
-              ]
+              "block_order": ["text_xrnftG", "price_tVjtKg"]
             },
             "divider_VJhene": {
               "type": "_divider",
@@ -192,7 +185,6 @@
               "settings": {
                 "stacking": true,
                 "show_pickup_availability": false,
-                "gift_card_form": true,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -247,10 +239,6 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
-            },
-            "appstle_memberships_appstle_membership_product_page_widget_LnKkND": {
-              "type": "shopify://apps/appstle-memberships/blocks/appstle-membership-product-page-widget/76528d70-5fbe-48f8-8e19-590d109aa2b7",
-              "settings": {}
             }
           },
           "block_order": [
@@ -258,8 +246,7 @@
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "text_aEtTtq",
-            "appstle_memberships_appstle_membership_product_page_widget_LnKkND"
+            "text_aEtTtq"
           ]
         }
       },
@@ -269,7 +256,6 @@
         "equal_columns": false,
         "limit_details_width": false,
         "gap": 48,
-        "enable_sticky_add_to_cart": true,
         "color_scheme": "",
         "padding-block-start": 0,
         "padding-block-end": 0
@@ -386,16 +372,10 @@
               "blocks": {}
             }
           },
-          "block_order": [
-            "product_card_gallery_DNizbJ",
-            "product_title_M7MJkb",
-            "price_gLWgA6"
-          ]
+          "block_order": ["product_card_gallery_DNizbJ", "product_title_M7MJkb", "price_gLWgA6"]
         }
       },
-      "block_order": [
-        "text_cbcgyb"
-      ],
+      "block_order": ["text_cbcgyb"],
       "name": "t:names.product_recommendations",
       "settings": {
         "product": "{{ closest.product }}",
@@ -417,8 +397,5 @@
       }
     }
   },
-  "order": [
-    "main",
-    "product_recommendations_qggXJq"
-  ]
+  "order": ["main", "product_recommendations_qggXJq"]
 }
