@@ -16,7 +16,7 @@
         "heading": "Welcome to Our Store",
         "subheading": "Discover our curated collection",
         "cta_text": "Shop Now",
-        "cta_url": "",
+        "cta_url": "shopify://products/household-annual-membership",
         "overlay_opacity": 40,
         "text_alignment": "center"
       }
