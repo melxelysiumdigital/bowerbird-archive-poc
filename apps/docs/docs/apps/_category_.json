@@ -1,0 +1,9 @@
+{
+  "label": "Apps",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "title": "Apps",
+    "description": "Per-app deep dives — what each workspace does and how to run it."
+  }
+}
