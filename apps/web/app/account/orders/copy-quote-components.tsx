@@ -75,13 +75,13 @@ function CopyQuoteCard({
     >
       <div
         className={cn(
-          'flex flex-wrap items-center justify-between gap-4 p-6',
+          'flex flex-wrap items-center justify-between gap-4 p-4 sm:p-6',
           isExpanded && 'bg-muted/30 border-b',
         )}
       >
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-3">
-            <span className="text-xl font-bold">{quote.requestNumber}</span>
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="text-lg font-bold sm:text-xl">{quote.requestNumber}</span>
             <Badge
               variant="secondary"
               className={cn(getStatusColor(quote.status), 'text-[10px] tracking-wider uppercase')}
@@ -106,7 +106,7 @@ function CopyQuoteCard({
       </div>
 
       {isExpanded && (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="mb-6">
             <h3 className="text-muted-foreground mb-3 text-sm font-bold tracking-widest uppercase">
               Request Summary
@@ -120,7 +120,7 @@ function CopyQuoteCard({
                 ['Response date', quote.responseDate],
                 ['Status', quote.status],
               ].map(([label, value]) => (
-                <div key={label} className="grid grid-cols-3 gap-4 py-2">
+                <div key={label} className="flex flex-col gap-0.5 py-2 sm:grid sm:grid-cols-3 sm:gap-4">
                   <dt className="text-sm font-semibold">{label}</dt>
                   <dd className="text-muted-foreground col-span-2 text-sm">{value}</dd>
                 </div>

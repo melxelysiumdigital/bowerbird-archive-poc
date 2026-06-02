@@ -100,7 +100,7 @@ export function TabSwitcher({
   copyQuotesCount?: number;
 }) {
   return (
-    <div className="bg-muted mb-8 flex w-fit flex-wrap gap-1 rounded-lg p-1">
+    <div className="bg-muted mb-8 flex w-full flex-col gap-1 rounded-lg p-1 sm:w-fit sm:flex-row sm:flex-wrap">
       <button
         onClick={() => setActiveTab('orders')}
         className={cn(
@@ -110,7 +110,7 @@ export function TabSwitcher({
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
-        <Receipt className="size-4" />
+        <Receipt className="size-4 shrink-0" />
         Orders
         {ordersCount > 0 && (
           <Badge variant="secondary" className="text-xs">
@@ -127,8 +127,8 @@ export function TabSwitcher({
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
-        <ScanLine className="size-4" />
-        Digitisation Requests
+        <ScanLine className="size-4 shrink-0" />
+        <span className="truncate">Digitisation Requests</span>
         {requestsCount > 0 && (
           <Badge variant="secondary" className="text-xs">
             {requestsCount}
@@ -144,8 +144,8 @@ export function TabSwitcher({
             : 'text-muted-foreground hover:text-foreground',
         )}
       >
-        <Copy className="size-4" />
-        Research Centre Requests
+        <Copy className="size-4 shrink-0" />
+        <span className="truncate">Research Centre Requests</span>
         {(copyQuotesCount ?? 0) > 0 && (
           <Badge variant="secondary" className="text-xs">
             {copyQuotesCount}
@@ -171,13 +171,13 @@ function OrderCardHeader({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-between gap-4 p-6',
+        'flex flex-wrap items-center justify-between gap-4 p-4 sm:p-6',
         isExpanded && 'bg-muted/30 border-b',
       )}
     >
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold">{order.id}</span>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className="text-lg font-bold sm:text-xl">{order.id}</span>
           <Badge
             variant="secondary"
             className={cn(statusStyle.bg, statusStyle.color, 'tracking-wider uppercase')}
@@ -209,12 +209,12 @@ function OrderCardHeader({
 function OrderProgress({ order }: { order: OrderData }) {
   return (
     <div className="mb-10">
-      <div className="mb-4 flex justify-between">
+      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:justify-between">
         <h3 className="text-muted-foreground text-sm font-bold tracking-widest uppercase">
           Order Progress
         </h3>
         {order.trackingNumber && (
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="text-muted-foreground text-sm font-medium">{order.carrier}</span>
             <span className="bg-muted rounded px-2 py-0.5 font-mono text-xs">
               {order.trackingNumber}
@@ -225,12 +225,51 @@ function OrderProgress({ order }: { order: OrderData }) {
           </div>
         )}
       </div>
-      <div className="flex items-center justify-between px-2">
+      <div className="hidden items-center justify-between px-2 md:flex">
         <OrderStep step={1} label="Order Placed" currentStep={order.currentStep} />
         <OrderStep step={2} label="Processing" currentStep={order.currentStep} />
         <OrderStep step={3} label="Shipped" currentStep={order.currentStep} />
         <OrderStep step={4} label="Out for Delivery" currentStep={order.currentStep} />
         <OrderStep step={5} label="Delivered" currentStep={order.currentStep} />
+      </div>
+      {/* Mobile: compact vertical progress */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {[
+          { step: 1, label: 'Order Placed' },
+          { step: 2, label: 'Processing' },
+          { step: 3, label: 'Shipped' },
+          { step: 4, label: 'Out for Delivery' },
+          { step: 5, label: 'Delivered' },
+        ].map(({ step, label }) => {
+          const isCompleted = order.currentStep > step;
+          const isCurrent = order.currentStep === step;
+          const isPending = order.currentStep < step;
+          const StepIcon = STEP_ICONS[step];
+          return (
+            <div key={step} className="flex items-center gap-3">
+              <div
+                className={cn(
+                  'flex shrink-0 items-center justify-center rounded-full',
+                  isCurrent && 'bg-primary size-8 text-white shadow-md',
+                  isCompleted && 'bg-primary size-6 text-white',
+                  isPending && 'size-6 bg-gray-200 text-gray-400',
+                )}
+              >
+                {isCompleted && <Check className="size-3" />}
+                {isCurrent && StepIcon && <StepIcon className="size-4" />}
+              </div>
+              <span
+                className={cn(
+                  'text-sm font-bold',
+                  isCurrent && 'text-primary',
+                  isPending && 'text-gray-400',
+                )}
+              >
+                {label}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -254,19 +293,22 @@ function OrderItemsList({
           key={idx}
           className="group hover:border-primary/30 flex flex-col gap-3 rounded-lg border p-3 transition-all"
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-start gap-3 sm:items-center sm:gap-4">
             <div
-              className="bg-muted size-20 shrink-0 rounded bg-cover bg-center"
+              className="bg-muted size-16 shrink-0 rounded bg-cover bg-center sm:size-20"
               style={{ backgroundImage: `url("${item.image}")` }}
             />
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <p className="group-hover:text-primary text-sm font-bold transition-colors">
                 {item.title}
               </p>
               <p className="text-accent-gold text-xs font-bold">{item.variant}</p>
-              <p className="text-muted-foreground mt-1 text-xs">Quantity: {item.quantity}</p>
+              <div className="mt-1 flex items-center justify-between gap-2">
+                <p className="text-muted-foreground text-xs">Quantity: {item.quantity}</p>
+                <p className="text-sm font-bold sm:hidden">{item.price}</p>
+              </div>
             </div>
-            <div className="text-right">
+            <div className="hidden text-right sm:block">
               <p className="text-sm font-bold">{item.price}</p>
             </div>
           </div>
@@ -370,7 +412,7 @@ function OrderCard({
       <OrderCardHeader order={order} isExpanded={isExpanded} onToggle={onToggle} />
 
       {isExpanded && order.items && (
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <OrderProgress order={order} />
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
@@ -469,9 +511,9 @@ export function OrdersHeader({
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="mb-10 flex items-start justify-between">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-4xl font-black tracking-tight">Your Orders</h1>
+          <h1 className="text-3xl font-black tracking-tight sm:text-4xl">Your Orders</h1>
           <p className="text-muted-foreground mt-2">
             Signed in as <span className="text-foreground font-semibold">{userEmail}</span>
           </p>
@@ -500,14 +542,14 @@ export function OrdersHeader({
 // ─── OrdersFooter ────────────────────────────────────────────
 export function OrdersFooter() {
   return (
-    <div className="border-primary/10 bg-primary/5 mt-12 flex flex-col items-center justify-between gap-6 rounded-2xl border p-8 md:flex-row">
+    <div className="border-primary/10 bg-primary/5 mt-12 flex flex-col items-center justify-between gap-6 rounded-2xl border p-6 text-center sm:p-8 md:flex-row md:text-left">
       <div>
         <h3 className="text-lg font-bold">Need help with an order?</h3>
         <p className="text-muted-foreground text-sm">
           Our archive specialists are available Mon-Fri, 9am - 5pm AEST.
         </p>
       </div>
-      <div className="flex gap-4">
+      <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:gap-4">
         <Button variant="outline">Contact Support</Button>
         <Button>Return Policy</Button>
       </div>

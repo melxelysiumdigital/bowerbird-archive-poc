@@ -225,7 +225,7 @@ export function AuthenticatedOrders({
   const onRefresh = activeTab === 'orders' ? data.fetchOrders : data.fetchRequests;
 
   return (
-    <div className="mx-auto w-full max-w-[960px] px-6 py-8">
+    <div className="mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
       <OrdersHeader
         userEmail={userEmail}
         isLoading={isLoading}

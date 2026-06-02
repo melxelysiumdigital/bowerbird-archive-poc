@@ -209,7 +209,7 @@ function ProductOrderCard({
           ) : (
             <>
               <ShoppingCart className="size-5" />
-              Proceed to Checkout
+              Add to Cart
             </>
           )}
         </Button>

@@ -22,7 +22,7 @@ export default function OrdersPage() {
 
   if (isAuthLoading) {
     return (
-      <div className="mx-auto w-full max-w-[960px] px-6 py-8">
+      <div className="mx-auto w-full max-w-[960px] px-4 py-6 sm:px-6 sm:py-8">
         <div className="flex flex-col items-center justify-center py-20">
           <span className="border-primary mb-4 inline-block size-8 animate-spin rounded-full border-4 border-t-transparent" />
           <p className="text-muted-foreground">Loading...</p>

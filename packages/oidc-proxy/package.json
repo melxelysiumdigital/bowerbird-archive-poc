@@ -1,0 +1,17 @@
+{
+  "name": "@bowerbird-poc/oidc-proxy",
+  "version": "1.0.0",
+  "description": "OIDC proxy between Shopify and Microsoft Entra External ID — rewrites email_verified from string to boolean",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "generate-keys": "node src/generate-keys.js",
+    "test": "node src/test-rewrite.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jose": "^6.0.11"
+  }
+}
