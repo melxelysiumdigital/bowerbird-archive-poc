@@ -6,21 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */
-{
+ */ {
   "sections": {
-    "react_hero_WfgxPk": {
-      "type": "react-hero",
-      "name": "React Hero Banner",
-      "settings": {
-        "heading": "Welcome to Our Store",
-        "subheading": "Discover our curated collection",
-        "cta_text": "Shop Now",
-        "cta_url": "shopify://products/household-annual-membership",
-        "overlay_opacity": 40,
-        "text_alignment": "center"
-      }
-    },
     "hero_jVaWmY": {
       "type": "hero",
       "blocks": {
@@ -66,11 +53,7 @@
           "blocks": {}
         }
       },
-      "block_order": [
-        "text_YLPk4p",
-        "button_H9gpTf"
-      ],
-      "disabled": true,
+      "block_order": ["text_YLPk4p", "button_H9gpTf"],
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
@@ -79,7 +62,6 @@
         "custom_mobile_media": false,
         "media_type_1_mobile": "image",
         "media_type_2_mobile": "image",
-        "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -181,10 +163,7 @@
               "blocks": {}
             }
           },
-          "block_order": [
-            "product_list_text_YFtzcL",
-            "product_list_button_MWeP9V"
-          ]
+          "block_order": ["product_list_text_YFtzcL", "product_list_button_MWeP9V"]
         },
         "static-product-card": {
           "type": "_product-card",
@@ -269,11 +248,7 @@
               "blocks": {}
             }
           },
-          "block_order": [
-            "product_card_gallery_677WP3",
-            "product_title_YXxMTj",
-            "price_JQzVV4"
-          ]
+          "block_order": ["product_card_gallery_677WP3", "product_title_YXxMTj", "price_JQzVV4"]
         }
       },
       "name": "Featured collection",
@@ -298,9 +273,5 @@
       }
     }
   },
-  "order": [
-    "react_hero_WfgxPk",
-    "hero_jVaWmY",
-    "product_list_fa6P9H"
-  ]
+  "order": ["hero_jVaWmY", "product_list_fa6P9H"]
 }
