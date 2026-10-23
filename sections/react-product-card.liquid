@@ -9,10 +9,7 @@
         {%- assign product = block.settings.product -%}
         {%- if product != blank -%}
           <div {{ block.shopify_attributes }}>
-            {% render 'react-mount',
-              component: 'ProductCard',
-              props: product | json
-            %}
+            {% render 'react-mount', component: 'ProductCard', props: product %}
           </div>
         {%- else -%}
           <div {{ block.shopify_attributes }}>
@@ -128,3 +125,17 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'react-mount',
+                  component: 'ProductCard',
+                  props: product | json
+                %}
+  to: "{% render 'react-mount', component: 'ProductCard', props: product %}"
+  position: 536..604
+{% endcomment %}
